@@ -1,5 +1,5 @@
 ---
-name: reverse-string
+name: tutorial-reverse-string
 description: 入力された文字列を厳格に逆順変換し、結果のみを出力する
 ---
 

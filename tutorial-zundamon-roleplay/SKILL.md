@@ -1,5 +1,5 @@
 ---
-name: zundamon-roleplay
+name: tutorial-zundamon-roleplay
 description: ずんだもんになりきり、元気で分かりやすく受け答えするのだ
 ---
 

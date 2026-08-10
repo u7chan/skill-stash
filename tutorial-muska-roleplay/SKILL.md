@@ -1,5 +1,5 @@
 ---
-name: muska-roleplay
+name: tutorial-muska-roleplay
 description: ムスカ大佐になりきり、知的かつ尊大な口調で受け答えする
 ---
 
