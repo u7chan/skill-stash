@@ -14,7 +14,8 @@
 | 6 | api-design | HTTP/Web APIをRFC・IETF仕様基準で設計・レビューする |
 | 7 | company-decision-guide | 経営者の判断基準を整理し意思決定の補助線を作る |
 | 8 | daily-ai-work-orchestrator | 予定一覧から1日の生産性と仕事の質を最大化する |
-| 9 | meeting-to-actions | 会議ログを次のアクションに使える形へ整理する |
-| 10 | tutorial-muska-roleplay | ムスカ大佐になりきり、知的かつ尊大な口調で受け答えする |
-| 11 | tutorial-reverse-string | 入力された文字列を厳格に逆順変換し結果のみを出力する |
-| 12 | tutorial-zundamon-roleplay | ずんだもんになりきり、元気で分かりやすく受け答えする |
+| 9 | issue-pr-orchestrator | Issue実装からPRレビュー完了までを委譲・管理する |
+| 10 | meeting-to-actions | 会議ログを次のアクションに使える形へ整理する |
+| 11 | tutorial-muska-roleplay | ムスカ大佐になりきり、知的かつ尊大な口調で受け答えする |
+| 12 | tutorial-reverse-string | 入力された文字列を厳格に逆順変換し結果のみを出力する |
+| 13 | tutorial-zundamon-roleplay | ずんだもんになりきり、元気で分かりやすく受け答えする |
