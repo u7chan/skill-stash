@@ -1,4 +1,0 @@
-interface:
-  display_name: "Issue PR Orchestrator"
-  short_description: "Issue実装からPRレビュー完了までを委譲・管理する"
-  default_prompt: "Use $issue-pr-orchestrator to coordinate an Issue implementation through PR review completion."
