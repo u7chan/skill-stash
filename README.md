@@ -4,7 +4,7 @@
 
 ## スキル一覧
 
-| 項番 | スキル名 | 概要 |
+| # | スキル名 | 概要 |
 | --- | --- | --- |
 | # | agent-ui-streaming | AIエージェントUIのリアルタイム通信をSSE基準で設計・実装する |
 | # | ai-business-opportunity-finder | 業界と自社の強みからAI事業化領域を探索する |
