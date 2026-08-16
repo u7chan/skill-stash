@@ -25,6 +25,7 @@ pane の確保・分割は Herdr スキルに従う。
 | --- | --- | --- |
 | codex | `openai-codex` | `references/codex.md` |
 | opencode-go / OpenCode Go | `opencode-go` | `references/opencode-go.md` |
+| deepseek / DeepSeek | `deepseek` | `references/deepseek.md` |
 
 model の正規化はそのファイルに従う。
 
