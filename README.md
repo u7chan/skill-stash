@@ -19,4 +19,4 @@
 | 11 | [tutorial-muska-roleplay](tutorial-muska-roleplay/SKILL.md) | ムスカ大佐になりきり、知的かつ尊大な口調で受け答えする |
 | 12 | [tutorial-reverse-string](tutorial-reverse-string/SKILL.md) | 入力された文字列を厳格に逆順変換し結果のみを出力する |
 | 13 | [tutorial-zundamon-roleplay](tutorial-zundamon-roleplay/SKILL.md) | ずんだもんになりきり、元気で分かりやすく受け答えする |
-| 14 | [pi-herdr-launch-agent](pi-herdr-launch-agent/SKILL.md) | pi経由で指定されたエージェントをモデル・推論effort付きでHerdrに起動する |
+| 14 | [pi-herdr-launch-agent](pi-herdr-launch-agent/SKILL.md) | pi経由で指定されたプロバイダー・モデル・thinkingレベルでpiをHerdrに起動する |

@@ -1,11 +1,11 @@
 ---
 name: pi-herdr-launch-agent
-description: pi経由で特定のプロバイダー・モデル・推論effortが指示されたら、対応するエージェントをHerdrの新規ペインに起動する。
+description: pi経由でプロバイダー・モデル・thinkingレベルが指示されたら、その設定でpiをHerdrの新規ペインに起動する。
 ---
 
 # Launch Agent
 
-pi経由で指定されたプロバイダー・モデル・推論effortに解決し、対応するエージェントを Herdr の新規ペインに起動する。
+指定されたプロバイダー・モデル・thinkingレベルで、pi を Herdr の新規ペインに起動する。
 
 ## Preflight
 
@@ -21,19 +21,21 @@ pane の確保・分割は Herdr スキルに従う。
 
 指定されたプロバイダーに対応する reference だけを読む。
 
-| 指定 | reference |
-| --- | --- |
-| codex | `references/codex.md` |
-| opencode-go / OpenCode Go | `references/opencode-go.md` |
+| 指定 | provider | reference |
+| --- | --- | --- |
+| codex | `openai-codex` | `references/codex.md` |
+| opencode-go / OpenCode Go | `opencode-go` | `references/opencode-go.md` |
 
-モデル・推論effort の正規化と native args（`--kind` 含む）の組み立ては、そのファイルに従う。
+model の正規化はそのファイルに従う。
 
-agent 未指定、または model/effort の値が読み取れない場合は勝手に補完せず確認する。agent のみ指定で model/effort 未指定なら、引数なしで起動しエージェント側の既定設定を使う。
+thinking（effort）は pi の `--thinking` に渡す。値は `off` / `minimal` / `low` / `medium` / `high` / `xhigh` / `max`。表記ゆれ（`xhight` など）は `xhigh` に補正する。
+
+プロバイダー未指定、または model/thinking の値が読み取れない場合は勝手に補完せず確認する。プロバイダーのみ指定で model/thinking 未指定なら、`--provider` のみ指定して起動する。
 
 ## 2. 起動
 
 ```bash
-herdr agent start <name> --kind <kind> --pane <pane-id> -- <native-args...>
+herdr agent start <name> --kind pi --pane <pane-id> -- --provider <provider> --model <model> --thinking <level>
 herdr pane rename <pane-id> <name>
 ```
 
@@ -42,4 +44,4 @@ herdr pane rename <pane-id> <name>
 
 ## 3. 報告
 
-起動した pane ID・agent kind・model・effort を報告する。タスク投入は `herdr agent prompt` を使う。
+起動した pane ID・provider・model・thinking を報告する。タスク投入は `herdr agent prompt` を使う。

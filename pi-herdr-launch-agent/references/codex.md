@@ -1,10 +1,10 @@
 # Codex
 
-Codex 用の正規化と native args の組み立て。
+pi を OpenAI Codex プロバイダーで起動するための対応。
 
-## Agent kind
+## Provider
 
-`herdr agent start` の `--kind` は `codex`。
+`--provider` は `openai-codex`。
 
 ## Model の正規化
 
@@ -12,26 +12,16 @@ Codex 用の正規化と native args の組み立て。
 | --- | --- |
 | gpt-5.6-sol / sol | `gpt-5.6-sol` |
 | gpt-5.6-luna / luna | `gpt-5.6-luna` |
+| gpt-5.6-terra / terra | `gpt-5.6-terra` |
 
-## Effort の正規化
+## 起動
 
-| 指定 | effort |
-| --- | --- |
-| xhight / xhigh | `xhigh` |
-| high | `high` |
-| low | `low` |
-| max | `max` |
-
-## Native args
-
-```text
---model <model> -c 'model_reasoning_effort="<effort>"'
+```bash
+herdr agent start <name> --kind pi --pane <pane-id> -- --provider openai-codex --model <model> --thinking <level>
 ```
-
-effort なしなら `--model <model>` のみ。`-c` の値は `model_reasoning_effort="<effort>"`（内側の二重引用符を含む1つのargv）。
 
 ## 例
 
 ```bash
-herdr agent start cx-review --kind codex --pane <pane-id> -- --model gpt-5.6-sol -c 'model_reasoning_effort="xhigh"'
+herdr agent start pi-cx-luna-max --kind pi --pane <pane-id> -- --provider openai-codex --model gpt-5.6-luna --thinking max
 ```

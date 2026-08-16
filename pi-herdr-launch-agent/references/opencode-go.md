@@ -1,10 +1,10 @@
 # OpenCode Go
 
-OpenCode Go 用の正規化と native args の組み立て。
+pi を OpenCode Go プロバイダーで起動するための対応。OpenCode Zen は別プロバイダー。
 
-## Agent kind
+## Provider
 
-`herdr agent start` の `--kind` は `opencode`。
+`--provider` は `opencode-go`。
 
 ## Model の正規化
 
@@ -13,16 +13,14 @@ OpenCode Go 用の正規化と native args の組み立て。
 | DeepSeekFlash / DeepSeekFrash / deepseek flash / deepseek-v4-flash | `deepseek-v4-flash` |
 | DeepSeekPro / deepseek pro / deepseek-v4-pro | `deepseek-v4-pro` |
 
-## Native args
+## 起動
 
-```text
---model opencode-go/<model>
+```bash
+herdr agent start <name> --kind pi --pane <pane-id> -- --provider opencode-go --model <model> --thinking <level>
 ```
-
-model には `opencode-go/` を前置する。対話セッションは reasoning effort 非対応のため、effort が指定されていても渡さず model のみで起動し、その旨を報告する。
 
 ## 例
 
 ```bash
-herdr agent start oc-worker --kind opencode --pane <pane-id> -- --model opencode-go/deepseek-v4-flash
+herdr agent start pi-oc-flash-max --kind pi --pane <pane-id> -- --provider opencode-go --model deepseek-v4-flash --thinking max
 ```
