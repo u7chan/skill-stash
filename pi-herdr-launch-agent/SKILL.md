@@ -24,7 +24,7 @@ pane の確保・分割は Herdr スキルに従う。
 | 指定 | reference |
 | --- | --- |
 | codex | `references/codex.md` |
-| opencode / opencode-go | `references/opencode.md` |
+| opencode-go / OpenCode Go | `references/opencode-go.md` |
 
 モデル・推論effort の正規化と native args（`--kind` 含む）の組み立ては、そのファイルに従う。
 

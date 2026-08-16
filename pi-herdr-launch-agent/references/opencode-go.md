@@ -1,6 +1,6 @@
-# OpenCode
+# OpenCode Go
 
-OpenCode 用の正規化と native args の組み立て。
+OpenCode Go 用の正規化と native args の組み立て。
 
 ## Agent kind
 
