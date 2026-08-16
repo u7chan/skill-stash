@@ -19,7 +19,14 @@ pane の確保・分割は Herdr スキルに従う。
 
 ## 1. 解決
 
-プロバイダー・モデル・推論effort の正規化と native args の組み立ては `references/providers.md` に従う。
+指定されたプロバイダーに対応する reference だけを読む。
+
+| 指定 | reference |
+| --- | --- |
+| codex | `references/codex.md` |
+| opencode / opencode-go | `references/opencode.md` |
+
+モデル・推論effort の正規化と native args（`--kind` 含む）の組み立ては、そのファイルに従う。
 
 agent 未指定、または model/effort の値が読み取れない場合は勝手に補完せず確認する。agent のみ指定で model/effort 未指定なら、引数なしで起動しエージェント側の既定設定を使う。
 
