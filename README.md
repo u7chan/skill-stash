@@ -20,3 +20,4 @@
 | 12 | [tutorial-reverse-string](tutorial-reverse-string/SKILL.md) | 入力された文字列を厳格に逆順変換し結果のみを出力する |
 | 13 | [tutorial-zundamon-roleplay](tutorial-zundamon-roleplay/SKILL.md) | ずんだもんになりきり、元気で分かりやすく受け答えする |
 | 14 | [pi-herdr-launch-agent](pi-herdr-launch-agent/SKILL.md) | pi経由で指定されたプロバイダー・モデル・thinkingレベルでpiをHerdrに起動する |
+| 15 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
