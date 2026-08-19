@@ -1,27 +1,13 @@
 # OpenCode Go
 
-pi を OpenCode Go プロバイダーで起動するための対応。OpenCode Zen は別プロバイダー。
-
-## Provider
-
-`--provider` は `opencode-go`。
-
-## Model の正規化
-
-ID は必ず `pi --list-models` のマスタ一覧で確認した正確な値を使う（タイプしない）。下表は指定語を正規化するための対応で、正規化結果がマスタに無い場合は `pi --list-models "<指定語>"` で実際の ID を探す。
+Provider: `opencode-go`（OpenCode Zen は別プロバイダー）
 
 | 指定 | model |
 | --- | --- |
 | DeepSeekFlash / DeepSeekFrash / deepseek flash / deepseek-v4-flash | `deepseek-v4-flash` |
 | DeepSeekPro / deepseek pro / deepseek-v4-pro | `deepseek-v4-pro` |
 
-## 起動
-
-```bash
-herdr agent start <name> --kind pi --pane <pane-id> -- --provider opencode-go --model <model> --thinking <level>
-```
-
-## 例
+## 起動例
 
 ```bash
 herdr agent start pi-oc-flash-max --kind pi --pane <pane-id> -- --provider opencode-go --model deepseek-v4-flash --thinking max

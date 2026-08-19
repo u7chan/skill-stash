@@ -19,14 +19,12 @@ pane の確保・分割は Herdr スキルに従う。
 
 ## 1. マスタの取得
 
-`pi --list-models` を実行して、利用可能なプロバイダー・モデルのマスタ一覧を取得する。model ID はタイプせず、必ずこの出力から正確な文字列を取る。
+`pi --list-models` で一覧を取得し、model ID はタイプせず出力から正確な文字列を取る。出力は `provider model ...` の表形式で、1 列目が provider、2 列目が model ID。
 
 ```bash
 pi --list-models                 # 全一覧
 pi --list-models "<model>"       # 部分一致で絞り込み
 ```
-
-出力は `provider model context max-out thinking images` の表形式。1 列目が provider、2 列目が model ID の正確な値。
 
 ## 2. 解決
 
@@ -36,11 +34,11 @@ pi --list-models "<model>"       # 部分一致で絞り込み
 - **opencode-go / OpenCode Go** → `opencode-go` — [references/opencode-go.md](references/opencode-go.md)
 - **deepseek / DeepSeek** → `deepseek` — [references/deepseek.md](references/deepseek.md)
 
-model の正規化はそのファイルに従う。正規化した model ID は必ずマスタ一覧（1）の同 provider の行に存在するか確認する。存在しない場合、`pi --list-models "<指定時の語>"` で実際の ID を探し、それでも見つからなければ勝手に補完せず確認する。
+model の正規化はそのファイルに従い、ID は必ずマスタ一覧（1）の同 provider 行に存在することを確認する。なければ `pi --list-models "<指定語>"` で実際の ID を探し、見つからなければ推測せず確認する。
 
-thinking（effort）は pi の `--thinking` に渡す。値は `off` / `minimal` / `low` / `medium` / `high` / `xhigh` / `max`。表記ゆれ（`xhight` など）は `xhigh` に補正する。
+thinking（effort）は `--thinking` に渡す（`off` / `minimal` / `low` / `medium` / `high` / `xhigh` / `max`）。表記ゆれ（`xhight` など）は `xhigh` に補正する。
 
-プロバイダー未指定、または model/thinking の値が読み取れない場合は勝手に補完せず確認する。プロバイダーのみ指定で model/thinking 未指定なら、`--provider` のみ指定して起動する。
+プロバイダー未指定、または model/thinking が読み取れない場合は勝手に補完せず確認する。プロバイダーのみで model/thinking 未指定なら `--provider` のみで起動する。
 
 ## 3. 起動
 
