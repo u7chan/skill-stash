@@ -32,11 +32,9 @@ pi --list-models "<model>"       # 部分一致で絞り込み
 
 指定されたプロバイダーに対応する reference だけを読む。
 
-| 指定 | provider | reference |
-| --- | --- | --- |
-| codex | `openai-codex` | `references/codex.md` |
-| opencode-go / OpenCode Go | `opencode-go` | `references/opencode-go.md` |
-| deepseek / DeepSeek | `deepseek` | `references/deepseek.md` |
+- **codex** → `openai-codex` — [references/codex.md](references/codex.md)
+- **opencode-go / OpenCode Go** → `opencode-go` — [references/opencode-go.md](references/opencode-go.md)
+- **deepseek / DeepSeek** → `deepseek` — [references/deepseek.md](references/deepseek.md)
 
 model の正規化はそのファイルに従う。正規化した model ID は必ずマスタ一覧（1）の同 provider の行に存在するか確認する。存在しない場合、`pi --list-models "<指定時の語>"` で実際の ID を探し、それでも見つからなければ勝手に補完せず確認する。
 
