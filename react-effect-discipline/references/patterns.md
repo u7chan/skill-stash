@@ -534,3 +534,4 @@ Effectがアプリケーションロジック、データフロー、イベン�
 - dependency arrayを最適化用ではなくreactive synchronization contractとして扱う
 - genericな `useMountEffect` / `useOnce` を推奨しない
 - `useEffectEvent` はReact 19.2+かつAPI利用可能な環境でのみ候補にし、dependency逃れには使わない
+- data fetchingは `use()` への単純置換ではなく、framework / query architectureを含めて判断する
