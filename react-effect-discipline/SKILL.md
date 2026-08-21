@@ -72,6 +72,8 @@ useEffect(() => {
 
 Effect内の処理の一部だけが「最新値は読みたいが、再同期の原因にはしたくない」場合は `useEffectEvent` を検討する。
 
+**先にプロジェクトのReact / React Native環境でAPIが利用可能か確認する。`useEffectEvent` は React 19.2 以降でのみ候補にする。** React Nativeでも、実際に利用しているReactバージョンが対応していることを確認する。未対応なら無理に置換せず、dependency contractを維持したEffect設計や用途に適した別手段を選ぶ。
+
 ただし、依存値を隠すために使わない。
 
 - reactiveな同期条件 → Effect dependency
@@ -158,5 +160,6 @@ Effectを追加・変更したら確認する。
 - Strict Modeの再接続で壊れない
 - race / stale closure / reconnect loopを考慮した
 - specialized APIがあるならそちらを優先した
+- `useEffectEvent` を使う場合はReactバージョン/API availabilityを確認した
 
 詳細なパターンとBefore/After例は [references/patterns.md](references/patterns.md) を参照する。
