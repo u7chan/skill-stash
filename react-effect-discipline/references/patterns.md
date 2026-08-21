@@ -146,10 +146,7 @@ function ChatRoom({ roomId, serverUrl }: Props) {
 
 ```tsx
 function useWindowSize() {
-  const [size, setSize] = useState(() => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }));
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     function handleResize() {
@@ -159,6 +156,7 @@ function useWindowSize() {
       });
     }
 
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -167,6 +165,7 @@ function useWindowSize() {
 }
 ```
 
+初期renderでは `window` を参照せず、SSRでも同じinitial stateを使う。hydration後にEffectで実値へ同期する。
 ただし、外部storeとして扱えるAPIなら `useSyncExternalStore` を優先する。
 
 ---
@@ -238,16 +237,31 @@ cache、dedupe、retry、stale state、SSR/hydrationなどをEffectで再発明�
 ```tsx
 function useProduct(productId: string) {
   const [product, setProduct] = useState<Product | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
 
     async function load() {
-      const response = await fetch(`/api/products/${productId}`, {
-        signal: controller.signal,
-      });
-      const next = await response.json();
-      setProduct(next);
+      try {
+        const response = await fetch(`/api/products/${productId}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load product: ${response.status}`);
+        }
+
+        const next = await response.json();
+        setProduct(next);
+        setError(null);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+
+        setError(
+          error instanceof Error ? error : new Error("Failed to load product"),
+        );
+      }
     }
 
     void load();
@@ -255,17 +269,19 @@ function useProduct(productId: string) {
     return () => controller.abort();
   }, [productId]);
 
-  return product;
+  return { product, error };
 }
 ```
 
-client-onlyな同期としてEffect fetchを選ぶなら、少なくともrequest cancellation、stale result、error handlingを設計する。
+client-onlyな同期としてEffect fetchを選ぶなら、少なくともrequest cancellation、stale result、error handlingを設計する。cleanupによるabortは正常な制御フローとして扱い、それ以外の失敗はアプリ側で処理する。
 
 `use()` は既に用意されたPromise/resourceをcomponentで読む構成では候補になるが、render中に毎回新しいfetch Promiseを作るような機械的置換はしない。
 
 ---
 
 ## 10. Latest valueを読む非reactive処理はuseEffectEvent
+
+`useEffectEvent` は React 19.2 以降で、プロジェクトのReact / React Native環境から実際に利用できる場合だけ候補にする。未対応ならdependencyを隠さず、同期契約を維持した設計を選ぶ。
 
 ```tsx
 function ChatRoom({ roomId, theme }: Props) {
@@ -489,7 +505,7 @@ Effectがアプリケーションロジック、データフロー、イベン�
 | paint前のDOM計測・同期 | `useLayoutEffect` |
 | server/network data | framework / query layer |
 | 外部connection/subscription | `useEffect` |
-| Effect内で最新値だけ読む非reactive処理 | `useEffectEvent` |
+| Effect内で最新値だけ読む非reactive処理 | `useEffectEvent`（React 19.2+ / API利用可能時） |
 | application-wide initialization | entry point / framework lifecycle |
 
 ---
@@ -517,5 +533,4 @@ Effectがアプリケーションロジック、データフロー、イベン�
 - cleanupを機械的な必須条件にせず、setupとの対称性で判断する
 - dependency arrayを最適化用ではなくreactive synchronization contractとして扱う
 - genericな `useMountEffect` / `useOnce` を推奨しない
-- `useEffectEvent` は現行Reactの正式APIとして扱い、dependency逃れには使わない
-- data fetchingは `use()` への単純置換ではなく、framework / query architectureを含めて判断する
+- `useEffectEvent` はReact 19.2+かつAPI利用可能な環境でのみ候補にし、dependency逃れには使わない
