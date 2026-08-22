@@ -21,3 +21,4 @@
 | 13 | [tutorial-zundamon-roleplay](tutorial-zundamon-roleplay/SKILL.md) | ずんだもんになりきり、元気で分かりやすく受け答えする |
 | 14 | [pi-herdr-launch-agent](pi-herdr-launch-agent/SKILL.md) | pi経由で指定されたプロバイダー・モデル・thinkingレベルでpiをHerdrに起動する |
 | 15 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
+| 16 | [language-teacher-template](language-teacher-template/SKILL.md) | プログラミング言語向け教師スキルをメンタルモデル中心で設計する |
