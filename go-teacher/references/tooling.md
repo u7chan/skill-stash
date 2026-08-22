@@ -74,13 +74,11 @@ go test -fuzz=FuzzParse ./path/to/package
 
 ```go
 func BenchmarkParse(b *testing.B) {
-    for b.Loop() {
+    for i := 0; i < b.N; i++ {
         Parse("input")
     }
 }
 ```
-
-projectの対象Go versionで利用できるbenchmark APIを確認する。
 
 実行:
 
