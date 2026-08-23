@@ -1,77 +1,77 @@
 ---
 name: language-teacher-template
-description: プログラミング言語向けの教師・メンタースキルを新規作成・改善するときに使う。構文の羅列ではなく、言語固有のメンタルモデル、比較、エラー解説、レビュー観点、実務判断を学習者へ教えられるスキルとして設計する。
+description: Use when creating or improving a teacher/mentor skill for a programming language. Design it to teach language-specific mental models, comparisons, error explanations, review criteria, and practical judgment, not a catalog of syntax.
 ---
 
 # Language Teacher Template
 
-プログラミング言語を「書き方」ではなく**考え方から教える教師スキル**を設計する。
+Design a teacher skill that teaches a programming language through **how to think**, not how to write it.
 
-完成形は、学習者が次を自力で行える状態を目指す。
+The finished skill should leave learners able to do the following on their own:
 
-- コードの動きを実行前に予測できる
-- コンパイラ / ランタイムがなぜその挙動になるか説明できる
-- 似た選択肢から、その言語らしい手段を選べる
-- エラーを局所修正だけでなく再発防止まで理解できる
-- 実務コードを correctness / idiom / simplicity の観点で判断できる
+- Predict what code does before running it
+- Explain why the compiler / runtime behaves that way
+- Pick the language-idiomatic option among similar choices
+- Understand errors well enough to prevent recurrence, not just patch them locally
+- Judge real-world code by correctness / idiom / simplicity
 
-単なる syntax cheat sheet、API一覧、巨大なベストプラクティス集にはしない。
+Do not turn it into a syntax cheat sheet, an API index, or a giant list of best practices.
 
-## 1. 設計入力を決める
+## 1. Define the Design Inputs
 
-対象言語について、最低限次を特定する。
+For the target language, identify at least the following:
 
-- **Target**: 初学者 / 他言語経験者 / 実務利用者のどこを主対象にするか
-- **Core mental models**: 挙動を予測するために不可欠な概念
-- **Common traps**: 他言語の直感を持ち込むと間違えやすい点
-- **Decision pairs**: AとBをどう使い分けるか説明すべき組み合わせ
-- **Error model**: コンパイルエラー / 実行時エラー / 例外・error値などの扱い
-- **Concurrency / resource model**: 並行処理、所有権、ライフサイクル、破棄責任
-- **Tooling**: formatter、test、lint/static analysis、debug、race/fuzz等
+- **Target**: whether the main audience is beginners, developers coming from other languages, or production users
+- **Core mental models**: concepts that are indispensable for predicting behavior
+- **Common traps**: points where intuition from other languages leads people astray
+- **Decision pairs**: pairs where you must explain when to choose A vs B
+- **Error model**: how compile errors / runtime errors / exceptions or error values are handled
+- **Concurrency / resource model**: concurrency, ownership, lifecycle, and disposal responsibility
+- **Tooling**: formatter, tests, lint/static analysis, debugger, race/fuzz tools, etc.
 
-細かな構文より先に「この言語では何をどう考える必要があるか」を抽出する。
+Extract "what you need to think about in this language and how" before fine-grained syntax.
 
 ## 2. Core Teaching Flow
 
-通常の説明は次の順を基本とする。
+Explanations normally follow this order:
 
-1. **結論** — まず短く答える
-2. **最小例** — 概念だけが見える小さなコード
-3. **何が起きるか** — 値、型、メモリ、制御フローなどの動き
-4. **なぜそうなるか** — 言語固有のメンタルモデル
-5. **よくある間違い** — 他言語由来の誤解も含める
-6. **どう選ぶか** — 実務上の判断基準
-7. **深掘り** — 必要な場合だけ内部仕様や高度な例へ進む
+1. **Conclusion** — answer briefly first
+2. **Minimal example** — a small snippet that shows only the concept
+3. **What happens** — how values, types, memory, and control flow behave
+4. **Why it happens** — the language-specific mental model
+5. **Common mistakes** — include misunderstandings carried over from other languages
+6. **How to choose** — the practical decision criteria
+7. **Go deeper** — only when needed, move on to internals or advanced examples
 
-最初から全部説明しない。質問の深さに合わせて progressive disclosure する。
+Do not explain everything up front. Use progressive disclosure matched to the depth of the question.
 
 ## 3. Mental Model First
 
-各重要概念について、少なくとも次の問いに答えられるようにする。
+For each important concept, make sure you can answer at least these questions:
 
-- この値 / オブジェクト / リソースを**誰が持つか**
-- 代入・引数渡しで**何がコピーされ、何が共有されるか**
-- 型システムは**何を保証し、何を保証しないか**
-- 失敗は**どの形で呼び出し元へ伝わるか**
-- 並行処理を開始したら**誰が終了・待機・キャンセルを担当するか**
-- abstractionは**いつ導入すべきか**
-- zero/default/null/nil相当の値は**どんな意味を持つか**
+- **Who owns** this value / object / resource?
+- On assignment or argument passing, **what is copied and what is shared**?
+- What does the type system **guarantee, and what does it not guarantee**?
+- In what form do **failures reach the caller**?
+- Once concurrency is started, **who is responsible for finishing, waiting, and cancellation**?
+- **When** should an abstraction be introduced?
+- What does the zero/default/null/nil equivalent value **mean**?
 
-対象言語に存在しない概念は無理に当てはめず、その言語で重要な問いへ差し替える。
+Do not force concepts the language does not have. Replace them with the questions that matter for that language.
 
 ## 4. Comparison Rule
 
-比較は「違い」の説明だけで終わらせない。
+Do not stop at explaining the "differences" in a comparison.
 
-各比較で必ず次を示す。
+For every comparison, always cover:
 
-- それぞれ何を表すか
-- 実行時 / 型システム上の差
-- どちらをデフォルトにするか
-- どの条件で反対側を選ぶか
-- 誤用したときに起きやすい問題
+- What each side represents
+- The runtime / type-system difference
+- Which one is the default
+- Under what conditions to choose the other side
+- What problems tend to occur when it is misused
 
-例:
+Example:
 
 ```text
 A vs B
@@ -84,46 +84,46 @@ A vs B
 
 ## 5. Error Explanation
 
-エラーを質問されたら、修正版コードだけを返さない。
+When asked about an error, do not reply with only the fixed code.
 
-次の順で説明する。
+Explain in this order:
 
-1. **何が起きたか**
-2. **言語処理系がなぜ拒否 / 失敗したか**
-3. **問題の最小箇所**
-4. **最小修正**
-5. **より自然な書き方**（差がある場合）
-6. **同種の問題を見抜くルール**
+1. **What happened**
+2. **Why the language implementation rejected / failed**
+3. **The smallest part that is the problem**
+4. **The minimal fix**
+5. **A more idiomatic way** (when there is a difference)
+6. **A rule for spotting the same kind of problem**
 
-エラーメッセージの文言暗記ではなく、原因モデルを学ばせる。
+Teach the causal model, not memorization of error message wording.
 
 ## 6. Review Mode
 
-コードレビューでは指摘を次の観点で整理する。
+In code review, organize findings along these axes:
 
-- **correctness**: 動作・型・境界条件が正しいか
-- **language model**: 言語の値・型・resource modelを誤解していないか
-- **idiom**: その言語で自然な表現か
-- **lifecycle / concurrency**: leak、race、cancel、cleanupの責任が明確か
-- **error semantics**: 失敗の伝播・分類・文脈追加が適切か
-- **simplicity**: abstractionやframework化が先走っていないか
+- **correctness**: are behavior, types, and boundary conditions right?
+- **language model**: does it misunderstand the language's value / type / resource model?
+- **idiom**: is it a natural expression in that language?
+- **lifecycle / concurrency**: are responsibilities for leaks, races, cancellation, and cleanup clear?
+- **error semantics**: are propagation, classification, and context for failures appropriate?
+- **simplicity**: is abstraction or framework-building getting ahead of the problem?
 
-「より高度にする」ことを改善とみなさない。正しく単純なら維持する。
+Do not treat "making it more advanced" as improvement. If it is correct and simple, keep it.
 
 ## 7. Example Rule
 
-例は小さく、1つの概念だけを説明する。
+Keep examples small and let each one explain a single concept.
 
-- unrelatedなframeworkやライブラリを持ち込まない
-- 本質と無関係なエラーハンドリングを増やさない
-- Bad / Betterを示す場合、差分が何を改善したか明記する
-- 高度な最適化は計測や要件がある場合だけ扱う
+- Do not drag in unrelated frameworks or libraries
+- Do not add error handling that is irrelevant to the point
+- When showing Bad / Better, state what the change improves
+- Cover advanced optimizations only when measurements or requirements call for them
 
 ## 8. Reference Split
 
-`SKILL.md` には教師としての判断ルールだけを置く。
+Keep only the teaching judgment rules in `SKILL.md`.
 
-言語固有の詳細は必要に応じて分離する。
+Split out language-specific details when needed.
 
 ```text
 <language>-teacher/
@@ -134,31 +134,31 @@ A vs B
     └── tooling.md
 ```
 
-- `mental-models.md`: 値、型、メモリ、error、並行処理など
-- `patterns.md`: 比較、典型ミス、Before/After
-- `tooling.md`: formatter、test、static analysis、debug等
+- `mental-models.md`: values, types, memory, errors, concurrency, etc.
+- `patterns.md`: comparisons, typical mistakes, Before/After
+- `tooling.md`: formatter, tests, static analysis, debugging, etc.
 
-小さい言語スキルならファイルを増やさず、必要になった時だけ分割する。
+For small language skills, do not add files; split only when the need arises.
 
-具体的な雛形は [references/skeleton.md](references/skeleton.md) を参照する。
+See [references/skeleton.md](references/skeleton.md) for a concrete skeleton.
 
 ## 9. Source Rule
 
-言語仕様や公式ドキュメントを第一資料にする。
+Treat the language specification and official documentation as primary sources.
 
-- version依存の仕様は現在の対象versionを確認する
-- blogやコミュニティ記事は補助資料として使う
-- 「有名なベストプラクティス」を仕様と混同しない
-- 古いidiomを現在の標準として断定しない
+- For version-dependent behavior, check the current target version
+- Use blog posts and community articles only as supplementary material
+- Do not confuse "well-known best practices" with the specification
+- Do not assert old idioms as the current standard
 
 ## Final Check
 
-教師スキルを完成させる前に確認する。
+Verify before considering a teacher skill finished:
 
-- 構文一覧ではなくメンタルモデルが中心になっている
-- 重要な比較に「いつ選ぶか」がある
-- エラー解説が原因 → 修正 → 再発防止になっている
-- review時に過剰設計を促さない
-- 言語固有の詳細が `SKILL.md` を圧迫していない
-- 公式資料とversion依存事項を区別している
-- 学習者が最終的に自力判断できることをゴールにしている
+- Mental models are at the center, not a syntax catalog
+- Important comparisons say "when to choose which"
+- Error explanations run cause → fix → recurrence prevention
+- Reviews do not push toward over-engineering
+- Language-specific details do not crowd `SKILL.md`
+- Official sources and version-dependent facts are kept apart
+- The goal is that learners eventually judge on their own

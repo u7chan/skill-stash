@@ -1,30 +1,30 @@
 # Language Teacher Skill Skeleton
 
-言語固有の教師スキルを作るときの雛形。
+A starting skeleton for building a language-specific teacher skill.
 
-そのまま穴埋めするのではなく、対象言語で本当に重要な概念だけを残す。
+Do not fill it in mechanically; keep only the concepts that truly matter for the target language.
 
 ## SKILL.md
 
 ```md
 ---
 name: <language>-teacher
-description: <language>の学習・解説・デバッグ・レビューで使う。構文だけでなく、<主要mental model>を使ってコードの挙動と設計判断を説明する。
+description: Use for learning, explaining, debugging, and reviewing <language>. Explain code behavior and design decisions through <main mental models>, not syntax alone.
 ---
 
 # <Language> Teacher
 
-<Language>を構文暗記ではなく、挙動を予測できるメンタルモデルから教える。
+Teach <language> through mental models that let learners predict behavior, not through syntax memorization.
 
 ## Teaching Flow
 
-1. 結論
-2. 最小例
-3. 何が起きるか
-4. なぜそうなるか
-5. よくある間違い
-6. 実務でどう選ぶか
-7. 必要なら深掘り
+1. Conclusion
+2. Minimal example
+3. What happens
+4. Why it happens
+5. Common mistakes
+6. How to choose in practice
+7. Go deeper when needed
 
 ## Core Mental Models
 
@@ -35,23 +35,23 @@ description: <language>の学習・解説・デバッグ・レビューで使う
 - <concurrency / resource lifecycle model>
 - <zero/default/null model>
 
-詳細は `references/mental-models.md`。
+Details live in `references/mental-models.md`.
 
 ## Comparisons
 
-重要な比較では必ず Default / Choose A when / Choose B when を示す。
+Important comparisons always show Default / Choose A when / Choose B when.
 
 - <A> vs <B>
 - <C> vs <D>
 
 ## Error Explanation
 
-1. 何が起きたか
-2. なぜ処理系が拒否 / 失敗したか
-3. 問題の最小箇所
-4. 最小修正
-5. idiomaticな改善
-6. 再発防止ルール
+1. What happened
+2. Why the implementation rejected / failed
+3. The smallest part that is the problem
+4. The minimal fix
+5. The idiomatic improvement
+6. The recurrence-prevention rule
 
 ## Review Mode
 
@@ -64,42 +64,42 @@ description: <language>の学習・解説・デバッグ・レビューで使う
 
 ## Tooling
 
-検証が必要なら `references/tooling.md` の最小コマンドを使う。
+Use the minimal commands in `references/tooling.md` when verification is needed.
 
 ## Final Check
 
-- コードの動きを説明できる
-- 選択理由を説明できる
-- errorを原因モデルから理解できる
-- 高度なabstractionを自動的に勧めない
+- Can explain what the code does
+- Can explain why a choice was made
+- Understands errors through their causal model
+- Does not automatically recommend advanced abstractions
 ```
 
 ## references/mental-models.md
 
-概念ごとに次の形式を使う。
+Use this format for each concept.
 
 ```md
 ## <Concept>
 
 ### Mental model
-<一文でどう考えるべきか>
+<How to think about it in one sentence>
 
 ### What actually happens
-<代入、引数渡し、型検査、runtime等で何が起きるか>
+<What happens on assignment, argument passing, type checking, at runtime, etc.>
 
 ### Predict
-<短いコードを見て結果を予測する問い>
+<A question that asks the learner to predict the result of a short snippet>
 
 ### Common mistake
-<他言語から持ち込みやすい誤解>
+<Misunderstandings easily carried over from other languages>
 
 ### Decision rule
-<実務上いつどう使うか>
+<When and how to use it in practice>
 ```
 
 ## references/patterns.md
 
-カタログ化しすぎない。頻出する比較や誤解だけ置く。
+Do not over-catalog. Keep only the comparisons and misunderstandings that come up often.
 
 ```md
 ## <A> vs <B>
@@ -111,72 +111,72 @@ description: <language>の学習・解説・デバッグ・レビューで使う
 - Common mistake:
 
 ### Minimal example
-<小さなコード>
+<A small snippet>
 ```
 
-典型的な候補:
+Typical candidates:
 
 - value vs reference/pointer
 - mutable vs immutable
 - concrete type vs interface/trait/protocol
-- exception/error/result型
+- exception/error/result types
 - sync vs async/concurrent
-- collectionの似た型
+- similar collection types
 - allocation / resource ownership
 
-対象言語に存在しない比較は削除する。
+Delete comparisons that do not exist in the target language.
 
 ## references/tooling.md
 
-コマンド名の羅列ではなく、**何を証明したいときに使うか**を書く。
+Do not list command names; write **what you want to prove when you use them**.
 
 ```md
 ## Format
 
 Command: `<formatter command>`
-Use when: source formattingを標準化する。
+Use when: standardizing source formatting.
 
 ## Test
 
 Command: `<test command>`
-Use when: behaviorを検証する。
+Use when: verifying behavior.
 
 ## Static analysis
 
 Command: `<lint/static analysis command>`
-Use when: compilerだけでは拾わない疑わしいコードを検査する。
+Use when: checking suspicious code the compiler alone will not catch.
 
 ## Concurrency / memory / sanitizer
 
 Command: `<optional command>`
-Use when: 対象言語で必要な場合のみ。
+Use when: needed for the target language.
 ```
 
 ## Adaptation Checklist
 
-新しい言語へ転用するときは、最低限次を差し替える。
+When adapting this to a new language, replace at minimum:
 
-- 言語が最も強く保証するもの
-- 初学者が最も誤解しやすい値・型モデル
-- エラーの表現と伝播方法
-- abstractionの標準的な境界
+- What the language guarantees most strongly
+- The value / type models beginners most often misunderstand
+- How errors are represented and propagated
+- The standard boundaries for abstraction
 - concurrency / async / resource lifecycle
-- 主要な比較対象
-- 公式toolchain
+- The main comparison targets
+- The official toolchain
 
-逆に、次は共通骨格として残せる。
+What can stay as the common skeleton:
 
-- 結論 → 最小例 → mental model の説明順
-- 比較時の判断基準
-- エラーの原因 → 修正 → 再発防止
-- progressive disclosure
-- simplicityを優先するreview観点
+- The conclusion → minimal example → mental model explanation order
+- Decision criteria for comparisons
+- Error cause → fix → recurrence prevention
+- Progressive disclosure
+- Review criteria that prefer simplicity
 
 ## Source Notes
 
-このテンプレートの教育設計は、Rustを構文ではなくメンタルモデルから教える `rust-teacher.md` の考え方を出発点に、他言語へ転用できるよう再構成している。
+The educational design of this template starts from the approach of `rust-teacher.md`, which teaches Rust through mental models rather than syntax, and reworks it so it can be adapted to other languages.
 
 - koutyuke / rust-teacher.md  
   https://gist.github.com/koutyuke/e2a68888bd9db30fa25c05f1bd030112
 
-文面や言語固有の内容を複製するのではなく、教育フローと設計原則だけを抽象化する。
+It abstracts only the teaching flow and design principles, without reproducing wording or language-specific content.
