@@ -128,7 +128,7 @@ Delete comparisons that do not exist in the target language.
 
 ## references/tooling.md
 
-Do not list command names; write **what you want to prove when you use them**.
+Do not turn this into a bare command catalog. For each command, write **what you want to prove when you use it**.
 
 ```md
 ## Format
@@ -163,6 +163,7 @@ When adapting this to a new language, replace at minimum:
 - concurrency / async / resource lifecycle
 - The main comparison targets
 - The official toolchain
+- The primary sources (specification and official documentation) and the target version
 
 What can stay as the common skeleton:
 
