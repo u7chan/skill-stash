@@ -22,3 +22,4 @@
 | 14 | [pi-herdr-launch-agent](pi-herdr-launch-agent/SKILL.md) | pi経由で指定されたプロバイダー・モデル・thinkingレベルでpiをHerdrに起動する |
 | 15 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
 | 16 | [language-teacher-template](language-teacher-template/SKILL.md) | プログラミング言語向け教師スキルをメンタルモデル中心で設計する |
+| 17 | [go-teacher](go-teacher/SKILL.md) | Goを構文暗記ではなくメンタルモデルから学習・解説・レビューする |
