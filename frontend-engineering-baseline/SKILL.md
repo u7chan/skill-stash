@@ -68,13 +68,13 @@ version-specificな判断が必要な場合は、現在のrepository versionと�
 
 ### 2. Identify gaps
 
-発見事項を分類する。
+発見事項を次の3種類に分類する。この分類を変更スコープ判断の正とする。
 
-- **Required**: correctness、security、reproducibility、CI reliabilityに明確な問題がある
-- **Recommended**: 継続的な品質維持やAgent開発との相性を改善する
-- **Optional**: 好み、チーム運用、規模によって判断が変わる
+- **Required now**: 今回の目的を成立させるために必要。correctness、security、reproducibility、CI reliabilityの明確な問題を含む
+- **Useful follow-up**: 改善価値はあるが、今回の完了条件には不要
+- **Optional**: 好み、チーム運用、規模、将来構想によって判断が変わる
 
-Optionalは明示的な理由なしに実装しない。
+今回実装するのは原則 `Required now` のみとする。`Useful follow-up` と `Optional` は、ユーザーが明示的に今回のスコープへ含めた場合を除き実装せず、必要ならfollow-upとして報告する。
 
 ### 3. Define scope
 
@@ -136,5 +136,5 @@ referenceはチェックリストではなく判断材料として使う。す�
 - unrelated refactoringを含める
 - versionを記憶だけで決める
 - validationを通すために設定を緩める
-- Optional improvementをRequiredとして扱う
+- `Useful follow-up` / `Optional` を明示合意なしに実装する
 - repository全体のmodernizationを一度に行う
