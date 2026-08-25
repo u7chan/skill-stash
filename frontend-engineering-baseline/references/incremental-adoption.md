@@ -18,23 +18,13 @@ baseline auditで複数の改善候補が見つかっても、一度にすべて
 
 これらは互いに独立した変更になり得る。
 
-## Classify changes
+## Use the skill-level scope classification
 
-変更候補を分類する。
+変更候補の分類と実装ゲートは、`SKILL.md` の `Identify gaps` を正とする。
 
-### Required now
+このreferenceでは別の分類基準を定義しない。
 
-今回の目的を成立させるために必要。
-
-### Useful follow-up
-
-価値はあるが今回の完了条件には不要。
-
-### Optional
-
-好みや将来構想に依存する。
-
-実装するのは原則 `Required now` のみ。
+段階導入では、`Required now` に分類された変更だけを今回の実装対象として扱い、`Useful follow-up` と `Optional` は明示的に今回のスコープへ含まれていない限りfollow-upへ分離する。
 
 ## Migration trigger
 
