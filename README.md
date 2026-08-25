@@ -23,3 +23,4 @@
 | 15 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
 | 16 | [language-teacher-template](language-teacher-template/SKILL.md) | プログラミング言語向け教師スキルをメンタルモデル中心で設計する |
 | 17 | [go-teacher](go-teacher/SKILL.md) | Goを構文暗記ではなくメンタルモデルから学習・解説・レビューする |
+| 18 | [frontend-engineering-baseline](frontend-engineering-baseline/SKILL.md) | TypeScriptフロントエンドの開発基盤を調査し、必要な品質・安全性・再現性を最小変更で整える |
