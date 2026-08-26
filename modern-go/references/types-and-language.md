@@ -71,6 +71,7 @@ operationが特定のgeneric receiver typeへ自然に属する場合、package-
 
 - 複数の対等なtypeを扱い、receiverを一つ選ぶ意味がない
 - stateless package operationとしての方が明確
+- interface methodとして宣言する必要がある、またはinterface methodの実装として満たす必要がある。Go 1.27でもinterface methodはtype parameterを宣言できず、generic methodでinterface methodを実装することもできない
 - 既存public APIを破壊するmigrationになる
 
 新規API設計ではmodern syntaxを使い、既存APIの全面移行は別taskとして扱う。

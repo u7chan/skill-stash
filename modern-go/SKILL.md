@@ -125,11 +125,15 @@ repository既存のvalidation commandを優先する。
 
 明示されたものがなければ、変更範囲に応じて最小限を選ぶ。
 
+変更したGoファイルは対象を明示して`gofmt`する。引数なしの`gofmt`はstdinを処理するため、validation commandとして使わない。
+
 ```sh
-gofmt
+gofmt -w path/to/changed.go
 go test ./...
 go vet ./...
 ```
+
+`path/to/changed.go`は実際に変更した`.go`ファイルへ置き換える。複数ある場合は対象を列挙する。
 
 repository全体を触っていない場合は、可能なら対象packageへ絞る。
 
