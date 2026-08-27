@@ -26,3 +26,4 @@
 | 18 | [frontend-engineering-baseline](frontend-engineering-baseline/SKILL.md) | TypeScriptフロントエンドの開発基盤を調査し、必要な品質・安全性・再現性を最小変更で整える |
 | 19 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |
 | 20 | [adr](adr/SKILL.md) | 将来の再議論や誤った巻き戻しを防ぐため、必要な技術判断だけをADRとして記録する |
+| 21 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
