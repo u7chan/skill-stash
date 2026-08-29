@@ -34,7 +34,7 @@ terraform validate
 
 目的: moduleの条件分岐、variables、outputs、resource構成など、Terraform logicをAWS接続なしで検証する。
 
-Terraform testが既にある場合は優先して利用する。
+L2で`terraform test`を使う場合、対象testが`mock_provider`やoverrideによってAWS Provider APIを呼ばないことを確認する。
 
 ```sh
 terraform test
@@ -50,11 +50,15 @@ Terraform 1.7+では`mock_provider`を利用できる。
 - variable combination
 - dependency shape
 
+重要: `terraform test`はデフォルトで`apply`を実行し得る。`.tftest.hcl`が存在するだけで安全と判断しない。
+
+実providerを使うtestはL2ではない。Flociへ確実に隔離できる場合はL3として扱い、実AWSを向く可能性がある場合は実行しない。
+
 mock providerはAWS API behaviorを再現しない。L3の代替ではなく、logic testとして扱う。
 
 ## L3: Local integration
 
-目的: AWS Providerを実際に動かし、FlociのAWS-compatible APIに対して`plan` / `apply`できることを確認する。
+目的: AWS Providerを実際に動かし、FlociのAWS-compatible APIに対して`plan` / `apply`またはreal-provider testを実行できることを確認する。
 
 前提:
 
@@ -97,7 +101,7 @@ Floci service supportがあっても、対象resourceが必要とする全operat
 常に最高levelまで実行する必要はない。
 
 - syntax修正だけ: L1で十分な場合がある
-- module logic変更: L1 + L2
+- module logic変更: L1 + safe L2
 - AWS resource追加: 安全ならL1-L3
 - network/security semantics変更: L1-L3 + L4項目を明示
 
