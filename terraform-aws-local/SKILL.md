@@ -13,7 +13,7 @@ FlociはAWSそのものではない。local validationを前倒しするため�
 
 ### Prove local safety before provider execution
 
-`terraform plan`や`apply`の前に、Terraform、Docker、Floci、AWS endpoint、credentials、backendを確認する。
+`terraform plan`や`apply`、実providerを使う`terraform test`の前に、Terraform、Docker、Floci、AWS endpoint、credentials、backendを確認する。
 
 実AWSやproduction stateへ接続しないことを確認できない場合、providerを実行する検証は行わない。
 
@@ -24,8 +24,8 @@ FlociはAWSそのものではない。local validationを前倒しするため�
 検証は軽いものから順に進める。
 
 1. **L1 Static**: `fmt` / `validate`
-2. **L2 Logic**: `terraform test` / mock provider
-3. **L3 Local integration**: Flociに対する`plan` / `apply` / smoke test
+2. **L2 Logic**: mock providerを使う`terraform test`
+3. **L3 Local integration**: Flociに対する`plan` / `apply` / real-provider test / smoke test
 4. **L4 Real AWS**: IAM enforcement、実network、managed runtime、quota等
 
 L1-L3で確認できることとL4でしか確認できないことを混同しない。
@@ -69,7 +69,7 @@ local-only harnessやtest fixtureで分離できる場合のみ、検証用構�
 - backend / `cloud` block
 - variables / locals / outputs
 - 対象`aws_*` resourceとdata source
-- `.tftest.hcl`の有無
+- `.tftest.hcl`の有無とproviderの種類
 - repository固有のformat / lint / test / CI command
 
 既存構成を理解する前にmodule分割やbackend変更を提案しない。
@@ -81,7 +81,7 @@ local-only harnessやtest fixtureで分離できる場合のみ、検証用構�
 Preflightが失敗しても作業全体を停止する必要はない。安全に実行できる上限まで降格する。
 
 - Terraformのみ利用可: L1中心
-- Terraform testが利用可能: L2まで
+- mock/local-onlyと確認できるTerraform test: L2まで
 - Docker + Floci + local-safe backend/providerを確認: L3まで
 - 実AWS: このスキルのlocal workflowでは実行しない
 
@@ -115,11 +115,13 @@ terraform init -backend=false
 terraform validate
 ```
 
-`.tftest.hcl`がある、またはmodule logicの検証価値が高い場合はL2を行う。
+L2として`terraform test`を実行する前に、対象testが`mock_provider`やoverrideによってAWS Provider APIを呼ばないことを確認する。
 
 ```sh
 terraform test
 ```
+
+Terraform testはデフォルトで`apply`を実行し得る。実providerを使うtestはL2ではなくL3として扱い、preflightを通してFlociへ隔離できた場合のみ実行する。実AWSを向く可能性があるtestは実行しない。
 
 L3はpreflightで安全を証明できた場合のみ行う。実行方法は [references/preflight.md](references/preflight.md) と各category referenceに従う。
 
@@ -153,6 +155,7 @@ local test用に作成したstateやFloci resourceが不要なら、今回作成
 禁止する。
 
 - 実AWSへの`terraform apply`をlocal validationとして実行する
+- provider利用形態を確認せず`terraform test`を実行する
 - 実credentialsをlocal Floci testへ流用する
 - remote production backendへlocal test stateを書き込む
 - Floci対応サービス一覧を固定値として信頼する
