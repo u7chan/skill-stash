@@ -28,3 +28,4 @@
 | 20 | [adr](adr/SKILL.md) | 将来の再議論や誤った巻き戻しを防ぐため、必要な技術判断だけをADRとして記録する |
 | 21 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | 22 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的設計・検証する |
+| 23 | [bundle-efficient-module-design](bundle-efficient-module-design/SKILL.md) | JS/TSのmodule boundaryをtree-shakingしやすく設計し、bundle削減を実測で検証する |
