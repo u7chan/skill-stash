@@ -30,3 +30,4 @@
 | 22 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的設計・検証する |
 | 23 | [bundle-efficient-module-design](bundle-efficient-module-design/SKILL.md) | JS/TSのmodule boundaryをtree-shakingしやすく設計し、bundle削減を実測で検証する |
 | 24 | [visualize](visualize/SKILL.md) | 理解したい対象から最適な可視化形式を選び、ASCII・Mermaid・HTML・画像生成へ振り分ける |
+| 25 | [japanese-writing-quality](japanese-writing-quality/SKILL.md) | 日本語文書を意味と書き手の特徴を保ちながら、校正・自然化・執筆・構造推敲し、読解負荷と情報密度を改善する |
