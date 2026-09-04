@@ -29,3 +29,4 @@
 | 21 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | 22 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的設計・検証する |
 | 23 | [bundle-efficient-module-design](bundle-efficient-module-design/SKILL.md) | JS/TSのmodule boundaryをtree-shakingしやすく設計し、bundle削減を実測で検証する |
+| 24 | [visualize](visualize/SKILL.md) | 理解したい対象から最適な可視化形式を選び、ASCII・Mermaid・HTML・画像生成へ振り分ける |
