@@ -54,21 +54,24 @@ bind mountからnamed volume等へ移行する場合は、直接置換しない�
 基本順序:
 
 1. current data locationとwriterを特定
-2. backupを作成
-3. isolatedな場所へrestoreして読めることを確認
-4. writerを停止し、移行中にsourceへ新規書き込みが発生しない状態にする
-5. target volume / storageを作成する
-6. serviceを起動しないままtargetへdataをpopulate / restoreする
-7. target data、ownership、permissionsを確認する
-8. Compose / mount設定をtargetへ切り替える
-9. serviceをrecreate / startする
-10. applicationからread/write確認
-11. restart / recreate後もdataが残ることを確認
-12. old dataを削除するかは別判断
+2. rollback用backupが必要なら作成する。writer稼働中に取得したbackupは、整合性が保証される方式でない限りmigration sourceとして使わない
+3. writerを停止またはquiesceし、移行中にsourceへ新規書き込みが発生しない状態にする
+4. quiesce後のsourceからfinal copy / snapshot / consistent backupを取得する
+5. final migration sourceをisolatedな場所で検証できる場合は、restoreまたはread testを行う
+6. target volume / storageを作成する
+7. serviceを起動しないまま、step 4のfinal migration sourceからtargetへpopulate / restoreする
+8. target data、ownership、permissionsを確認する
+9. Compose / mount設定をtargetへ切り替える
+10. serviceをrecreate / startする
+11. applicationからread/write確認
+12. restart / recreate後もdataが残ることを確認
+13. old dataを削除するかは別判断
+
+移行元の基準点はwriter停止 / quiesce後に固定する。停止前に取得した通常backupをそのままmigration sourceにすると、その後の成功書き込みを欠落させる可能性がある。
 
 空のtargetをmountしたserviceを先に起動し、その後で旧dataをrestoreしない。application initializationによる新規stateとの混在や上書きを避ける。
 
-databaseの場合は、この一般手順よりengine固有のconsistent backup / dump / restore、snapshot、shutdown手順を優先する。
+databaseの場合は、この一般手順よりengine固有のconsistent backup / dump / restore、snapshot、shutdown手順を優先する。engine固有手順がwriterを稼働させたままconsistent snapshotを保証する場合は、その整合性保証をmigration boundaryとして扱う。
 
 backup commandのexit 0だけではrestore可能性を証明できない。
 
