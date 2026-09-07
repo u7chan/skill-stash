@@ -4,13 +4,22 @@ Compose、service lifecycle、health、logs、resource usageに関係する場�
 
 ## Validate Effective Configuration
 
-Compose変更後は、まず展開後の設定を確認する。
+Compose変更後は、まず設定をstdoutへrenderせずvalidationする。
 
 ```sh
-docker compose config
+docker compose config -q
 ```
 
-environment interpolation、override、profiles、volumes、portsの結果を確認する。
+通常の`docker compose config`はenvironment interpolationやservice `env_file`を解決し、secret値をstdoutへ含める可能性がある。エージェントのtool output / transcriptへ実値を流さない。
+
+実効設定の確認が必要な場合は、目的に応じて次を使う。
+
+- `--no-interpolate`: environment variableを展開しない
+- `--no-env-resolution`: service `env_file`を解決しない
+- `--services` / `--images` / `--networks`等: 必要な情報だけ出力する
+- sanitized output: secret-bearing fieldを含めない形で確認する
+
+secretを含まないと確認できない限り、resolved model全体をstdoutへ出力しない。
 
 ## Readiness Is Not Startup Order
 
@@ -99,11 +108,13 @@ permission errorを見て無条件にread-onlyを解除せず、必要なwrite p
 変更後は必要に応じて確認する。
 
 ```sh
-docker compose config
+docker compose config -q
 docker compose up -d
 docker compose ps
 docker compose logs --tail=100
 docker stats --no-stream
 ```
+
+`up`等のstate-changing commandは、SKILL.mdのpreflightで操作対象が意図したlocal daemonだと確認できた場合だけ実行する。
 
 さらにrestart、graceful shutdown、health遷移、主要requestを確認する。
