@@ -64,15 +64,30 @@ repository固有のDockerfile、Compose、CI、deployment、runtime要件を先�
 
 ### 1. Inspect
 
-利用可能な範囲で現状を確認する。
+daemonへ接続する前に、CLIが向くcontext / endpointを確認する。
+
+```sh
+docker --version
+docker compose version
+docker context show
+docker context inspect "$(docker context show)" --format '{{ .Endpoints.docker.Host }}'
+printf 'DOCKER_CONTEXT=%s\nDOCKER_HOST=%s\n' "${DOCKER_CONTEXT:-<unset>}" "${DOCKER_HOST:-<unset>}"
+```
+
+`DOCKER_CONTEXT`、`DOCKER_HOST`、`--context`、`--host`によるoverrideを含め、今回操作してよいlocal daemonだと確定する。
+
+remote、staging、production、共有daemonの可能性がある場合は、`build`、`up`、`rm`、`prune`等のstate-changing commandへ進まない。contextを推測で切り替えない。
+
+local daemonだと確認できた後に、利用可能な範囲で現状を確認する。
 
 ```sh
 docker version
-docker compose version
 docker system df
 docker stats --no-stream
-docker compose config
+docker compose config -q
 ```
+
+`docker compose config`のrendered outputは、environment interpolationや`env_file`の値を展開してsecretをtool output / transcriptへ露出させる可能性がある。validation目的では`-q`を既定とする。実効設定を確認する必要がある場合は、secretを出力しないことを確認したうえで`--no-interpolate` / `--no-env-resolution`や対象を限定したsanitized outputを使う。
 
 加えて対象に応じて確認する。
 
@@ -152,11 +167,13 @@ repository既存のvalidation commandを優先する。
 最低限、変更内容に応じて次を選ぶ。
 
 ```sh
-docker compose config
+docker compose config -q
 docker compose build
 docker compose up -d
 docker compose ps
 ```
+
+state-changing commandを実行する直前にも、操作対象がpreflightで確認したlocal daemonから変わっていないことを確認する。
 
 さらに必要に応じて確認する。
 
@@ -205,6 +222,8 @@ volume migrationでは、backup fileの作成だけを成功条件にしない�
 - image sizeだけを理由にbase imageを変更する
 - Alpineへ機械的に変更する
 - runtime dependencyを確認せずmulti-stage化する
+- active context / endpointを確認せずdaemonへstate-changing commandを実行する
+- rendered Compose configをsecret露出の確認なしにtool output / transcriptへ出力する
 - secretsをDockerfile、build args、image layerへ埋め込む
 - non-root化で必要なfilesystem permissionを壊す
 - healthcheckを単なるprocess存在確認で済ませる
