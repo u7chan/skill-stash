@@ -52,7 +52,7 @@ imageを小さくすることや設定を増やすこと自体を目的にしな
 - **Follow-up**: 有効だが独立したmigrationや運用変更が必要
 - **Skip**: 効果が未計測、style preferenceだけ、またはriskが利益を上回る
 
-原則として`Apply now`だけ実装する。
+`Apply now`は「実装する価値がある」という分類であり、常に変更を実行する意味ではない。実際に適用するかはtask modeで決める。
 
 ### Preserve project constraints
 
@@ -61,6 +61,20 @@ repository固有のDockerfile、Compose、CI、deployment、runtime要件を先�
 一般論を理由に既存設計を無視しない。
 
 ## Workflow
+
+### 0. Resolve task mode
+
+ユーザーの依頼から、変更を許可するmodeを先に確定する。
+
+- **Review**: Dockerfile / Compose / runtime構成を評価し、findingと改善案を返す。file mutation、build、container再作成、cleanupは行わない。
+- **Design**: 望ましい構成や変更案を設計する。提案までに留め、fileやDocker stateを変更しない。
+- **Implement**: ユーザーが作成・修正・実装を明示した範囲だけfileを変更する。state-changing validationは必要性とlocal daemonを確認してから行う。
+- **Improve**: ユーザーが既存環境の改善・最適化と実変更を明示した場合だけ、計測結果に基づく最小変更を適用できる。
+- **Diagnose**: 原因調査だけが依頼ならread-only diagnosticsまで。修正や再作成へ進まない。
+
+依頼がreview / design / diagnosisに留まる場合は、後続の`Apply safely`を実行せず、提案とnon-mutating validationで完了する。
+
+state-changing commandを実行できるのは、**Implement / Improve modeで、その操作が依頼スコープに含まれ、意図したlocal daemonだと確認できた場合だけ**。
 
 ### 1. Inspect
 
@@ -147,6 +161,8 @@ referenceは全項目を適用するためのチェックリストではない�
 
 ### 5. Apply safely
 
+このstepはImplement / Improve modeでのみ実行する。Review / Design / Diagnose modeではskipする。
+
 安全な変更から行う。
 
 一般に、次のような変更は比較的局所的に適用できる。
@@ -164,7 +180,9 @@ referenceは全項目を適用するためのチェックリストではない�
 
 repository既存のvalidation commandを優先する。
 
-最低限、変更内容に応じて次を選ぶ。
+Review / Design / Diagnose modeではnon-mutating validationだけを使う。例えば`docker compose config -q`や静的なfile inspectionに留め、`build`、`up`、recreate、cleanupは実行しない。
+
+Implement / Improve modeでは、変更内容と依頼スコープに応じて次を選ぶ。
 
 ```sh
 docker compose config -q
@@ -218,6 +236,8 @@ volume migrationでは、backup fileの作成だけを成功条件にしない�
 
 禁止する。
 
+- review / design / diagnosis依頼でfileやDocker stateを変更する
+- user intentを確認せず`build`、`up`、recreate、cleanupへ進む
 - baselineなしで複数の性能変更をまとめて適用する
 - image sizeだけを理由にbase imageを変更する
 - Alpineへ機械的に変更する
