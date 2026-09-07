@@ -2,6 +2,8 @@
 
 bind mount、named volume、database、cache、persistent dataに関係する場合だけ参照する。
 
+SKILL.mdのtask mode gateを優先する。migration、writer停止、restore、mount切替はImplement / Improve modeでユーザーが実変更を求めた場合だけ行う。Review / Design / Diagnose modeでは手順の提案までに留める。
+
 ## Choose Storage by Responsibility
 
 ### Bind mount
