@@ -2,6 +2,8 @@
 
 Compose、service lifecycle、health、logs、resource usageに関係する場合だけ参照する。
 
+SKILL.mdのtask mode gateを優先する。Review / Design / Diagnose modeではnon-mutating validationだけを行い、`up`、recreate、restart等でDocker stateを変更しない。
+
 ## Validate Effective Configuration
 
 Compose変更後は、まず設定をstdoutへrenderせずvalidationする。
