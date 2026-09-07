@@ -78,7 +78,9 @@ state-changing commandを実行できるのは、**Implement / Improve modeで�
 
 ### 1. Inspect
 
-daemonへ接続する前に、CLIが向くcontext / endpointを確認する。
+Review / Design modeでlive runtimeの確認が依頼に不要なら、repository fileのinspectionだけを行いdaemonへ接続しない。
+
+daemon情報が必要な場合は、接続する前にCLIが向くcontext / endpointを確認する。
 
 ```sh
 docker --version
