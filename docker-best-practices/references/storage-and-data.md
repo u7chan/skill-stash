@@ -53,15 +53,22 @@ bind mountからnamed volume等へ移行する場合は、直接置換しない�
 
 基本順序:
 
-1. current data locationを特定
+1. current data locationとwriterを特定
 2. backupを作成
 3. isolatedな場所へrestoreして読めることを確認
-4. Compose / mount設定を変更
-5. serviceを再作成
-6. dataをrestoreまたはcopy
-7. applicationからread/write確認
-8. restart / recreate後もdataが残ることを確認
-9. old dataを削除するかは別判断
+4. writerを停止し、移行中にsourceへ新規書き込みが発生しない状態にする
+5. target volume / storageを作成する
+6. serviceを起動しないままtargetへdataをpopulate / restoreする
+7. target data、ownership、permissionsを確認する
+8. Compose / mount設定をtargetへ切り替える
+9. serviceをrecreate / startする
+10. applicationからread/write確認
+11. restart / recreate後もdataが残ることを確認
+12. old dataを削除するかは別判断
+
+空のtargetをmountしたserviceを先に起動し、その後で旧dataをrestoreしない。application initializationによる新規stateとの混在や上書きを避ける。
+
+databaseの場合は、この一般手順よりengine固有のconsistent backup / dump / restore、snapshot、shutdown手順を優先する。
 
 backup commandのexit 0だけではrestore可能性を証明できない。
 
