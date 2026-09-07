@@ -2,6 +2,8 @@
 
 Dockerfile、build performance、image設計に関係する場合だけ参照する。
 
+SKILL.mdのtask mode gateを優先する。Review / Design / Diagnose modeではDockerfileのinspectionと提案に留め、`docker compose build`などimage / cacheを変更するvalidationは実行しない。
+
 ## Build Context
 
 build contextは必要最小限にする。
