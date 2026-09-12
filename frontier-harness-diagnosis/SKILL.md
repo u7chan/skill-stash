@@ -1,6 +1,10 @@
 ---
 name: frontier-harness-diagnosis
 description: AIエージェント向けのAGENTS.md、Skills、Prompts、References、Permission、テスト方針などを見直し、フロンティアモデルの能力に対して過剰な指示・常時ロード・手順固定・不要な停止条件がないか診断して、必要最小限の改善案を出すときに使う。
+metadata:
+  guidance-as-of: "2026-09"
+  last-reviewed: "2026-09-12"
+  source: "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra"
 ---
 
 # Frontier Harness Diagnosis
