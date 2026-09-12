@@ -33,3 +33,4 @@
 | 25 | [japanese-writing-quality](japanese-writing-quality/SKILL.md) | 日本語文書を意味と書き手の特徴を保ちながら、校正・自然化・執筆・構造推敲し、読解負荷と情報密度を改善する |
 | 26 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
 | 27 | [rag-system-design](rag-system-design/SKILL.md) | RAGありきにせず、質問とデータの性質から知識取得方式を壁打ち・設計する |
+| 28 | [frontier-harness-diagnosis](frontier-harness-diagnosis/SKILL.md) | フロンティアモデル向けハーネスの過剰指示・常時ロード・停止条件を診断し、最小改善案を出す |
