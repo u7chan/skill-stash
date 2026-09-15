@@ -5,8 +5,6 @@ metadata:
   guidance-as-of: "2026-09"
   last-reviewed: "2026-09-15"
   source: "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra"
-  source-context-engineering: "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models"
-  source-practical-guide: "https://qiita.com/nogataka/items/d6a54f3694726b9141f3"
 ---
 
 # Frontier Harness Diagnosis
