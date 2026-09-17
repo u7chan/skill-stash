@@ -34,3 +34,4 @@
 | 26 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
 | 27 | [rag-system-design](rag-system-design/SKILL.md) | RAGありきにせず、質問とデータの性質から知識取得方式を壁打ち・設計する |
 | 28 | [frontier-harness-diagnosis](frontier-harness-diagnosis/SKILL.md) | フロンティアモデル向けハーネスの過剰指示・常時ロード・停止条件を診断し、最小改善案を出す |
+| 29 | [orchestration-design](orchestration-design/SKILL.md) | 複雑な作業をTask・依存関係・検証条件へ分解し、必要最小限の実行トポロジーを設計する |
