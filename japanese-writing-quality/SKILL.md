@@ -78,6 +78,7 @@ description: 日本語文書を校正、自然化、執筆、構造推敲、診�
 - 新規執筆: [references/writing.md](references/writing.md)
 - 選択的改稿: [references/selective-revision.md](references/selective-revision.md)
 - 文書種別: [references/document-types.md](references/document-types.md)
+- 機械的確認: [references/mechanical-checks.md](references/mechanical-checks.md)
 - 最終品質判定: [references/quality-gate.md](references/quality-gate.md)
 - 出力契約: [references/output.md](references/output.md)
 - 境界例: [references/examples.md](references/examples.md)
@@ -132,8 +133,9 @@ description: 日本語文書を校正、自然化、執筆、構造推敲、診�
 - 必要情報へ早く到達できるか
 - 主張・根拠・条件・因果が追えるか
 - 元文の意味や書き手の特徴を壊していないか
+- 機械的に確認できる問題は、必要に応じて人間・LLMの判断と分けて確認したか
 
-詳細は [references/quality-gate.md](references/quality-gate.md) を参照する。
+詳細は [references/quality-gate.md](references/quality-gate.md) と [references/mechanical-checks.md](references/mechanical-checks.md) を参照する。
 
 ### 6. Return only what the user needs
 
