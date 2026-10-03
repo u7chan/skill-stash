@@ -1,6 +1,6 @@
 ---
 name: adr
-description: 実装・設計・レビューで、将来「なぜそうしたか」を失うと再議論や誤った巻き戻しが起きる技術判断を検出し、必要なときだけ短いArchitecture Decision Record（ADR）を作成・更新する。必要に応じてAGENTS.mdにはADRへの最小限の入口だけを追加する。
+description: コードだけでは理由を復元しづらい重要な技術判断を、短いArchitecture Decision Record（ADR）として記録・更新するときに使う。
 ---
 
 # ADR
@@ -22,10 +22,11 @@ ADRは実装履歴ではなく、**現在有効な重要判断と理由**を短�
 
 次のような、コードだけでは理由を復元しづらい重要判断をADR候補とする。
 
-- system boundary、data ownership、storage、integration、auth/security、deploymentなどの横断方針
+- system boundary、data ownership、storage、integration、auth/security、concurrency、deploymentなどの横断方針
 - 複数の妥当な選択肢から、意図的なtrade-offで選んだ設計
 - 主要dependency、runtime、framework、serviceの採用・置換
 - repository全体や今後の実装を制約する方針
+- 移行コスト、運用リスク、lock-inなどにより簡単には戻せない判断
 - 将来の人間やAIが善意で「単純化」「cleanup」して戻しそうな判断
 - 既存ADRの判断を変更・廃止・置換する場合
 
@@ -37,6 +38,8 @@ ADRは実装履歴ではなく、**現在有効な重要判断と理由**を短�
 - 局所的で容易に戻せるrefactor
 - 既存ADRや明文化済み方針に従うだけの実装
 - 短命なspike / experiment
+
+ADRを書かない理由をADRとして記録しない。
 
 迷ったら、「半年後にコードだけで理由を復元できるか」「背景を知らないAIが誤って戻しそうか」で判断する。
 
@@ -57,7 +60,7 @@ docs/adr/NNNN-kebab-case-title.md
 ADRを書く前に次だけ確定する。
 
 - Context: なぜ判断が必要か
-- Decision: 何を決めたか
+- Decision: 何を決め、なぜその選択にしたか
 - Consequences: 何を得て、何を受け入れるか
 
 独立した判断が複数あるなら分ける。
@@ -90,6 +93,9 @@ statusは既存conventionを優先する。既定では次のように扱う。
 - `Proposed`: 検討中。実装上の拘束力はない
 - `Superseded`: 過去の判断。現在の実装を制約しない
 
+`Deprecated` など他のstatusを使うrepositoryでは、既存conventionに従う。
+実装済みという理由だけで自動的に`Accepted`へしない。
+
 タスクとAccepted ADRが衝突する場合、ADRを守るためだけの迂回実装や不要な抽象化を追加しない。
 
 衝突を明示し、タスクまたはADRのどちらを見直すべきか判断する。根拠が不足する場合だけ人間に確認する。
@@ -105,6 +111,7 @@ statusは既存conventionを優先する。既定では次のように扱う。
 ## 完了確認
 
 - Decisionを1文で説明できる
+- Decisionから選択理由が読み取れる
 - ADRが1つの判断に集中している
 - 判断理由より実装詳細の方が長くなっていない
 - 不要な履歴や議論ログがない
