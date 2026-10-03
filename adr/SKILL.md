@@ -1,177 +1,115 @@
 ---
 name: adr
-description: 実装・設計・レビューで、将来「なぜそうしたか」を失うと再議論や誤った巻き戻しが起きる技術判断を検出し、必要なときだけArchitecture Decision Record（ADR）を作成・更新するときに使う。技術選定、境界設計、データ配置、主要依存、横断ルール、既存方針の置き換えなど、複数の妥当な選択肢とトレードオフがある判断に適用する。
+description: 実装・設計・レビューで、将来「なぜそうしたか」を失うと再議論や誤った巻き戻しが起きる技術判断を検出し、必要なときだけ短いArchitecture Decision Record（ADR）を作成・更新する。必要に応じてAGENTS.mdにはADRへの最小限の入口だけを追加する。
 ---
 
 # ADR
 
-ADRは「何を実装したか」ではなく、**なぜその判断を選び、何を受け入れ、いつ見直すか**を未来へ残すための記録である。
+ADRは実装履歴ではなく、**現在有効な重要判断と理由**を短く残すための記録である。
 
-目的は文書を増やすことではない。半年後の自分や別のAIエージェントが、コードだけを見て善意で設計判断を巻き戻すことを防ぐ。
+目的は文書を増やすことではない。人間やAIエージェントが、背景を知らずに重要な設計判断を推測・巻き戻すことを防ぐ。
 
-## Decision Gate
+## 原則
 
-非自明な実装・設計・レビューを完了する前に、ADRが必要か必ず判定する。
+- ADRは必要な判断だけ残す
+- 原則 `1 decision = 1 file`
+- ADR本文は短く保つ
+- 現在の判断と理由を中心に書く
+- 変更履歴や議論ログはGit、Issue、PRへ任せる
+- `AGENTS.md` は薄く保ち、ADR本文を重複させない
 
-次のいずれかに当てはまり、理由がコードから自明でないならADR候補とする。
+## ADRを作る判断
 
-- 妥当な選択肢が複数あり、意図的なトレードオフを選んだ
-- system boundary、data ownership、storage、integration、auth/security、concurrency、deploymentなど横断的な方針を決めた
-- 主要なdependency、runtime、framework、serviceを追加・削除・置換した
-- repository全体または今後の実装が従うconventionを決めた
-- 一見すると単純化・置換できそうだが、あえて現在の形にしている
-- 将来の人間やAIが「cleanup」として元に戻しそうな判断である
-- 変更コスト、移行コスト、運用リスク、lock-inなどにより簡単には戻せない
-- 既存ADRの判断を変更・廃止・置換する
+次のような、コードだけでは理由を復元しづらい重要判断をADR候補とする。
 
-### 半年後テスト
+- system boundary、data ownership、storage、integration、auth/security、deploymentなどの横断方針
+- 複数の妥当な選択肢から、意図的なtrade-offで選んだ設計
+- 主要dependency、runtime、framework、serviceの採用・置換
+- repository全体や今後の実装を制約する方針
+- 将来の人間やAIが善意で「単純化」「cleanup」して戻しそうな判断
+- 既存ADRの判断を変更・廃止・置換する場合
 
-迷ったら次の2問で判定する。
+次は原則ADRにしない。
 
-1. 半年後、コードだけを読んでこの判断理由を正しく復元できるか？
-2. 将来の人間やAIが、背景を知らずに善意で元へ戻す可能性があるか？
-
-1が「いいえ」または2が「はい」なら、ADRを残す価値が高い。
-
-## Skip
-
-次の変更では原則ADRを作らない。
-
-- 既存仕様へ戻すだけのbug fix
-- UI styling、copy edit、formatting
+- bug fix
+- UI styling、copy、formatting
 - test-only change
-- observable behaviorや境界を変えない局所refactor
-- 既存のAccepted ADRや明文化済みconventionに従うだけの実装
-- 採用判断に至っていない短命なspike / experiment
-- 理由が自明で、安価かつ安全に巻き戻せる局所判断
+- 局所的で容易に戻せるrefactor
+- 既存ADRや明文化済み方針に従うだけの実装
+- 短命なspike / experiment
 
-ADRを書かない理由をADRとして記録しない。
+迷ったら、「半年後にコードだけで理由を復元できるか」「背景を知らないAIが誤って戻しそうか」で判断する。
 
 ## Workflow
 
-### 1. Inspect existing conventions
+### 1. 既存ルールを確認する
 
-最初にrepository内の既存ADRとルールを探す。
+最初に既存のADR、`AGENTS.md`、README、CONTRIBUTINGなどを確認する。
 
-確認対象の例:
-
-- `docs/adr/`
-- `docs/adrs/`
-- `adr/`
-- `architecture/decisions/`
-- README / AGENTS.md / CONTRIBUTING.md
-- 既存ADRの番号、filename、status、section構成
-
-既存conventionがあれば必ずそちらを優先する。
-
-conventionが存在せず新規導入する場合のみ、既定値として以下を使う。
+既存conventionがあれば優先する。なければ既定値として次を使う。
 
 ```text
 docs/adr/NNNN-kebab-case-title.md
 ```
 
-番号は既存最大値 + 1 とし、再利用しない。
+### 2. 判断を1つに絞る
 
-### 2. Reconstruct the decision context
+ADRを書く前に次だけ確定する。
 
-ADRを書くためだけに、ユーザーへ既に分かっている情報を聞き直さない。
+- Context: なぜ判断が必要か
+- Decision: 何を決めたか
+- Consequences: 何を得て、何を受け入れるか
 
-必要な背景は可能な範囲で以下から復元する。
+独立した判断が複数あるなら分ける。
 
-- Issue / PR / discussion
-- code / tests
-- repository documentation
-- benchmark / experiment result
-- 外部仕様・公式documentation
+### 3. 最小限で書く
 
-推測で理由を作らない。判断理由が本当に不明でADRの意味が変わる場合のみ確認する。
+`references/template.md` を使う。
 
-### 3. Freeze one decision
+背景説明、alternatives、見直し条件は、判断の理解に必要な場合だけ追加する。
 
-ADRは原則 **1 decision = 1 file** とする。
+実装手順、TODO、PR差分、長い議論履歴をADRへ入れない。
 
-書き始める前に以下を確定する。
+### 4. AGENTS.mdは入口だけにする
 
-- **Decision**: 何を決めたかを1文で言えるか
-- **Context**: なぜ今この判断が必要か
-- **Drivers / Constraints**: 判断を動かした条件は何か
-- **Alternatives**: 他に現実的な選択肢は何だったか
-- **Trade-offs**: 何を得て、何を諦めるか
-- **Revisit criteria**: 何が変われば判断を見直すか
+エージェントがADRの存在や扱いを知らない場合だけ、`AGENTS.md` に短い入口を追加する。
 
-複数の独立した判断が混ざるならADRを分ける。
+`references/agents-md-snippet.md` を参考にし、次だけ伝える。
 
-### 4. Write the minimum durable record
+- ADRの場所
+- statusの意味
+- Accepted ADRとタスクが衝突した場合の行動
 
-テンプレートは [references/template.md](references/template.md) を使う。
+ADRの内容や詳細ルールを`AGENTS.md`へコピーしない。
 
-すべてのsectionを埋めることを目的にしない。未来の判断復元に必要な情報だけ残す。
+### 5. 衝突を無理に回避しない
 
-特に省略しない。
+statusは既存conventionを優先する。既定では次のように扱う。
 
-- 明確なDecision
-- 選択理由
-- 採用しなかった現実的な案と、その理由
-- negative consequence / accepted trade-off
-- 制約
-- 見直し条件
-
-実装手順、TODO一覧、PR差分説明をADRへ詰め込まない。それらはIssue、design doc、PR、runbookへ置く。
-
-### 5. Preserve decision history
-
-AcceptedになったADRは、誤字・壊れたlinkなど意味を変えない修正を除き、原則として書き換えない。
-
-判断が変わった場合は新しいADRを作り、旧ADRを`Superseded`として参照する。
-
-過去の判断が現在は誤りでも、当時なぜ妥当だったかという履歴を消さない。
-
-### 6. Validate the ADR
-
-完了前に以下を確認する。
-
-- Decisionを新しく参加した人が1文で言い直せる
-- Contextが特定の選択肢を最初から正当化する文章になっていない
-- alternativesに現実的な案が含まれる
-- status quoが現実的な選択肢なら比較対象に含めた
-- 「なぜ採用しなかったか」が分かる
-- positiveだけでなくnegative consequenceも書かれている
-- revisit criteriaが「必要になったら」ではなく具体的なsignal / eventになっている
-- implementation detailで判断理由が埋もれていない
-- 既存ADRとの関係が必要なら明示されている
-
-## Status Policy
-
-既存conventionがなければ次を使う。
-
-- `Proposed`: 判断案。まだ確定していない
 - `Accepted`: 現在有効な判断
-- `Superseded`: 新しいADRに置き換えられた
-- `Deprecated`: 現在は推奨しないが、直接の後継ADRがない
+- `Proposed`: 検討中。実装上の拘束力はない
+- `Superseded`: 過去の判断。現在の実装を制約しない
 
-実装済みという理由だけで自動的に`Accepted`へしない。repositoryのreview / merge運用に従う。
+タスクとAccepted ADRが衝突する場合、ADRを守るためだけの迂回実装や不要な抽象化を追加しない。
 
-## Guardrails
+衝突を明示し、タスクまたはADRのどちらを見直すべきか判断する。根拠が不足する場合だけ人間に確認する。
 
-禁止する。
+## 更新ルール
 
-- trivialな変更までADR化して文書を増やす
-- 結論を正当化するためだけにalternativesを後付けする
-- 実際には検討していない案を「検討した」と書く
-- trade-offやnegative consequenceを隠す
-- ADRを詳細設計書や実装計画の代わりにする
-- Accepted ADRの履歴を都合よく書き換える
-- 根拠がない将来予測を事実として書く
-- repositoryの既存ADR conventionを無視して独自形式を持ち込む
+- amendmentやchangelogをADR本文へ積み上げない
+- 意味の変わらない修正を除き、Accepted ADRを過去ログ化しない
+- 判断が変わる場合は既存conventionに従う
+- conventionがなければ新しいADRを作り、旧ADRを`Superseded`にする
+- 同じルールを複数ADRや`AGENTS.md`へ重複記載しない
 
-## Completion Report
+## 完了確認
 
-ADRを作成・更新した場合は簡潔に報告する。
+- Decisionを1文で説明できる
+- ADRが1つの判断に集中している
+- 判断理由より実装詳細の方が長くなっていない
+- 不要な履歴や議論ログがない
+- statusが現在の扱いと一致している
+- Accepted ADRとの衝突を隠していない
+- `AGENTS.md` を更新した場合、詳細を重複させていない
 
-- **Decision**: 記録した判断
-- **ADR**: file path / number
-- **Why now**: ADRが必要だった理由
-- **Trade-off**: 明示した主要な代償
-- **Revisit**: 見直し条件
-
-ADR不要と判断した場合、通常は報告を増やさない。ユーザーがADR要否の判定を求めた場合のみ理由を説明する。
+ADRを作成・更新した場合は、判断とfile pathだけ簡潔に報告する。
