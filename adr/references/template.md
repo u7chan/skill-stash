@@ -16,7 +16,7 @@
 
 ## Decision
 
-<何を決めたかを明確に書く。>
+<何を決めたか、なぜその選択にしたかを明確に書く。>
 
 ## Consequences
 
@@ -26,7 +26,7 @@
 
 必要な場合だけ、以下を追加する。
 
-- `Alternatives`: 採用しなかった現実的な案が判断理解に必要な場合
+- `Alternatives`: 採用しなかった現実的な案と却下理由が判断理解に必要な場合
 - `Revisit`: 見直す条件が明確な場合
 - `Supersedes`: 既存ADRを置き換える場合
 - `References`: Issue / PR / 関連ADRへの参照が必要な場合
@@ -35,6 +35,7 @@
 
 - 原則 `1 decision = 1 file`
 - Decisionは1文から数文で言い切る
+- Decisionから「なぜその選択か」が読み取れるようにする
 - Contextを長い経緯説明にしない
 - 実装手順、TODO、議論ログを書かない
 - amendmentやchangelogを積み上げない
