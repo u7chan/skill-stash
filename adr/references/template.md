@@ -12,80 +12,31 @@
 
 ## Context
 
-<なぜ今この判断が必要なのか。現状、課題、制約を価値中立的に書く。>
-
-## Decision Drivers
-
-- <判断に強く影響した条件>
-- <優先した品質・コスト・運用上の制約>
+<なぜこの判断が必要か。必要十分な背景だけを書く。>
 
 ## Decision
 
-**<何を採用・変更・維持するかを1文で明確に書く。>**
-
-## Rationale
-
-<なぜこの選択肢がdriversとconstraintsに最も合うのか。>
-
-<何を優先し、何を最適化しないと決めたのかも明示する。>
-
-## Alternatives Considered
-
-### <Option A>
-
-- Pros:
-  - <利点>
-- Cons:
-  - <欠点>
-- Rejected because:
-  - <採用しなかった理由>
-
-### <Option B / Status quo>
-
-- Pros:
-  - <利点>
-- Cons:
-  - <欠点>
-- Rejected because:
-  - <採用しなかった理由>
+<何を決めたかを明確に書く。>
 
 ## Consequences
 
-### Positive
-
 - <得られるもの>
-
-### Negative / Accepted Trade-offs
-
-- <受け入れる代償・制限・運用負荷>
-
-## Constraints / Non-goals
-
-- <この判断で守る制約>
-- <このADRでは決めないこと>
-
-## Revisit Criteria
-
-次のsignal / eventが発生したら判断を見直す。
-
-- <具体的な条件>
-- <具体的な条件>
-
-## References
-
-- <Issue / PR / benchmark / documentation / related ADR>
-
-## Supersedes
-
-<必要な場合のみ、置き換えるADRを記載する。>
+- <受け入れる制約・trade-off>
 ```
 
-## 書き方の目安
+必要な場合だけ、以下を追加する。
 
-- Contextは結論ありきで書かない
-- Decisionは1文で言い切る
-- Alternativesは実際に検討した現実的な案だけを書く
-- status quoが現実的なら選択肢に含める
-- Negative / Accepted Trade-offsを空にしない
-- Revisit Criteriaは「必要になったら」ではなく観測可能な条件にする
-- ADR本文を実装手順やTODO一覧で肥大化させない
+- `Alternatives`: 採用しなかった現実的な案が判断理解に必要な場合
+- `Revisit`: 見直す条件が明確な場合
+- `Supersedes`: 既存ADRを置き換える場合
+- `References`: Issue / PR / 関連ADRへの参照が必要な場合
+
+## 書き方
+
+- 原則 `1 decision = 1 file`
+- Decisionは1文から数文で言い切る
+- Contextを長い経緯説明にしない
+- 実装手順、TODO、議論ログを書かない
+- amendmentやchangelogを積み上げない
+- 過去の変更履歴はGitに任せる
+- 判断を理解するために不要なsectionは追加しない
