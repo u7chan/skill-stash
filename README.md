@@ -25,7 +25,7 @@
 | 17 | [go-teacher](go-teacher/SKILL.md) | Goを構文暗記ではなくメンタルモデルから学習・解説・レビューする |
 | 18 | [frontend-engineering-baseline](frontend-engineering-baseline/SKILL.md) | TypeScriptフロントエンドの開発基盤を調査し、必要な品質・安全性・再現性を最小変更で整える |
 | 19 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |
-| 20 | [adr](adr/SKILL.md) | 将来の再議論や誤った巻き戻しを防ぐため、必要な技術判断だけをADRとして記録する |
+| 20 | [adr](adr/SKILL.md) | 重要な技術判断を短いADRとして残し、必要に応じてAGENTS.mdから参照させる |
 | 21 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | 22 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的設計・検証する |
 | 23 | [bundle-efficient-module-design](bundle-efficient-module-design/SKILL.md) | JS/TSのmodule boundaryをtree-shakingしやすく設計し、bundle削減を実測で検証する |
