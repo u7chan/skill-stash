@@ -26,7 +26,7 @@
 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
-| [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的設計・検証する |
+| [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的に設計・検証する |
 | **AI活用 / 業務変革** | AI導入・業務設計・意思決定 |
 | [ai-business-opportunity-finder](ai-business-opportunity-finder/SKILL.md) | 業界と自社の強みからAI事業化領域を探索する |
 | [ai-impact-diagnosis](ai-impact-diagnosis/SKILL.md) | 仕事内容とAI活用状況からAI活用レベルを診断する |
