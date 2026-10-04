@@ -35,3 +35,4 @@
 | 27 | [rag-system-design](rag-system-design/SKILL.md) | RAGありきにせず、質問とデータの性質から知識取得方式を壁打ち・設計する |
 | 28 | [frontier-harness-diagnosis](frontier-harness-diagnosis/SKILL.md) | フロンティアモデル向けハーネスの過剰指示・常時ロード・停止条件を診断し、最小改善案を出す |
 | 29 | [orchestration-design](orchestration-design/SKILL.md) | 複雑な作業をTask・依存関係・検証条件へ分解し、必要最小限の実行トポロジーを設計する |
+| 30 | [development-simplicity-review](development-simplicity-review/SKILL.md) | 社内・個人開発の開発中プロジェクトをKISSの観点でレビューし、不要な互換・移行・残骸・過剰実装を抑える |
