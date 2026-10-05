@@ -15,10 +15,8 @@
   <!-- DADS: トークン → グローバル → 使用するコンポーネントの順に読み込む -->
   <link rel="stylesheet" href="assets/dads-tokens.css">
   <link rel="stylesheet" href="assets/dads-global.css">
+  <!-- 例示用。使わないコンポーネントの link は削除する -->
   <link rel="stylesheet" href="assets/components/button.css">
-  <link rel="stylesheet" href="assets/components/form-control-label.css">
-  <link rel="stylesheet" href="assets/components/input-text.css">
-  <link rel="stylesheet" href="assets/components/breadcrumb.css">
   <link rel="stylesheet" href="assets/components/heading.css">
 
   <style>
@@ -60,6 +58,7 @@
       z-index: 10;
       padding: calc(8 / 16 * 1rem) calc(16 / 16 * 1rem);
       background-color: var(--color-neutral-white);
+      /* dads-global.css と同じリンク色（DADS では primitive の青を直接使う） */
       color: var(--color-primitive-blue-1000);
       transform: translateY(-200%);
     }

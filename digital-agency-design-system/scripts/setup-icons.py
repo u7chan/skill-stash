@@ -46,15 +46,34 @@ OFFICIAL_INK = "#1A1A1C"
 
 def download(dest: Path, refresh: bool) -> Path:
     if dest.exists() and not refresh:
-        print(f"[skip] cached zip: {dest} ({dest.stat().st_size:,} bytes)")
-        return dest
+        if zipfile.is_zipfile(dest):
+            print(f"[skip] cached zip: {dest} ({dest.stat().st_size:,} bytes)")
+            return dest
+        print(f"[warn] cached zip is broken, refetching: {dest}")
+
     dest.parent.mkdir(parents=True, exist_ok=True)
+    # 途中で切れた転送をキャッシュに残さないよう、一時ファイルに書いてから置換する。
+    part = dest.with_name(dest.name + ".part")
     print(f"[get ] {ASSETS_URL}")
     try:
-        with urllib.request.urlopen(ASSETS_URL, timeout=120) as res, dest.open("wb") as fh:
+        with urllib.request.urlopen(ASSETS_URL, timeout=120) as res, part.open("wb") as fh:
             shutil.copyfileobj(res, fh)
     except urllib.error.URLError as exc:  # pragma: no cover - network failure path
+        part.unlink(missing_ok=True)
         sys.exit(f"[fail] download failed: {exc}\n       hand-place the zip and rerun with --from <zip>")
+    except BaseException:
+        part.unlink(missing_ok=True)
+        raise
+
+    if not zipfile.is_zipfile(part):
+        size = part.stat().st_size
+        part.unlink(missing_ok=True)
+        sys.exit(
+            f"[fail] downloaded file is not a valid zip ({size:,} bytes). "
+            "The download was probably truncated; retry, or use --from <zip>."
+        )
+
+    part.replace(dest)
     print(f"[ok  ] {dest} ({dest.stat().st_size:,} bytes)")
     return dest
 
@@ -74,6 +93,13 @@ def iter_members(zip_path: Path):
 
 
 def extract(zip_path: Path, with_illustrations: bool) -> tuple[int, int]:
+    if not zipfile.is_zipfile(zip_path):
+        sys.exit(
+            f"[fail] not a zip file: {zip_path}\n"
+            "       The cache may be corrupted. Rerun with --refresh, or pass a known-good"
+            " archive with --from <zip>."
+        )
+
     ICON_DIR.mkdir(parents=True, exist_ok=True)
     icon_count = 0
     illustration_count = 0
@@ -107,12 +133,18 @@ def main() -> int:
 
     zip_path = args.zip_path if args.zip_path else CACHE_ZIP
     if args.zip_path:
-        if not args.zip_path.exists():
+        if not args.zip_path.is_file():
             sys.exit(f"[fail] zip not found: {args.zip_path}")
     elif args.list and CACHE_ZIP.exists():
         pass
     else:
         zip_path = download(CACHE_ZIP, refresh=args.refresh)
+
+    if not zipfile.is_zipfile(zip_path):
+        sys.exit(
+            f"[fail] not a zip file: {zip_path}\n"
+            "       Rerun with --refresh to refetch the cache, or use --from <zip>."
+        )
 
     if args.list:
         names = sorted(

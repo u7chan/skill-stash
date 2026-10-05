@@ -38,16 +38,23 @@ class Collector(HTMLParser):
         self.svgs: list[dict[str, str]] = []
         self.label_for: set[str] = set()
         self.ids: list[str] = []
+        self.controls_in_label: set[int] = set()
         self.text_chunks: list[str] = []
         self._heading_tag: str | None = None
         self._heading_text: list[str] = []
         self._in_title = False
+        self._label_depth = 0
         self.title = ""
         self._skip_depth = 0
 
     def handle_starttag(self, tag, attrs):
         items = {k: (v if v is not None else "") for k, v in attrs}
         self.attrs_by_tag.append((tag, items))
+        if tag == "label":
+            self._label_depth += 1
+        if self._label_depth and tag in {"input", "select", "textarea"}:
+            # <label> が入力要素を内包する形（DADS の checkbox / radio の正式形）
+            self.controls_in_label.add(len(self.attrs_by_tag) - 1)
         if "id" in items:
             self.ids.append(items["id"])
         if tag == "img":
@@ -71,6 +78,8 @@ class Collector(HTMLParser):
             self._skip_depth = 0
 
     def handle_endtag(self, tag):
+        if tag == "label" and self._label_depth:
+            self._label_depth -= 1
         if tag == "title":
             self._in_title = False
         if tag == "svg" and self._skip_depth:
@@ -99,10 +108,31 @@ def collect_css(html: str) -> str:
     return strip_comments("\n".join(blocks))
 
 
+def collect_font_sizes_px(css: str) -> list[float]:
+    """font-size の指定を px 換算して集める（px / rem / calc(N / 16 * 1rem)）。"""
+    sizes: list[float] = []
+    for m in re.finditer(
+        r"font-size:\s*(?:calc\(\s*)?([0-9]*\.?[0-9]+)\s*(/\s*[0-9]*\.?[0-9]+\s*\*\s*1rem|px|rem)",
+        css,
+    ):
+        value = float(m.group(1))
+        unit = m.group(2)
+        if unit.startswith("/"):
+            sizes.append(value)  # calc(N / 16 * 1rem) は N が px 相当
+        elif unit == "rem":
+            sizes.append(value * 16)
+        else:
+            sizes.append(value)
+    # calc を伴わない単純な rem
+    for m in re.finditer(r"font-size:\s*([0-9]*\.?[0-9]+)rem", css):
+        sizes.append(float(m.group(1)) * 16)
+    return sizes
+
+
 def check(path: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
-    html = path.read_text(encoding="utf-8")
+    html = path.read_text(encoding="utf-8", errors="replace")
 
     parser = Collector()
     parser.feed(html)
@@ -161,15 +191,16 @@ def check(path: Path) -> tuple[list[str], list[str]]:
             )
 
     # --- フォーム -----------------------------------------------------------
-    for tag, a in attrs:
+    for index, (tag, a) in enumerate(attrs):
         if tag in {"input", "select", "textarea"}:
             if a.get("type") in {"hidden", "submit", "button", "reset", "image"}:
                 continue
             wired = bool(a.get("id") and a["id"] in parser.label_for)
-            if not wired and not (a.get("aria-label") or a.get("aria-labelledby")):
+            wrapped = index in parser.controls_in_label
+            if not (wired or wrapped) and not (a.get("aria-label") or a.get("aria-labelledby")):
                 errors.append(
                     f"<{tag} name=\"{a.get('name', '?')}\"> にラベルがない"
-                    "（<label for> か aria-label を付ける）"
+                    "（<label for> / <label> で内包 / aria-label のいずれか）"
                 )
     # --- インタラクション ---------------------------------------------------
     for tag, a in attrs:
@@ -183,16 +214,28 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         warnings.append("onsubmit があるが preventDefault が見当たらない（ネイティブ送信で遷移する）")
 
     # --- フォーカス可視化 ---------------------------------------------------
-    if "outline: none" in css or "outline:none" in css:
-        if "focus-visible" not in css:
-            errors.append("outline: none が指定され、代替のフォーカス表示がない")
+    # dads-global.css はフォーカスインジケーターを提供するので、それを link していれば
+    # inline CSS に :focus-visible がなくても正しい。
+    global_css_loaded = "dads-global.css" in linked
+    focus_provided = (
+        global_css_loaded
+        or "focus-visible" in css
+        or "dads-u-focus" in css
+        or "focus-visible" in html
+    )
+    if "outline: none" in css or "outline:none" in css or "outline: 0" in css or "outline:0" in css:
+        if not focus_provided:
+            errors.append("outline を消しているのに代替のフォーカス表示がない")
         else:
-            warnings.append("outline: none がある。:focus-visible の代替表示を確認する")
-    if "focus-visible" not in css and "dads-u-focus" not in css and "focus-visible" not in html:
-        errors.append(":focus-visible のフォーカスインジケーターが見当たらない（DADS は必須）")
+            warnings.append("outline を消している箇所がある。:focus-visible の代替表示を確認する")
+    if not focus_provided:
+        errors.append(
+            ":focus-visible のフォーカスインジケーターが見当たらない（DADS は必須。"
+            "dads-global.css を読み込むか、:focus-visible を自前で定義する）"
+        )
 
     # --- スキップリンク -----------------------------------------------------
-    if "main" in tags and not re.search(r"href=\"#(main|content|main-content)\"", html):
+    if "main" in tags and not re.search(r"href=[\"']#(main|content|main-content)[\"']", html):
         warnings.append("スキップリンク（本文へ移動）がない")
 
     # --- トークン利用 -------------------------------------------------------
@@ -207,10 +250,12 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     if css and not REQUIRED_TOKEN_HINT.search(css):
         warnings.append("CSS で DADS のデザイントークン（var(--...)）が使われていない")
 
-    font_sizes = [float(m) for m in re.findall(r"font-size:\s*([0-9.]+)px", css)]
+    font_sizes = collect_font_sizes_px(css)
     too_small = sorted({s for s in font_sizes if s < MIN_FONT_PX})
     if too_small:
-        errors.append(f"14 CSS px 未満のフォントサイズがある: {', '.join(f'{s}px' for s in too_small)}")
+        errors.append(
+            f"14 CSS px 未満のフォントサイズがある: {', '.join(f'{s:g}px' for s in too_small)}"
+        )
 
     # --- ターゲットサイズ ---------------------------------------------------
     if re.search(r"width:\s*([1-3][0-9])px", css) and "min-height" not in css:
@@ -235,7 +280,9 @@ def main() -> int:
     ap.add_argument("--quiet", action="store_true", help="ERROR のみ表示する")
     args = ap.parse_args()
 
-    if not args.html.exists():
+    if not args.html.is_file():
+        if args.html.is_dir():
+            sys.exit(f"[fail] {args.html} はディレクトリです。HTML ファイルを指定してください")
         sys.exit(f"[fail] not found: {args.html}")
 
     errors, warnings = check(args.html)

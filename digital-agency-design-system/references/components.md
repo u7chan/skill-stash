@@ -1,6 +1,8 @@
 # コンポーネント
 
-公式コードスニペット（`digital-go-jp/design-system-example-components-html`、MIT License）の CSS を `assets/components/<name>.css` に同梱している。クラス名・`data-*` 属性は公式実装の契約であり、**独自のクラス名に置き換えない**。
+公式コードスニペット（`digital-go-jp/design-system-example-components-html`、MIT License）の CSS を `assets/components/` に同梱している。クラス名・`data-*` 属性は公式実装の契約であり、**独自のクラス名に置き換えない**。
+
+`card` と `switch` は同名の CSS を持たないため、`card-example-N.css` / `switch-mode.css` / `switch-on-off.css` として同梱している。`<name>.css` を探しても見つからない場合は下の一覧を見る。
 
 読み込み順: `assets/dads-tokens.css` → `assets/dads-global.css` → 必要な `assets/components/*.css`。
 
@@ -14,22 +16,42 @@
 
 ## 同梱しているコンポーネント CSS
 
-`accordion` `blockquote` `breadcrumb` `button` `calendar` `card` `carousel` `checkbox` `chip-label` `date-picker` `description-list` `disclosure` `divider` `drawer` `emergency-banner` `file-upload` `form-control-label` `hamburger-menu-button` `heading` `horizontal-menu` `image` `input-text` `language-selector` `link` `list` `menu-list` `menu-list-box` `modal-dialog` `notification-banner` `page-navigation` `progress-indicator` `radio` `resource-list` `search-box` `select` `step-navigation` `switch` `tab` `table` `textarea` `toc` `utility-link`
+48 ファイル。すべて公式リポジトリの `src/components/<dir>/<file>.css` と**バイト単位で一致**している（検証方法は `NOTICE.md`）。
 
-## JavaScript が必要なコンポーネント
+```
+accordion blockquote breadcrumb button calendar carousel checkbox chip-label
+card-example-1 card-example-2 card-example-3 card-example-4 card-example-5 card-example-6
+date-picker description-list disclosure divider drawer emergency-banner file-upload
+form-control-label hamburger-menu-button heading horizontal-menu image input-text
+language-selector link list menu-list menu-list-box modal-dialog notification-banner
+page-navigation progress-indicator radio resource-list search-box select step-navigation
+switch-mode switch-on-off tab table textarea toc utility-link
+```
+
+`card` と `switch` は単一の `<name>.css` を持たないため、公式の内訳どおり複数ファイルで同梱している。
+
+| 同梱ファイル | クラスの接頭辞 | 用途 |
+| --- | --- | --- |
+| `card-example-1.css` 〜 `card-example-6.css` | `.dads-card-example-N` | カードの 6 作例（構造は作例ごとに異なる） |
+| `switch-on-off.css` | `.dads-switch-on-off` | ON/OFF スイッチ |
+| `switch-mode.css` | `.dads-switch-mode` | モード切替スイッチ |
+
+### JavaScript が必要なコンポーネント
 
 CSS だけでは動作しない。静的な HTML で再現する場合は**使わないか、公式の JS を読み込む**。見た目だけ真似て壊れた操作を作らない。
 
-| コンポーネント | 必要な実装 |
+| 同梱 CSS | 必要な実装 |
 | --- | --- |
-| `accordion` / `disclosure` | 開閉（`<details>` でも代替可） |
-| `tab` | タブ切替（`role="tablist"` + キーボード操作） |
-| `switch` | トグル |
-| `modal-dialog` / `drawer` | `showModal()` とフォーカストラップ |
-| `calendar` / `date-picker` | 日付選択 |
-| `menu-list-box` / `combobox` | 候補絞り込み |
-| `carousel` / `image-slider` | スライド操作 |
-| `search-box`（ファイル/地図タブ等） | 一部の補助動作 |
+| `accordion.css` / `disclosure.css` | 開閉（`<details>` でも代替可） |
+| `tab.css` | タブ切替（`role="tablist"` + キーボード操作） |
+| `switch-on-off.css` / `switch-mode.css` | トグル |
+| `modal-dialog.css` / `drawer.css` | `showModal()` とフォーカストラップ |
+| `calendar.css` / `date-picker.css` | 日付選択 |
+| `menu-list-box.css` | 候補の絞り込み・選択 |
+| `carousel.css` | スライド操作 |
+| `file-upload.css` | ファイル選択 UI の連動 |
+| `hamburger-menu-button.css` | メニューの開閉 |
+| `search-box.css` | 検索対象の切替など一部の補助動作 |
 
 代替手段が確立している場合はネイティブ要素を優先する。
 
@@ -84,19 +106,26 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
 
 ### Select / Checkbox / Radio / Textarea
 
+Select は `dads-form-control-label` と組にする（`for` + `id`）。Checkbox / Radio は公式どおり **`<label>` で入力要素を内包する**形でよい。
+
 ```html
-<span class="dads-select">
-  <span class="dads-select__control">
-    <select class="dads-select__select" data-size="md" aria-describedby="dept-error">
-      <option value="">選択してください</option>
-      <option value="internal">内科</option>
-    </select>
-    <svg class="dads-select__chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 17L3 8L4 7L12 15L20 7L21 8L12 17Z" fill="currentcolor"/>
-    </svg>
-  </span>
-  <span id="dept-error" class="dads-select__error-text">＊診療科を選択してください。</span>
-</span>
+<div class="dads-form-control-label" data-size="md">
+  <label class="dads-form-control-label__label" for="department">診療科</label>
+  <div>
+    <span class="dads-select">
+      <span class="dads-select__control">
+        <select id="department" name="department" class="dads-select__select" data-size="md" aria-describedby="department-error">
+          <option value="">選択してください</option>
+          <option value="internal">内科</option>
+        </select>
+        <svg class="dads-select__chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 17L3 8L4 7L12 15L20 7L21 8L12 17Z" fill="currentcolor"/>
+        </svg>
+      </span>
+      <span id="department-error" class="dads-select__error-text">＊診療科を選択してください。</span>
+    </span>
+  </div>
+</div>
 
 <label class="dads-checkbox" data-size="md">
   <span class="dads-checkbox__checkbox">
@@ -112,19 +141,47 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
   <span class="dads-radio__label">再診</span>
 </label>
 
-<span class="dads-textarea">
-  <textarea class="dads-textarea__textarea" data-size="md" aria-describedby="symptom-error"></textarea>
-  <span id="symptom-error" class="dads-textarea__error-text">＊症状を入力してください。</span>
-</span>
+<div class="dads-form-control-label" data-size="md">
+  <label class="dads-form-control-label__label" for="symptom">症状</label>
+  <div>
+    <span class="dads-textarea">
+      <textarea id="symptom" class="dads-textarea__textarea" data-size="md" aria-describedby="symptom-error"></textarea>
+      <span id="symptom-error" class="dads-textarea__error-text">＊症状を入力してください。</span>
+    </span>
+  </div>
+</div>
 ```
 
+Select / Textarea / Input text は「`dads-form-control-label` の `for` と入力要素の `id`」で結ぶ。Checkbox / Radio は `<label>` で内包する公式形でよい。
+
 チェックボックス群・ラジオ群は `<fieldset>` + `<legend>` でまとめ、`dads-form-control-label` を付ける。
+
+### Switch
+
+カスタム要素（`<dads-switch-on-off>`）と公式 JS の組で使う。`role="switch"` は自分で書かず、公式 JS が付与する属性も含めて公式マークアップをそのまま使う。
+
+```html
+<dads-switch-on-off class="dads-switch-on-off">
+  <button id="notify-switch" class="dads-switch-on-off__button" type="button" role="switch"
+          aria-checked="false" aria-labelledby="notify-label" data-js-toggle>
+    <span class="dads-switch-on-off__track" aria-hidden="true">
+      <span class="dads-switch-on-off__thumb">
+        <svg class="dads-switch-on-off__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="m10.4 16.3-4.1-4.1 1.2-1.3 2.9 2.9 6-6.1 1.3 1.2z" fill="currentcolor"/>
+        </svg>
+      </span>
+    </span>
+  </button>
+</dads-switch-on-off>
+```
+
+2 択のモード切替は `switch-mode.css`（`.dads-switch-mode`）。ON/OFF の 2 値なら `switch-on-off.css`。JS がないと切替できないため、静的なページではチェックボックスとラベルで代替する。
 
 ### Breadcrumb
 
 ```html
 <nav class="dads-breadcrumb" aria-labelledby="breadcrumb-label">
-  <span id="breadcrumb-label" class="dads-u-visually-hidden">現在位置</span>
+  <span id="breadcrumb-label" class="dads-breadcrumb__label">現在位置</span>
   <p class="dads-breadcrumb__list">
     <span class="dads-breadcrumb__item">
       <a class="dads-breadcrumb__link" href="/">ホーム</a>
@@ -138,6 +195,8 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
   </p>
 </nav>
 ```
+
+`dads-breadcrumb__label` は CSS の `::after` で「：」を補う。ラベルを視覚的に出したくない場合のみ `dads-u-visually-hidden` に差し替える（`aria-labelledby` は維持する）。
 
 `aria-current="page"` は現在ページのみ。リンクにしない。
 
@@ -169,7 +228,7 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
 ```html
 <div class="dads-notification-banner" data-style="standard" data-type="info-1" role="status">
   <h2 class="dads-notification-banner__heading">
-    <svg class="dads-notification-banner__icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">…</svg>
+    <svg class="dads-notification-banner__icon" width="24" height="24" viewBox="0 0 24 24" role="img" aria-label="インフォメーション">…</svg>
     <span class="dads-notification-banner__heading-text">予約受付時間が変更になりました</span>
   </h2>
   <div class="dads-notification-banner__body">
@@ -179,7 +238,11 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
 </div>
 ```
 
-`data-type`: `info-1` / `info-2` / `warning` / `error` / `success`。緊急時は `dads-emergency-banner` を使い、`role="alert"` を付ける。
+`data-type`: `info-1` / `info-2` / `warning` / `error` / `success`。
+
+種別アイコン（info / warning / error / success）は**種別情報を単独で伝えるため `role="img"` + `aria-label` を付ける**。ラベル併記の装飾アイコンとは扱いが違う（`references/foundations.md` 参照）。
+
+緊急時は `dads-emergency-banner` を使い、`role="alert"` を付ける。
 
 ### Table
 
@@ -209,32 +272,36 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
 
 ### Card / List / Description list
 
-`dads-card` という単一コンポーネントはなく、**6 種類の作例**（`dads-card-example-1` 〜 `dads-card-example-6`）が `assets/components/card.css` に含まれる。作例ごとに構造が異なるため、近い作例の CSS を選び、`dads-card-example-N` のクラス名とマークアップの組を**そのまま**使う。
+`dads-card` という単一コンポーネントは存在せず、公式実装も `card.css` を持たない。**6 種類の作例**が `assets/components/card-example-1.css` 〜 `card-example-6.css` として別々に同梱されている。作例ごとに構造もクラス名も違うため、**使う作例を 1 つ選び、そのマークアップと CSS を組でそのまま使う**。
 
-| 作例 | 構造の特徴 |
-| --- | --- |
-| 1 | カード全体が 1 つのリンク。メイン領域の角を丸める |
-| 2 | ヘッダー + リンク付きタイトル + フッター |
-| 3 | 画像 + 見出し + 本文 + アクション |
-| 4 | 横並び（画像 + テキスト） |
-| 5 | リスト形式 |
-| 6 | チェックボックス付き選択カード |
+| CSS | クラス接頭辞 | 構造 |
+| --- | --- | --- |
+| `card-example-1.css` | `.dads-card-example-1` | カード全体が 1 リンク。`__image`（アイコン面）+ `__main`（見出し + 本文） |
+| `card-example-2.css` | `.dads-card-example-2` | `__main-header`（見出し + メニュー）+ 本文 + `__links` |
+| `card-example-3.css` | `.dads-card-example-3` | タイトルリンク + `__label` + `__avatar` の記事カード |
+| `card-example-4.css` | `.dads-card-example-4` | 見出し + `__function` + `__contents` + `__actions` の機能カード |
+| `card-example-5.css` | `.dads-card-example-5` | 画像 + 日付ラベル + `__label` のニュース・イベントカード |
+| `card-example-6.css` | `.dads-card-example-6` | チェックボックス付きの選択カード（表内の複数選択に使う） |
+
+作例 1 の最小形（公式 `example-1.html` より）:
 
 ```html
 <ul class="dads-card-example-1-list">
   <li>
     <a class="dads-card-example-1" href="/departments">
-      <div class="dads-card-example-1__image" aria-hidden="true">…</div>
-      <div class="dads-card-example-1__body">
-        <p class="dads-card-example-1__title">診療科から選ぶ</p>
-        <p class="dads-card-example-1__text">診療科ごとに担当医と予約枠を確認できます。</p>
+      <div class="dads-card-example-1__image">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">…</svg>
+      </div>
+      <div class="dads-card-example-1__main">
+        <h2>診療科から選ぶ</h2>
+        <p>診療科ごとに担当医と予約枠を確認できます</p>
       </div>
     </a>
   </li>
 </ul>
 ```
 
-正確なクラス名は `assets/components/card.css` の該当作例を参照する。
+見出しは作例内の `<h2>` に直接入れる（`dads-card-example-1__title` のようなクラスは存在しない）。正確なクラスは使う作例の CSS を読んで確かめる。
 
 ```html
 <ul class="dads-list">
@@ -265,5 +332,5 @@ CSS だけでは動作しない。静的な HTML で再現する場合は**使�
 - 1 画面 1 つの主要アクション（`solid-fill`）。副次アクションは `outline`、補助は `text`。
 - 操作要素は **44×44 CSS px 以上**（`lg` はこれを満たす。`xs` / `sm` を主要操作に使わない）。
 - 状態は `aria-*` と `data-*` の両方で表現する（例: 無効 = `disabled`、現在 = `aria-current`）。
-- アイコンは `assets/icons/*.svg`。`fill` は `currentColor` なので文字色を継承する。
+- アイコンは `assets/icons/*.svg`。色の制御方法は `references/foundations.md` を参照。
 - 公式実装にないクラスを足す場合は `dads-` 接頭辞を付けず、レイアウト調整用の小さいユーティリティに限定する。

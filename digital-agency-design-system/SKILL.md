@@ -15,7 +15,7 @@ description: デジタル庁デザインシステム（DADS β版）を再現し
 | --- | --- | --- |
 | `assets/dads-tokens.css` | デザイントークン（色・書体・サイズ・行高・角丸・エレベーション） | `@digital-go-jp/design-tokens` v2.0.1 |
 | `assets/dads-global.css` | リンク、フォーカスリング、テキストスタイルユーティリティ（`dads-u-*`） | `design-system-example-components-html` `src/global.css` |
-| `assets/components/*.css` | 公式コンポーネント CSS 42 種 | 同上 |
+| `assets/components/*.css` | 公式コンポーネント CSS 48 ファイル（42 コンポーネント分。`card` は 6 作例、`switch` は 2 種に分かれる） | 同上 |
 | `assets/icons/*.svg` | 公式アイコン素材 120 種（24×24、`fill` は `currentColor` に正規化） | デジタル庁「イラストレーション・アイコン素材」 |
 | `assets/page-template.html` | ヘッダー / 本文 / フッター / スキップリンク入りの雛形 | — |
 
@@ -29,7 +29,7 @@ python3 scripts/setup-icons.py --list             # 収録アイコン一覧
 ## 作業手順
 
 1. **画面の目的と登場要素を決める。** 誰が何をする画面か、必要な部品（フォーム / 表 / カード / 手順表示 / 通知 など）を列挙する。
-2. **雛形をコピーする。** `assets/page-template.html` を起点にする。`lang="ja"`・viewport・skin link・スキップリンク・ランドマークは消さない。
+2. **雛形をコピーする。** `assets/page-template.html` を起点にする。`lang="ja"`・viewport meta・Noto Sans JP の link・DADS トークン→グローバル→コンポーネントの link 順・スキップリンク・ランドマークは消さない。
 3. **使うコンポーネント CSS だけを `<link>` する。** `references/components.md` でクラス名と `data-*` 属性を確認し、**公式のクラス名とマークアップの組をそのまま**使う。
 4. **色・サイズ・角丸・影は必ずトークン（`var(--...)`）で書く。** 生の HEX を書かない。`references/tokens.md` に一覧がある。
 5. **余白は 8 CSS px 基準で 3〜5 段階に絞る。** 例: `8 / 24 / 64`。要素ごとに思いつきの値を入れない。
@@ -68,12 +68,7 @@ python3 scripts/setup-icons.py --list             # 収録アイコン一覧
 
 ### アイコンの色
 
-`<img src="assets/icons/xxx.svg">` で読み込んだ SVG の `currentColor` は SVG 自身の `color`（既定は黒）で解決され、**ページの `color` は継承しない**。色を変える場合は `.dads-icon-mask` を使う。
-
-```html
-<img class="dads-icon" src="assets/icons/search_line.svg" alt="" width="24" height="24">
-<span class="dads-icon-mask" aria-hidden="true" style="--dads-icon-src: url('assets/icons/search_line.svg')"></span>
-```
+`<img src="assets/icons/xxx.svg">` で読み込んだ SVG の `currentColor` は SVG 自身の `color`（既定は黒）で解決され、**ページの `color` は継承しない**。色を変える場合は `.dads-icon-mask` を使う。詳細とコード例は `references/foundations.md` を参照。
 
 ### 公式にないものを作らない
 
