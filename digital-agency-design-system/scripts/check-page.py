@@ -28,6 +28,12 @@ TOKEN_CSS = ("dads-tokens.css", "dads-global.css")
 
 REQUIRED_TOKEN_HINT = re.compile(r"--(color|font|elevation|border-radius)-")
 
+# 閉じタグを持たない要素（このスタックでは積まない）
+VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+    "meta", "param", "source", "track", "wbr",
+}
+
 
 class Collector(HTMLParser):
     def __init__(self) -> None:
@@ -44,19 +50,23 @@ class Collector(HTMLParser):
         self._heading_text: list[str] = []
         self._in_title = False
         self._label_depth = 0
+        self._open_tags: list[str] = []
+        self.unclosed_labels = 0
+        self.aria_refs: list[tuple[str, str]] = []
         self.title = ""
         self._skip_depth = 0
 
     def handle_starttag(self, tag, attrs):
         items = {k: (v if v is not None else "") for k, v in attrs}
         self.attrs_by_tag.append((tag, items))
-        if tag == "label":
-            self._label_depth += 1
-        if self._label_depth and tag in {"input", "select", "textarea"}:
-            # <label> が入力要素を内包する形（DADS の checkbox / radio の正式形）
+        # <label> が入力要素を内包する形（DADS の checkbox / radio の正式形）
+        if "label" in self._open_tags and tag in {"input", "select", "textarea"}:
             self.controls_in_label.add(len(self.attrs_by_tag) - 1)
         if "id" in items:
             self.ids.append(items["id"])
+        for attr in ("aria-labelledby", "aria-describedby"):
+            for ref in items.get(attr, "").split():
+                self.aria_refs.append((attr, ref))
         if tag == "img":
             self.images.append(items)
         if tag == "svg":
@@ -71,15 +81,26 @@ class Collector(HTMLParser):
             self._heading_text = []
         if tag == "title":
             self._in_title = True
+        if tag not in VOID_TAGS:
+            self._open_tags.append(tag)
 
     def handle_startendtag(self, tag, attrs):
+        attrs = list(attrs)
         self.handle_starttag(tag, attrs)
+        if tag not in VOID_TAGS and self._open_tags and self._open_tags[-1] == tag:
+            self._open_tags.pop()
         if tag == "svg":
             self._skip_depth = 0
 
     def handle_endtag(self, tag):
-        if tag == "label" and self._label_depth:
-            self._label_depth -= 1
+        if tag in self._open_tags:
+            while self._open_tags:
+                popped = self._open_tags.pop()
+                if popped == tag:
+                    break
+                if popped == "label":
+                    # 閉じられないまま親要素が閉じられた <label>
+                    self.unclosed_labels += 1
         if tag == "title":
             self._in_title = False
         if tag == "svg" and self._skip_depth:
@@ -159,8 +180,13 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     linked = " ".join(
         a.get("href", "") for t, a in attrs if t == "link"
     )
+
+    def asset_loaded(name: str) -> bool:
+        """<link href> でも @import でも html 内に現れていれば読まれていると見なす。"""
+        return name in linked or name in html
+
     for name in TOKEN_CSS:
-        if name not in linked and name not in html:
+        if not asset_loaded(name):
             errors.append(f"{name} が読み込まれていない（DADS のトークン/共通スタイル）")
 
     # --- 見出し構造 ---------------------------------------------------------
@@ -214,20 +240,20 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         warnings.append("onsubmit があるが preventDefault が見当たらない（ネイティブ送信で遷移する）")
 
     # --- フォーカス可視化 ---------------------------------------------------
-    # dads-global.css はフォーカスインジケーターを提供するので、それを link していれば
+    # dads-global.css はフォーカスインジケーターを提供するので、それを読み込んでいれば
     # inline CSS に :focus-visible がなくても正しい。
-    global_css_loaded = "dads-global.css" in linked
-    focus_provided = (
-        global_css_loaded
-        or "focus-visible" in css
-        or "dads-u-focus" in css
-        or "focus-visible" in html
-    )
-    if "outline: none" in css or "outline:none" in css or "outline: 0" in css or "outline:0" in css:
-        if not focus_provided:
-            errors.append("outline を消しているのに代替のフォーカス表示がない")
-        else:
+    global_css_loaded = asset_loaded("dads-global.css")
+    inline_focus = "focus-visible" in css or "dads-u-focus" in css
+    focus_provided = global_css_loaded or inline_focus or "focus-visible" in html
+
+    # inline CSS で outline を消している場合、その inline CSS 側に代替表示が必要。
+    # dads-global.css を読み込んでいても、inline の outline: none は後勝ちで
+    # :focus-visible のリングを消せてしまうため、global の有無では免責しない。
+    if re.search(r"outline:\s*(none|0)\b", css):
+        if inline_focus:
             warnings.append("outline を消している箇所がある。:focus-visible の代替表示を確認する")
+        else:
+            errors.append("outline を消しているのに代替のフォーカス表示がない（:focus-visible を定義する）")
     if not focus_provided:
         errors.append(
             ":focus-visible のフォーカスインジケーターが見当たらない（DADS は必須。"
@@ -269,6 +295,19 @@ def check(path: Path) -> tuple[list[str], list[str]]:
 
     if not parser.text_chunks or not "".join(parser.text_chunks).strip():
         warnings.append("本文テキストが空")
+
+    # --- 閉じ忘れと参照切れ -------------------------------------------------
+    if parser.unclosed_labels or "label" in parser._open_tags:
+        warnings.append(
+            "<label> が閉じられていない。以降の入力要素を内包と誤認する可能性がある"
+        )
+
+    known_ids = set(parser.ids)
+    dangling = sorted({ref for _, ref in parser.aria_refs if ref not in known_ids})
+    if dangling:
+        errors.append(
+            f"aria-labelledby / aria-describedby の参照先 id が存在しない: {', '.join(dangling)}"
+        )
 
     return errors, warnings
 

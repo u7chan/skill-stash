@@ -27,7 +27,7 @@
 | `card-example-1.css` 〜 `card-example-6.css` | `card/card-example-1.css` 〜 `card-example-6.css` | upstream に `card.css` はない |
 | `switch-on-off.css` | `switch/switch-on-off.css` | upstream に `switch.css` はない |
 | `switch-mode.css` | `switch/switch-mode.css` | 同上 |
-| その他 43 ファイル | `<dir>/<name>.css` | 同名 |
+| その他 40 ファイル | `<dir>/<name>.css` | 同名 |
 
 一覧にないコンポーネント（`combobox` / `image-slider` など）は upstream に存在しないため、このスキルには同梱していない。
 

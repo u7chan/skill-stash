@@ -40,18 +40,29 @@ switch-mode switch-on-off tab table textarea toc utility-link
 
 CSS だけでは動作しない。静的な HTML で再現する場合は**使わないか、公式の JS を読み込む**。見た目だけ真似て壊れた操作を作らない。
 
+このスキルは公式 JS を同梱していない。必要な場合は upstream を clone して `src/components/<dir>/<file>.js` を使う（例: `switch/switch-on-off.js`）。
+
+```bash
+git clone --depth 1 https://github.com/digital-go-jp/design-system-example-components-html.git /tmp/dsx
+```
+
 | 同梱 CSS | 必要な実装 |
 | --- | --- |
 | `accordion.css` / `disclosure.css` | 開閉（`<details>` でも代替可） |
 | `tab.css` | タブ切替（`role="tablist"` + キーボード操作） |
-| `switch-on-off.css` / `switch-mode.css` | トグル |
+| `switch-on-off.css` / `switch-mode.css` | トグル（公式 JS。`role` は HTML 側に書く） |
 | `modal-dialog.css` / `drawer.css` | `showModal()` とフォーカストラップ |
 | `calendar.css` / `date-picker.css` | 日付選択 |
 | `menu-list-box.css` | 候補の絞り込み・選択 |
 | `carousel.css` | スライド操作 |
 | `file-upload.css` | ファイル選択 UI の連動 |
-| `hamburger-menu-button.css` | メニューの開閉 |
-| `search-box.css` | 検索対象の切替など一部の補助動作 |
+
+CSS だけで完結するもの:
+
+| 同梱 CSS | 動作 |
+| --- | --- |
+| `hamburger-menu-button.css` | 見た目のみ。開閉は `@media` や自前の JS で行う（公式に JS はない） |
+| `search-box.css` | 絞り込みパネルは `<details class="dads-disclosure">` のネイティブ動作 |
 
 代替手段が確立している場合はネイティブ要素を優先する。
 
@@ -158,21 +169,26 @@ Select / Textarea / Input text は「`dads-form-control-label` の `for` と入�
 
 ### Switch
 
-カスタム要素（`<dads-switch-on-off>`）と公式 JS の組で使う。`role="switch"` は自分で書かず、公式 JS が付与する属性も含めて公式マークアップをそのまま使う。
+カスタム要素（`<dads-switch-on-off>`）と公式 JS の組で使う。`role="switch"` と `aria-checked` は **HTML に自分で書く**（公式 JS が更新するのは `aria-checked` だけ）。名前はボタン自身に付ける必要があるため、`dads-form-control-label` の `for` と `<button>` の `id` を組にする（公式 `switch/with-form-control-label-on-off.html` と同じ形）。
 
 ```html
-<dads-switch-on-off class="dads-switch-on-off">
-  <button id="notify-switch" class="dads-switch-on-off__button" type="button" role="switch"
-          aria-checked="false" aria-labelledby="notify-label" data-js-toggle>
-    <span class="dads-switch-on-off__track" aria-hidden="true">
-      <span class="dads-switch-on-off__thumb">
-        <svg class="dads-switch-on-off__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-          <path d="m10.4 16.3-4.1-4.1 1.2-1.3 2.9 2.9 6-6.1 1.3 1.2z" fill="currentcolor"/>
-        </svg>
-      </span>
-    </span>
-  </button>
-</dads-switch-on-off>
+<div class="dads-form-control-label" data-size="md">
+  <label class="dads-form-control-label__label" for="notify-switch">予約リマインダーを受け取る</label>
+  <div>
+    <dads-switch-on-off class="dads-switch-on-off">
+      <button id="notify-switch" class="dads-switch-on-off__button" type="button" role="switch"
+              aria-checked="false" data-js-toggle>
+        <span class="dads-switch-on-off__track" aria-hidden="true">
+          <span class="dads-switch-on-off__thumb">
+            <svg class="dads-switch-on-off__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <path d="m10.4 16.3-4.1-4.1 1.2-1.3 2.9 2.9 6-6.1 1.3 1.2z" fill="currentcolor"/>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </dads-switch-on-off>
+  </div>
+</div>
 ```
 
 2 択のモード切替は `switch-mode.css`（`.dads-switch-mode`）。ON/OFF の 2 値なら `switch-on-off.css`。JS がないと切替できないため、静的なページではチェックボックスとラベルで代替する。
@@ -281,7 +297,7 @@ Select / Textarea / Input text は「`dads-form-control-label` の `for` と入�
 | `card-example-3.css` | `.dads-card-example-3` | タイトルリンク + `__label` + `__avatar` の記事カード |
 | `card-example-4.css` | `.dads-card-example-4` | 見出し + `__function` + `__contents` + `__actions` の機能カード |
 | `card-example-5.css` | `.dads-card-example-5` | 画像 + 日付ラベル + `__label` のニュース・イベントカード |
-| `card-example-6.css` | `.dads-card-example-6` | チェックボックス付きの選択カード（表内の複数選択に使う） |
+| `card-example-6.css` | `.dads-card-example-6` | チェックボックス付きの選択カード（カード一覧から複数選択する用途） |
 
 作例 1 の最小形（公式 `example-1.html` より）:
 
