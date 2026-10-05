@@ -253,8 +253,14 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     # inline CSS で outline を消している場合、その inline CSS 側に代替表示が必要。
     # dads-global.css を読み込んでいても、inline の outline: none は後勝ちで
     # :focus-visible のリングを消せてしまうため、global の有無では免責しない。
-    # CSS は大文字小文字を区別しないので re.I を付け、単位付きの 0 も拾う。
-    if re.search(r"outline(?:-width|-style|-color)?\s*:\s*(?:none|0(?:\.0+)?(?:px|em|rem|%)?)\s*(?:[;}]|$)", css, re.I | re.M):
+    # outline を消す書き方は none / 0 / 0px / NONE / `!important` / outline-width など多様。
+    # `(?<![-\w])` でカスタムプロパティ（--focus-outline など）を除外する。
+    if re.search(
+        r"(?<![-\w])outline(?:-width|-style|-color)?\s*:\s*"
+        r"(?:none|0(?:\.0+)?(?:px|em|rem|%)?)\s*(?:!\s*important\s*)?(?:[;}]|$)",
+        css,
+        re.I | re.M,
+    ):
         if inline_focus:
             warnings.append("outline を消している箇所がある。:focus-visible の代替表示を確認する")
         else:

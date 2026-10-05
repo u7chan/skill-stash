@@ -49,10 +49,10 @@ git clone --depth 1 https://github.com/digital-go-jp/design-system-example-compo
 | 同梱 CSS | 必要な実装 | 公式 JS |
 | --- | --- | --- |
 | `switch-on-off.css` / `switch-mode.css` | トグル（`role` は HTML 側に書く） | `switch/switch-on-off.js` |
-| `calendar.css` / `date-picker.css` | 日付選択 | `calendar/` `date-picker/` |
-| `menu-list-box.css` | 候補の絞り込み・選択 | `menu-list-box/` |
-| `carousel.css` | スライド操作 | `carousel/` |
-| `file-upload.css` | ファイル選択 UI の連動 | `file-upload/` |
+| `calendar.css` / `date-picker.css` | 日付選択 | `calendar/calendar.js` `date-picker/date-picker.js` |
+| `menu-list-box.css` | 候補の絞り込み・選択 | `menu-list-box/menu-list-box.js` |
+| `carousel.css` | スライド操作 | `carousel/carousel.js` |
+| `file-upload.css` | ファイル選択 UI の連動 | `file-upload/file-upload.js` |
 | `tab.css` | タブ切替（`role="tablist"` + キーボード操作） | `tab/tab.js` `tab/tab-aria.js` |
 
 ### CSS だけで完結するもの
