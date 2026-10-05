@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ページタイトル｜サイト名</title>
+  <meta name="description" content="ページの説明">
+
+  <!-- Noto Sans JP（DADS の基本書体） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Sans+Mono:wght@100..900&display=swap">
+
+  <!-- DADS: トークン → グローバル → 使用するコンポーネントの順に読み込む -->
+  <link rel="stylesheet" href="assets/dads-tokens.css">
+  <link rel="stylesheet" href="assets/dads-global.css">
+  <!-- 例示用。使わないコンポーネントの link は削除する -->
+  <link rel="stylesheet" href="assets/components/button.css">
+  <link rel="stylesheet" href="assets/components/heading.css">
+
+  <style>
+    /* レイアウト用の最小限のスタイル。色・サイズは必ずトークンを参照する。
+       余白スケールは 8 CSS px 基準で 8 / 24 / 64 の 3 段階に固定。 */
+    :root {
+      --page-gutter: calc(16 / 16 * 1rem);
+      --section-gap: calc(64 / 16 * 1rem);
+    }
+
+    @media (min-width: 768px) {
+      :root { --page-gutter: calc(64 / 16 * 1rem); }
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--color-neutral-white);
+      color: var(--color-neutral-solid-gray-800);
+      font-family: var(--font-family-sans);
+      font-size: calc(16 / 16 * 1rem);
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
+
+    .l-container {
+      max-width: 1200px;
+      margin-inline: auto;
+      padding-inline: var(--page-gutter);
+    }
+
+    .l-section { padding-block: var(--section-gap); }
+
+    .l-stack > * + * { margin-block-start: calc(24 / 16 * 1rem); }
+
+    .l-skip-link {
+      position: absolute;
+      inset-inline-start: calc(8 / 16 * 1rem);
+      inset-block-start: calc(8 / 16 * 1rem);
+      z-index: 10;
+      padding: calc(8 / 16 * 1rem) calc(16 / 16 * 1rem);
+      background-color: var(--color-neutral-white);
+      /* dads-global.css と同じリンク色（DADS では primitive の青を直接使う） */
+      color: var(--color-primitive-blue-1000);
+      transform: translateY(-200%);
+    }
+
+    .l-skip-link:focus-visible { transform: none; }
+  </style>
+</head>
+<body>
+  <a class="l-skip-link" href="#main">本文へ</a>
+
+  <header class="l-container">
+    <p><a href="/">サイト名</a></p>
+  </header>
+
+  <main id="main" class="l-container l-section">
+    <hgroup class="dads-heading" data-size="32">
+      <p class="dads-heading__shoulder">ページの種別</p>
+      <h1 class="dads-heading__heading">ページの見出し</h1>
+    </hgroup>
+
+    <div class="l-stack">
+      <p>本文。16 CSS px 以上、行高 1.7。</p>
+
+      <button class="dads-button" type="button" data-type="solid-fill" data-size="lg">
+        主要アクション
+      </button>
+    </div>
+  </main>
+
+  <footer class="l-container l-section">
+    <small>© 2026 サイト名</small>
+  </footer>
+</body>
+</html>
