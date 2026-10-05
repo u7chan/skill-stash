@@ -40,29 +40,35 @@ switch-mode switch-on-off tab table textarea toc utility-link
 
 CSS だけでは動作しない。静的な HTML で再現する場合は**使わないか、公式の JS を読み込む**。見た目だけ真似て壊れた操作を作らない。
 
-このスキルは公式 JS を同梱していない。必要な場合は upstream を clone して `src/components/<dir>/<file>.js` を使う（例: `switch/switch-on-off.js`）。
+このスキルは公式 JS を同梱していない。必要な場合は upstream を clone して `src/components/<dir>/<file>.js` を使う。
 
 ```bash
 git clone --depth 1 https://github.com/digital-go-jp/design-system-example-components-html.git /tmp/dsx
 ```
 
-| 同梱 CSS | 必要な実装 |
-| --- | --- |
-| `accordion.css` / `disclosure.css` | 開閉（`<details>` でも代替可） |
-| `tab.css` | タブ切替（`role="tablist"` + キーボード操作） |
-| `switch-on-off.css` / `switch-mode.css` | トグル（公式 JS。`role` は HTML 側に書く） |
-| `modal-dialog.css` / `drawer.css` | `showModal()` とフォーカストラップ |
-| `calendar.css` / `date-picker.css` | 日付選択 |
-| `menu-list-box.css` | 候補の絞り込み・選択 |
-| `carousel.css` | スライド操作 |
-| `file-upload.css` | ファイル選択 UI の連動 |
+| 同梱 CSS | 必要な実装 | 公式 JS |
+| --- | --- | --- |
+| `switch-on-off.css` / `switch-mode.css` | トグル（`role` は HTML 側に書く） | `switch/switch-on-off.js` |
+| `calendar.css` / `date-picker.css` | 日付選択 | `calendar/` `date-picker/` |
+| `menu-list-box.css` | 候補の絞り込み・選択 | `menu-list-box/` |
+| `carousel.css` | スライド操作 | `carousel/` |
+| `file-upload.css` | ファイル選択 UI の連動 | `file-upload/` |
+| `tab.css` | タブ切替（`role="tablist"` + キーボード操作） | `tab/tab.js` `tab/tab-aria.js` |
 
-CSS だけで完結するもの:
+### CSS だけで完結するもの
+
+公式に JS がなく、ネイティブの HTML 機能で動作する。
 
 | 同梱 CSS | 動作 |
 | --- | --- |
-| `hamburger-menu-button.css` | 見た目のみ。開閉は `@media` や自前の JS で行う（公式に JS はない） |
-| `search-box.css` | 絞り込みパネルは `<details class="dads-disclosure">` のネイティブ動作 |
+| `accordion.css` | `<details class="dads-accordion"><summary class="dads-accordion__summary">` |
+| `disclosure.css` | `<details class="dads-disclosure"><summary class="dads-disclosure__summary">` |
+| `modal-dialog.css` | `<dialog>` + `<button command="show-modal" commandfor="<dialog の id>">` / `command="close"` |
+| `drawer.css` | 同様に `<dialog class="dads-drawer">` + `command` / `commandfor` |
+| `hamburger-menu-button.css` | 見た目のみ。開閉は `@media` や自前の JS で行う |
+| `search-box.css` | 絞り込みパネルは `<details class="dads-search-box__detail dads-disclosure">` のネイティブ動作 |
+
+`command` / `commandfor` が未対応の環境をカバーする必要がある場合は、`showModal()` / `close()` を自前で呼ぶ。
 
 代替手段が確立している場合はネイティブ要素を優先する。
 

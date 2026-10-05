@@ -103,15 +103,16 @@ def extract(zip_path: Path, with_illustrations: bool) -> tuple[int, int]:
     # 一時ディレクトリへ展開してから入れ替える。上流で削除されたアイコンが
     # 古い内容として残らないようにするため。
     staging = ICON_DIR.parent / ".icons.tmp"
-    if staging.exists():
-        shutil.rmtree(staging)
+    staging_illustrations = ICON_DIR.parent / ".illustrations.tmp"
+    for tmp in (staging, staging_illustrations):
+        if tmp.exists():
+            shutil.rmtree(tmp)
     staging.mkdir(parents=True)
+    staging_illustrations.mkdir(parents=True)
 
     icon_count = 0
     illustration_count = 0
-    staging_illustrations = ICON_DIR.parent / ".illustrations.tmp"
-    if staging_illustrations.exists():
-        shutil.rmtree(staging_illustrations)
+    has_license = False
 
     with zipfile.ZipFile(zip_path) as zf:
         for name in zf.namelist():
@@ -124,25 +125,37 @@ def extract(zip_path: Path, with_illustrations: bool) -> tuple[int, int]:
                 icon_count += 1
             elif name.startswith(LICENSE_PREFIX):
                 (staging / "LICENSE.txt").write_bytes(zf.read(name))
+                has_license = True
             elif with_illustrations and name.startswith(ILLUSTRATION_PREFIX) and name.endswith(".png"):
-                staging_illustrations.mkdir(parents=True, exist_ok=True)
                 (staging_illustrations / Path(name).name).write_bytes(zf.read(name))
                 illustration_count += 1
 
     if icon_count == 0:
-        shutil.rmtree(staging, ignore_errors=True)
+        for tmp in (staging, staging_illustrations):
+            shutil.rmtree(tmp, ignore_errors=True)
         sys.exit("[fail] no SVG icons found in the zip; check the archive structure")
+
+    # ライセンスはスキル直下に置く。ZIP に無い場合は既存を残して WARN にする。
+    license_target = ICON_DIR.parent / "icons-LICENSE.txt"
+    if has_license:
+        license_target.write_bytes((staging / "LICENSE.txt").read_bytes())
+        (staging / "LICENSE.txt").unlink()
+    else:
+        print("[warn] LICENSE.txt not found in the zip; keeping the existing icons-LICENSE.txt")
 
     if ICON_DIR.exists():
         shutil.rmtree(ICON_DIR)
     staging.rename(ICON_DIR)
-    (ICON_DIR.parent / "icons-LICENSE.txt").write_bytes((ICON_DIR / "LICENSE.txt").read_bytes())
-    (ICON_DIR / "LICENSE.txt").unlink()  # ライセンスはスキル直下に置く
 
     if with_illustrations:
-        if ILLUSTRATION_DIR.exists():
-            shutil.rmtree(ILLUSTRATION_DIR)
-        staging_illustrations.rename(ILLUSTRATION_DIR)
+        if illustration_count == 0:
+            shutil.rmtree(staging_illustrations, ignore_errors=True)
+        else:
+            if ILLUSTRATION_DIR.exists():
+                shutil.rmtree(ILLUSTRATION_DIR)
+            staging_illustrations.rename(ILLUSTRATION_DIR)
+    else:
+        shutil.rmtree(staging_illustrations, ignore_errors=True)
 
     return icon_count, illustration_count
 

@@ -84,6 +84,10 @@ class Collector(HTMLParser):
         if tag not in VOID_TAGS:
             self._open_tags.append(tag)
 
+    def has_open_label(self) -> bool:
+        """<label> が閉じられないまま残っているか。"""
+        return self.unclosed_labels > 0 or "label" in self._open_tags
+
     def handle_startendtag(self, tag, attrs):
         attrs = list(attrs)
         self.handle_starttag(tag, attrs)
@@ -249,7 +253,8 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     # inline CSS で outline を消している場合、その inline CSS 側に代替表示が必要。
     # dads-global.css を読み込んでいても、inline の outline: none は後勝ちで
     # :focus-visible のリングを消せてしまうため、global の有無では免責しない。
-    if re.search(r"outline:\s*(none|0)\b", css):
+    # CSS は大文字小文字を区別しないので re.I を付け、単位付きの 0 も拾う。
+    if re.search(r"outline(?:-width|-style|-color)?\s*:\s*(?:none|0(?:\.0+)?(?:px|em|rem|%)?)\s*(?:[;}]|$)", css, re.I | re.M):
         if inline_focus:
             warnings.append("outline を消している箇所がある。:focus-visible の代替表示を確認する")
         else:
@@ -297,7 +302,7 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         warnings.append("本文テキストが空")
 
     # --- 閉じ忘れと参照切れ -------------------------------------------------
-    if parser.unclosed_labels or "label" in parser._open_tags:
+    if parser.has_open_label():
         warnings.append(
             "<label> が閉じられていない。以降の入力要素を内包と誤認する可能性がある"
         )
