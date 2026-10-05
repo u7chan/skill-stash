@@ -20,6 +20,7 @@
 | [api-design](api-design/SKILL.md) | HTTP/Web APIをRFC・IETF仕様基準で設計・レビューする |
 | [bundle-efficient-module-design](bundle-efficient-module-design/SKILL.md) | JS/TSのmodule boundaryをtree-shakingしやすく設計し、bundle削減を実測で検証する |
 | [development-simplicity-review](development-simplicity-review/SKILL.md) | 社内・個人開発の開発中プロジェクトをKISSの観点でレビューし、不要な互換・移行・残骸・過剰実装を抑える |
+| [digital-agency-design-system](digital-agency-design-system/SKILL.md) | デジタル庁デザインシステムのトークン・コンポーネント・公式アイコンを使い、行政系の画面をアクセシビリティ要件込みで再現する |
 | [frontend-engineering-baseline](frontend-engineering-baseline/SKILL.md) | TypeScriptフロントエンドの開発基盤を調査し、必要な品質・安全性・再現性を最小変更で整える |
 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |

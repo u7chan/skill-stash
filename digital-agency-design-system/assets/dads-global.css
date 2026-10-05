@@ -1,0 +1,506 @@
+/**
+ * デジタル庁デザインシステム グローバルスタイル（DADS準拠の共通スタイル）
+ *
+ * 出典: digital-go-jp/design-system-example-components-html src/global.css (MIT License)
+ *       の :root（デザイントークン定義）を assets/dads-tokens.css へ分離し、
+ *       末尾にアイコン補助クラスを追加したもの。
+ *
+ * 読み込み順: dads-tokens.css -> dads-global.css -> assets/components/*.css
+ */
+
+html {
+  scrollbar-gutter: stable;
+  font-family: var(--font-family-sans);
+}
+
+html:has(:modal) {
+  overflow: clip;
+  scrollbar-gutter: auto;
+}
+
+body:has(:modal) {
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+:where(a):any-link {
+  color: var(--color-primitive-blue-1000);
+  text-decoration: underline;
+  text-decoration-thickness: calc(1 / 16 * 1rem);
+  text-underline-offset: calc(3 / 16 * 1rem);
+}
+
+:where(a):visited {
+  color: var(--color-primitive-magenta-900);
+}
+
+@media (hover: hover) {
+  :where(a):hover {
+    color: var(--color-primitive-blue-900);
+    text-decoration-thickness: calc(3 / 16 * 1rem);
+  }
+}
+
+:where(a):active {
+  color: var(--color-primitive-orange-800);
+  text-decoration-thickness: calc(1 / 16 * 1rem);
+}
+
+:focus-visible {
+  outline: calc(4 / 16 * 1rem) solid var(--color-neutral-black);
+  outline-offset: calc(2 / 16 * 1rem);
+  border-radius: calc(4 / 16 * 1rem);
+  box-shadow: 0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300);
+}
+
+.dads-u-visually-hidden {
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  white-space: nowrap !important;
+  width: 1px !important;
+}
+
+:where(.dads-u-focus-outline):focus-visible {
+  outline: calc(4 / 16 * 1rem) solid var(--color-neutral-black) !important;
+  outline-offset: calc(2 / 16 * 1rem) !important;
+  border-radius: calc(4 / 16 * 1rem) !important;
+  background-color: var(--color-primitive-yellow-300) !important;
+  box-shadow: 0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300) !important;
+}
+
+@supports selector(:has(*)) {
+  :where(.dads-u-focus-within-outline):focus-visible,
+  :where(.dads-u-focus-within-outline):has(:focus-visible) {
+    outline: calc(4 / 16 * 1rem) solid var(--color-neutral-black) !important;
+    outline-offset: calc(2 / 16 * 1rem) !important;
+    border-radius: calc(4 / 16 * 1rem) !important;
+    background-color: var(--color-primitive-yellow-300) !important;
+    box-shadow: 0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300) !important;
+  }
+}
+@supports not selector(:has(*)) {
+  :where(.dads-u-focus-within-outline):focus-within {
+    outline: calc(4 / 16 * 1rem) solid var(--color-neutral-black) !important;
+    outline-offset: calc(2 / 16 * 1rem) !important;
+    border-radius: calc(4 / 16 * 1rem) !important;
+    background-color: var(--color-primitive-yellow-300) !important;
+    box-shadow: 0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300) !important;
+  }
+}
+
+.dads-u-dsp-64B-140 {
+  font-weight: bold !important;
+  font-size: calc(64 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dsp-57B-140 {
+  font-weight: bold !important;
+  font-size: calc(57 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dsp-48B-140 {
+  font-weight: bold !important;
+  font-size: calc(48 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dsp-64N-140 {
+  font-weight: normal !important;
+  font-size: calc(64 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dsp-57N-140 {
+  font-weight: normal !important;
+  font-size: calc(57 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dsp-48N-140 {
+  font-weight: normal !important;
+  font-size: calc(48 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-std-45B-140 {
+  font-weight: bold !important;
+  font-size: calc(45 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-std-36B-140 {
+  font-weight: bold !important;
+  font-size: calc(36 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-32B-150 {
+  font-weight: bold !important;
+  font-size: calc(32 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-28B-150 {
+  font-weight: bold !important;
+  font-size: calc(28 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-26B-150 {
+  font-weight: bold !important;
+  font-size: calc(26 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-24B-150 {
+  font-weight: bold !important;
+  font-size: calc(24 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-22B-150 {
+  font-weight: bold !important;
+  font-size: calc(22 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-20B-150 {
+  font-weight: bold !important;
+  font-size: calc(20 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-18B-160 {
+  font-weight: bold !important;
+  font-size: calc(18 / 16 * 1rem) !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-17B-170 {
+  font-weight: bold !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-16B-170 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-16B-175 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.75 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-45N-140 {
+  font-weight: normal !important;
+  font-size: calc(45 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-std-36N-140 {
+  font-weight: normal !important;
+  font-size: calc(36 / 16 * 1rem) !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-32N-150 {
+  font-weight: normal !important;
+  font-size: calc(32 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-28N-150 {
+  font-weight: normal !important;
+  font-size: calc(28 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dads-u-std-26N-150 {
+  font-weight: normal !important;
+  font-size: calc(26 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-24N-150 {
+  font-weight: normal !important;
+  font-size: calc(24 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-22N-150 {
+  font-weight: normal !important;
+  font-size: calc(22 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-20N-150 {
+  font-weight: normal !important;
+  font-size: calc(20 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-18N-160 {
+  font-weight: normal !important;
+  font-size: calc(18 / 16 * 1rem) !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-17N-170 {
+  font-weight: normal !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-16N-170 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-std-16N-175 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.75 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-dns-17B-130 {
+  font-weight: bold !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-17B-120 {
+  font-weight: bold !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-16B-130 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-16B-120 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-14B-130 {
+  font-weight: bold !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-14B-120 {
+  font-weight: bold !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-17N-130 {
+  font-weight: normal !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-17N-120 {
+  font-weight: normal !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-16N-130 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-16N-120 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-14N-130 {
+  font-weight: normal !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-dns-14N-120 {
+  font-weight: normal !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-oln-17B-100 {
+  font-weight: bold !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-oln-16B-100 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-oln-14B-100 {
+  font-weight: bold !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-oln-17N-100 {
+  font-weight: normal !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-oln-16N-100 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-oln-14N-100 {
+  font-weight: normal !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dads-u-mono-17B-150 {
+  font-weight: bold !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-mono-16B-150 {
+  font-weight: bold !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-mono-14B-150 {
+  font-weight: bold !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-mono-17N-150 {
+  font-weight: normal !important;
+  font-size: calc(17 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-mono-16N-150 {
+  font-weight: normal !important;
+  font-size: calc(16 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+.dads-u-mono-14N-150 {
+  font-weight: normal !important;
+  font-size: calc(14 / 16 * 1rem) !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-family-mono) !important;
+  letter-spacing: 0 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   DADS 公式アイコン素材（assets/icons/*.svg）用の補助クラス
+   アイコンは 24x24。fill は currentColor へ変換済みだが、<img> で読み込んだ
+   SVG の currentColor は SVG 自身の color（既定は黒）で解決されるため、
+   ページの color は継承しない。色を変える場合は .dads-icon-mask を使う。
+   --------------------------------------------------------------------------- */
+
+/* <img src="assets/icons/search_line.svg" alt=""> 用。サイズだけ揃える。 */
+.dads-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* CSS の color をアイコン色に反映させたいとき（mask 方式）。
+   例: <span class="dads-icon-mask" aria-hidden="true"
+             style="--dads-icon-src: url('assets/icons/search_line.svg')"></span> */
+.dads-icon-mask {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  vertical-align: middle;
+  background-color: currentColor;
+  -webkit-mask: var(--dads-icon-src) center / contain no-repeat;
+  mask: var(--dads-icon-src) center / contain no-repeat;
+}
