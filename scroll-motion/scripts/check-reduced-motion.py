@@ -9,6 +9,8 @@
 - JS でアニメーションループ（requestAnimationFrame / setTimeout / setInterval）を使うサンプルは
   matchMedia('(prefers-reduced-motion: reduce)') を確認している
 - CSS で内容を隠し JS で表示するサンプルは、JS 無効時にも読めるよう <noscript> のフォールバックを持つ
+- CSS でクリップしたコンテナを JS の transform で移動するサンプル（横スクロール・マーキー等）も、
+  JS 無効時に中身へ到達できるよう <noscript> のフォールバックを持つ
 """
 
 from __future__ import annotations
@@ -41,6 +43,11 @@ HIDDEN_STATE_TOKENS = (
     "filter: blur(",
 )
 JS_REVEAL_TOKENS = ("classList.add", "classList.toggle", "classList.remove", ".style.transform", ".style.opacity", "strokeDashoffset", "textContent")
+# 「クリップしたコンテナを JS の transform で動かす」構成の目印。
+# overflow: hidden の中身は、横スクロール・マーキーのように JS が動かす前提だとユーザー操作では到達できない。
+CLIP_TOKENS = ("overflow: hidden", "overflow-x: hidden")
+JS_TRANSFORM_TOKENS = ("will-change: transform",)
+JS_TRANSFORM_WRITE = ".style.transform"
 # @keyframes の中身は「アニメーションを適用したときだけ」効くので、非表示トークンの走査から外す
 KEYFRAMES_RE = re.compile(r"@keyframes\s+[A-Za-z0-9_-]+", re.IGNORECASE)
 ANIMATION_DECL_RE = re.compile(r"animation(?:-name)?\s*:\s*(?P<value>[^;}]+)")
@@ -98,6 +105,15 @@ def check_file(path: str, rel: str) -> list:
     if hides_content and reveals_with_js and "<noscript>" not in text:
         errors.append(
             f"{rel}: CSS で隠して JS で表示する構成なのに <noscript> のフォールバックがありません（JS 無効時に内容が読めません）"
+        )
+
+    # クリップしたコンテナを JS の transform で移動する構成（横スクロール・マーキー等）
+    clips_container = any(token in css for token in CLIP_TOKENS)
+    moves_with_js = any(token in css for token in JS_TRANSFORM_TOKENS) and JS_TRANSFORM_WRITE in script_body
+    if clips_container and moves_with_js and "<noscript>" not in text:
+        errors.append(
+            f"{rel}: クリップしたコンテナを JS の transform で動かす構成なのに <noscript> のフォールバックがありません"
+            "（JS 無効時に中身へ到達できません）"
         )
     if any(token in script_body for token in LOOP_TOKENS):
         if "matchMedia" not in text:

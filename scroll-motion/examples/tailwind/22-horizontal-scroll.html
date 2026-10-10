@@ -96,6 +96,25 @@
     }
   }
 </style>
+<noscript><style>
+  /* JS が無効な環境では transform で横送りできないため、通常の横スクロール枠として読めるようにする
+     （JS 有効時は sticky + overflow: hidden + transform 駆動のままにする） */
+  .hscroll {
+    min-height: auto;
+  }
+
+  .hscroll__stage {
+    position: static;
+    display: block;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .hscroll__track {
+    transform: none;
+  }
+</style></noscript>
 </head>
 <body>
 <main class="demo-shell">

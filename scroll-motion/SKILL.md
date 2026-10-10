@@ -89,7 +89,7 @@ description: スクロールに応じた演出（入場・パララックス・�
 | `check-catalog.py` | ID 01–24・名称・使用技術・サンプルパスの欠落/重複/未知IDなし |
 | `check-references.py` | SKILL.md / references / examples / showroom / README の相対参照が実在する |
 | `check-external-deps.py` | 外部 CDN・外部フォント・外部画像・外部 API を読み込んでいない |
-| `check-reduced-motion.py` | 全サンプルで reduce 対応が成立し、CSS で隠して JS で表示する構成は `<noscript>` のフォールバックを持つ |
+| `check-reduced-motion.py` | 全サンプルで reduce 対応が成立し、CSS で隠す／クリップして JS で表示・移動する構成は `<noscript>` のフォールバックを持つ |
 | `check-mobile.py` | 375px 想定で横溢れパターンが無い |
 | `check-pair-equivalence.py` | 全演出で CSS版 / Tailwind版 のフック・keyframes・reduce 対応が一致する |
 | `check-hooks.py` | コード切替・コピー・再実行・詳細デモのフックと、examples を正本とする単一性 |

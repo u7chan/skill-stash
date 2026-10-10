@@ -77,7 +77,10 @@ CSS で初期非表示にして JS で表示する演出は、JS が動かない
 - マスク（`clip-path`）・押し上げ（`transform`）・`display: none` の切替も同じ考え方で解除する。
 - 打ち出しテキストやカウントアップのように、JS が内容そのものを作る演出は、`sr-only` に置いた全文・確定値を
   `<noscript>` で可視化する（`examples/css/07-typewriter.html`、`08-count-up.html` が雛形）。
-- `scripts/check-reduced-motion.py` が「CSS で隠して JS で表示する構成に `<noscript>` があるか」を検証する。
+- クリップしたコンテナを JS の `transform` で移動する演出（横スクロール・マーキー等）は、JS 無効時に中身へ
+  到達できない。`<noscript>` で `overflow-x: auto`（または折り返し）へ切り替え、ユーザーのスクロールで読めるようにする
+  （`examples/css/22-horizontal-scroll.html`、`16-marquee.html` が雛形）。
+- `scripts/check-reduced-motion.py` が「CSS で隠す／クリップして JS で表示・移動する構成に `<noscript>` があるか」を検証する。
 
 ## 3. スクロール進捗の2系統
 

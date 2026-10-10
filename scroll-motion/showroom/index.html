@@ -4327,6 +4327,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では流れないため、行を折り返して全部を表示する */
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -4449,6 +4457,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では流れないため、行を折り返して全部を表示する */
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -6461,6 +6477,25 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では transform で横送りできないため、通常の横スクロール枠として読めるようにする
+     （JS 有効時は sticky + overflow: hidden + transform 駆動のままにする） */
+  .hscroll {
+    min-height: auto;
+  }
+
+  .hscroll__stage {
+    position: static;
+    display: block;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .hscroll__track {
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -6638,6 +6673,25 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では transform で横送りできないため、通常の横スクロール枠として読めるようにする
+     （JS 有効時は sticky + overflow: hidden + transform 駆動のままにする） */
+  .hscroll {
+    min-height: auto;
+  }
+
+  .hscroll__stage {
+    position: static;
+    display: block;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .hscroll__track {
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
