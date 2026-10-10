@@ -151,7 +151,7 @@ def render_card(catalog: dict, effect: dict, categories: dict, css_code: str, ta
     tailwind_path = "../" + effect["tailwindPath"]
     tech = ", ".join(SHORT_TECH.get(token, token) for token in effect["tech"])
     return f"""      <article class="card" id="{anchor}" data-effect="{effect_id}" data-current-lang="css"
-        data-detail-css="{css_path}" data-detail-tailwind="{tailwind_path}" data-demo-src="{css_path}">
+        data-demo-src="{css_path}">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">{effect_id}</span> <span class="card__slug">{effect['slug']}</span></p>
           <h3 class="card__title">{html.escape(effect['name'])}</h3>
@@ -162,10 +162,10 @@ def render_card(catalog: dict, effect: dict, categories: dict, css_code: str, ta
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="{css_path}" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="{css_path}" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--{effect['demoHeight']}" data-demo-frame src="{css_path}"
@@ -205,7 +205,7 @@ def render_card(catalog: dict, effect: dict, categories: dict, css_code: str, ta
               <ul>{list_items(effect['a11yNotes'])}</ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="{css_path}"><code>{effect['cssPath']}</code></a> / <a href="{tailwind_path}"><code>{effect['tailwindPath']}</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="{css_path}"><code>{effect['cssPath']}</code></a> / <a href="{tailwind_path}"><code>{effect['tailwindPath']}</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>"""
 

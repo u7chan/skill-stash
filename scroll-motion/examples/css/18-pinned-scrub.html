@@ -189,6 +189,13 @@
     }
   }
 </style>
+<noscript><style>
+  /* JS が無効な環境では is-active が付かないため、全ステップを表示する
+     （スクロールタイムライン対応ブラウザでは keyframes が優先されるため影響しない） */
+  .pin__step {
+    opacity: 1;
+  }
+</style></noscript>
 </head>
 <body>
 <main class="demo-shell">

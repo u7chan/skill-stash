@@ -53,6 +53,14 @@
     }
   }
 </style>
+<noscript><style>
+  /* JS が無効な環境ではマスクを解除して図版をそのまま表示する */
+  .reveal-mask .mask-visual,
+  .reveal-mask--vertical .mask-visual {
+    clip-path: none;
+    opacity: 1;
+  }
+</style></noscript>
 </head>
 <body>
 <main class="demo-shell">

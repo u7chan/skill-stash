@@ -70,7 +70,7 @@ description: スクロールに応じた演出（入場・パララックス・�
 | --- | --- | --- |
 | カード内でデモが止まる | ピン留め・横スクロールは十分なスクロール領域が必要 | 詳細デモ（`examples/` を直接開く）で確認し、埋め込みカードでは再現しない |
 | スクロールできない・指が抜けない | ネストしたスクロール枠（`scroll-snap`・横スクロール） | 枠を画面高さの 60% 以下にし、`reduce` では通常スクロールへ戻す |
-| 内容が消えたまま | 初期非表示のまま JS が動かなかった | 初期非表示は `@media (prefers-reduced-motion: no-preference)` の中だけに置き、JS 失敗時は表示のままにする |
+| 内容が消えたまま | 初期非表示のまま JS が動かなかった | 初期非表示は `@media (prefers-reduced-motion: no-preference)` の中だけに置き、`<noscript><style>` で JS 無効時の初期非表示を解除する |
 | カクつく | `width` / `top` / `background-position` の連続更新 | `transform` / `opacity` / `clip-path` に置き換えるか、更新頻度を落とす |
 | ピン留めが最後まで進まない | `view()` の既定 `cover` 範囲は固定区間より広い | `animation-range: cover 25% cover 75%` のように固定区間だけを指定する |
 
@@ -89,7 +89,7 @@ description: スクロールに応じた演出（入場・パララックス・�
 | `check-catalog.py` | ID 01–24・名称・使用技術・サンプルパスの欠落/重複/未知IDなし |
 | `check-references.py` | SKILL.md / references / examples / showroom / README の相対参照が実在する |
 | `check-external-deps.py` | 外部 CDN・外部フォント・外部画像・外部 API を読み込んでいない |
-| `check-reduced-motion.py` | 全サンプルで reduce 対応が成立している |
+| `check-reduced-motion.py` | 全サンプルで reduce 対応が成立し、CSS で隠して JS で表示する構成は `<noscript>` のフォールバックを持つ |
 | `check-mobile.py` | 375px 想定で横溢れパターンが無い |
 | `check-pair-equivalence.py` | 全演出で CSS版 / Tailwind版 のフック・keyframes・reduce 対応が一致する |
 | `check-hooks.py` | コード切替・コピー・再実行・詳細デモのフックと、examples を正本とする単一性 |

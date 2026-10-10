@@ -71,10 +71,16 @@
         var path = entry.target.querySelector('[data-draw-path]');
         if (!path || typeof path.getTotalLength !== 'function') { return; }
         var length = path.getTotalLength();
+        /* 初期状態は transition を切って確定させる。
+           そのまま設定すると 0 → パス長 の逆方向 transition が始まり、
+           直後の 0 への変更が「反転」とみなされて一瞬で塗り終えてしまう。 */
+        path.style.transitionProperty = 'none';
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
+        void path.getBoundingClientRect(); /* 強制リフローで初期値を確定させる */
+        path.style.transitionProperty = ''; /* CSS の transition 定義に戻す */
         window.requestAnimationFrame(function () {
-          path.style.strokeDashoffset = '0'; /* 初期値を適用してから描き始める */
+          path.style.strokeDashoffset = '0'; /* ここから 1400ms の線描画が走る */
         });
       });
     }, { threshold: 0.4 });

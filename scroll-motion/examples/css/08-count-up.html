@@ -46,6 +46,23 @@
     color: #55627a;
   }
 </style>
+<noscript><style>
+  /* JS が無効な環境では 0 のままの装飾値を隠し、確定値のテキストを表示する */
+  .stat__value,
+  .stat__unit {
+    display: none;
+  }
+
+  .stat .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+</style></noscript>
 </head>
 <body>
 <main class="demo-shell">

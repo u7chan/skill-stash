@@ -5,18 +5,13 @@
    - [data-code-tab="css|tailwind"]  : コード表示の切替（ライブデモは CSS 版のまま）
    - [data-action="copy"]            : 表示中コードのコピー
    - [data-action="rerun"]           : ライブデモ iframe の再読み込み
-   - [data-detail-link]              : 選択中バリアントの詳細デモへ遷移
+   - [data-detail-link]              : CSS 版の詳細デモへ遷移（Tailwind 版はコード表示のみ）
 */
 
 (() => {
   'use strict';
 
   const LANG_LABELS = { css: 'CSS版', tailwind: 'Tailwind版' };
-  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function applyMotionPreference() {
-    document.documentElement.classList.toggle('reduce-motion', motionQuery.matches);
-  }
 
   function setStatus(card, message) {
     const status = card.querySelector('[data-copy-status]');
@@ -56,14 +51,9 @@
     if (label) {
       label.textContent = LANG_LABELS[normalized];
     }
-    const detailLink = card.querySelector('[data-detail-link]');
-    if (detailLink) {
-      const href = normalized === 'tailwind' ? card.dataset.detailTailwind : card.dataset.detailCss;
-      if (href) {
-        detailLink.setAttribute('href', href);
-      }
-      detailLink.textContent = normalized === 'tailwind' ? '詳細デモを開く（Tailwind版）' : '詳細デモを開く（CSS版）';
-    }
+    /* 「詳細デモを開く」は CSS 版に固定する。
+       Tailwind 版はショールームがランタイムを読み込まないため、開いてもユーティリティが
+       適用されない生のページになる。Tailwind 版はコード表示用のサンプルとして扱う。 */
   }
 
   function visibleCode(card) {
@@ -171,9 +161,4 @@
   document.querySelectorAll('.card[data-effect]').forEach((card) => {
     activateTab(card, card.dataset.currentLang, false);
   });
-
-  applyMotionPreference();
-  if (typeof motionQuery.addEventListener === 'function') {
-    motionQuery.addEventListener('change', applyMotionPreference);
-  }
 })();

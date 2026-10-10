@@ -59,6 +59,26 @@ if (!('IntersectionObserver' in window)) {
 - `unobserve` して常時監視を避ける。スタッガーは親だけを監視し、遅延は `transition-delay: calc(var(--i) * 90ms)` で作る。
 - 移動で横溢れが出る場合は、セクション側に `overflow-x: clip` を指定する（`overflow: hidden` と違いスクロールコンテナを作らない）。
 
+### JS 無効時・スクリプト失敗時のフォールバック
+
+CSS で初期非表示にして JS で表示する演出は、JS が動かないと内容が隠れたままになる。`<noscript>` の
+`<style>` で初期非表示を解除しておく（`head` 内に置ける。演出本体の `<style>` より後に書くと上書きできる）。
+
+```html
+<noscript><style>
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+</style></noscript>
+```
+
+- マスク（`clip-path`）・押し上げ（`transform`）・`display: none` の切替も同じ考え方で解除する。
+- 打ち出しテキストやカウントアップのように、JS が内容そのものを作る演出は、`sr-only` に置いた全文・確定値を
+  `<noscript>` で可視化する（`examples/css/07-typewriter.html`、`08-count-up.html` が雛形）。
+- `scripts/check-reduced-motion.py` が「CSS で隠して JS で表示する構成に `<noscript>` があるか」を検証する。
+
 ## 3. スクロール進捗の2系統
 
 CSS Scroll-driven Animations が使える環境では CSS だけで動かし、非対応環境では同じ進捗を JS で再現する。
@@ -87,6 +107,7 @@ CSS Scroll-driven Animations が使える環境では CSS だけで動かし、�
 ```
 
 ```js
+const bar = document.querySelector('[data-progress]'); /* 進捗バーの要素 */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const supportsTimeline = CSS.supports && CSS.supports('animation-timeline: view()');
 if (!supportsTimeline && !reduce.matches) {

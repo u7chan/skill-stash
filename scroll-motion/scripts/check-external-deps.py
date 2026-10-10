@@ -31,12 +31,23 @@ CSS_URL_RE = re.compile(r"url\(\s*['\"]?(?P<value>[^'\")]+)['\"]?\s*\)", re.IGNO
 CSS_IMPORT_RE = re.compile(r"@import\s+(?:url\(\s*['\"]?[^'\")]+['\"]?\s*\)|['\"](?P<value>[^'\"]+)['\"])", re.IGNORECASE)
 JS_PATTERNS = (
     re.compile(r"""\bimport\s*\(\s*['"`](?P<value>[^'"`]+)['"`]"""),
+    # 副作用 import（バインディングなし）
+    re.compile(r"""\bimport\s+['"](?P<value>[^'"]+)['"]"""),
     re.compile(r"""\bfrom\s*['"](?P<value>[^'"]+)['"]"""),
     re.compile(r"""\bfetch\s*\(\s*['"`](?P<value>[^'"`]+)['"`]"""),
     re.compile(r"""\bnew\s+WebSocket\s*\(\s*['"`](?P<value>[^'"`]+)['"`]"""),
     re.compile(r"""\bsendBeacon\s*\(\s*['"`](?P<value>[^'"`]+)['"`]"""),
     re.compile(r"""\bopen\s*\(\s*['"](?:GET|POST|PUT|DELETE)['"]\s*,\s*['"](?P<value>[^'"]+)['"]"""),
+    # 代入形式（例: new Image().src = 外部URL / link.href = 外部URL）
+    re.compile(r"""\.(?:src|href|srcset|poster)\s*=\s*['"`](?P<value>[^'"`]+)['"`]"""),
+    # setAttribute 形式
+    re.compile(
+        r"""setAttribute\(\s*['"](?:src|href|srcset|poster)['"]\s*,\s*['"](?P<value>[^'"]+)['"]"""
+    ),
 )
+# srcset は「URL 記述子, URL 記述子」の並びなので、カンマ区切りの各候補を個別に検査する
+SRCSET_ATTRS = ("srcset", "imagesrcset", "data-srcset")
+LOADING_ATTRS = ("src", "href", "data", "poster", "xlink:href", "data-src", "data-background")
 MARKDOWN_IMAGE_RE = re.compile(r"!\[[^\]]*\]\((?P<value>[^)\s]+)\)")
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\((?P<value>[^)\s]+)\)")
 BARE_URL_RE = re.compile(r"https?://[^\s)>\]\"']+")
@@ -70,10 +81,18 @@ def scan(path: str, rel: str):
                 continue
         if tag == "form":
             continue
-        for name in ("src", "href", "data", "poster", "xlink:href"):
+        for name in LOADING_ATTRS:
             value = attrs.get(name)
             if value and EXTERNAL_RE.match(value.strip()):
                 loads.append((rel, f"<{tag} {name}=\"{value[:80]}\">"))
+        for name in SRCSET_ATTRS:
+            value = attrs.get(name)
+            if not value:
+                continue
+            for candidate in value.split(","):
+                url = candidate.strip().split(" ")[0].strip()
+                if url and EXTERNAL_RE.match(url):
+                    loads.append((rel, f"<{tag} {name}=\"{url[:80]}\">"))
 
     for match in CSS_URL_RE.finditer(text):
         if EXTERNAL_RE.match(match.group("value").strip()):

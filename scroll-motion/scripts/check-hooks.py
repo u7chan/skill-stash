@@ -23,13 +23,14 @@ REQUIRED_JS_TOKENS = (
     '"rerun"',
     "navigator.clipboard",
     "execCommand",
-    "detailCss",
-    "detailTailwind",
     "aria-selected",
     "data-code-panel",
     "cloneNode",
     "currentLang",
+    "tabIndex",
 )
+# 詳細デモのリンクは CSS 版に固定する（JS で href を差し替えないこと）
+FORBIDDEN_JS_TOKENS = ("detailTailwind", "dataset.detailCss", "setAttribute('href'")
 REQUIRED_HTML_TOKENS = (
     'role="status"',
     'role="tab"',
@@ -82,9 +83,8 @@ def main() -> int:
         if index.count(f'data-effect="{effect_id}"') != 1:
             errors.append(f"showroom/index.html: 演出 {effect_id} の data-effect が 1 件ではありません")
         for expected in (
-            f'data-detail-css="../{effect["cssPath"]}"',
-            f'data-detail-tailwind="../{effect["tailwindPath"]}"',
             f'src="../{effect["cssPath"]}"',
+            f'<a class="btn btn--link" data-detail-link href="../{effect["cssPath"]}" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>',
         ):
             # data-demo-src などの部分一致を避けて、属性としての出現だけを数える
             found = len(re.findall(r"(?<![\w-])" + re.escape(expected), index))
@@ -111,7 +111,10 @@ def main() -> int:
     for token in REQUIRED_JS_TOKENS:
         if token not in js:
             errors.append(f"showroom/showroom.js: フック {token} の実装が見つかりません")
-    for token in ("detailLink", "setAttribute('href'", "tabIndex"):
+    for token in FORBIDDEN_JS_TOKENS:
+        if token in js:
+            errors.append(f"showroom/showroom.js: 詳細デモのリンクは CSS 版に固定するため {token} は使わないでください")
+    for token in ("data-detail-link", "tabIndex"):
         if token not in js:
             errors.append(f"showroom/showroom.js: {token} の扱いが見つかりません")
 
@@ -127,6 +130,8 @@ def main() -> int:
         errors.append("showroom/index.html: タブに role=\"tab\" がありません")
     if 'role="tabpanel"' not in index:
         errors.append("showroom/index.html: コードパネルに role=\"tabpanel\" がありません")
+    if index.count("Tailwind版はコード表示用のサンプル") != len(effects):
+        errors.append("showroom/index.html: Tailwind 版がコード表示専用である旨の可視注記が全カードにありません")
     if "skip-link" not in index:
         errors.append("showroom/index.html: スキップリンクがありません")
 

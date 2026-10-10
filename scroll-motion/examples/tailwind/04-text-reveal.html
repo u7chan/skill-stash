@@ -22,6 +22,17 @@
     color: #33415c;
   }
 
+  /* 行マスク: 親で切り取り、内側を transform で押し上げる。
+     Tailwind 版では block / overflow-hidden / inline-block のユーティリティが同じ役割を担う。 */
+  .line {
+    display: block;
+    overflow: hidden;
+  }
+
+  .line__inner {
+    display: inline-block;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .line__inner {
       transform: translate3d(0, 110%, 0);
@@ -34,6 +45,12 @@
     }
   }
 </style>
+<noscript><style>
+  /* JS が無効な環境では押し上げ状態を解除して全文を表示する */
+  .reveal-lines .line__inner {
+    transform: none;
+  }
+</style></noscript>
 </head>
 <body>
 <main class="demo-shell">

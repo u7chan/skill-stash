@@ -38,7 +38,7 @@
         <p>ビューポートへの進入を IntersectionObserver で検出し、再生は CSS の transition / animation に任せる。</p>
       </header>
       <article class="card" id="effect-01" data-effect="01" data-current-lang="css"
-        data-detail-css="../examples/css/01-fade-in.html" data-detail-tailwind="../examples/tailwind/01-fade-in.html" data-demo-src="../examples/css/01-fade-in.html">
+        data-demo-src="../examples/css/01-fade-in.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">01</span> <span class="card__slug">fade-in</span></p>
           <h3 class="card__title">フェードイン</h3>
@@ -50,10 +50,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/01-fade-in.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/01-fade-in.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/01-fade-in.html"
@@ -97,6 +97,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -176,6 +183,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -246,11 +260,11 @@
               <ul><li>reduce 時に opacity: 0 が残らないようにする（本文が読めない事故を防ぐ）</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/01-fade-in.html"><code>examples/css/01-fade-in.html</code></a> / <a href="../examples/tailwind/01-fade-in.html"><code>examples/tailwind/01-fade-in.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/01-fade-in.html"><code>examples/css/01-fade-in.html</code></a> / <a href="../examples/tailwind/01-fade-in.html"><code>examples/tailwind/01-fade-in.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-02" data-effect="02" data-current-lang="css"
-        data-detail-css="../examples/css/02-slide-in.html" data-detail-tailwind="../examples/tailwind/02-slide-in.html" data-demo-src="../examples/css/02-slide-in.html">
+        data-demo-src="../examples/css/02-slide-in.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">02</span> <span class="card__slug">slide-in</span></p>
           <h3 class="card__title">スライドイン</h3>
@@ -262,10 +276,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/02-slide-in.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/02-slide-in.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/02-slide-in.html"
@@ -336,6 +350,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -445,6 +466,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -518,11 +546,11 @@
               <ul><li>左右から入る要素を画面外固定にしない（横スクロールを生まない）</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/02-slide-in.html"><code>examples/css/02-slide-in.html</code></a> / <a href="../examples/tailwind/02-slide-in.html"><code>examples/tailwind/02-slide-in.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/02-slide-in.html"><code>examples/css/02-slide-in.html</code></a> / <a href="../examples/tailwind/02-slide-in.html"><code>examples/tailwind/02-slide-in.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-03" data-effect="03" data-current-lang="css"
-        data-detail-css="../examples/css/03-stagger.html" data-detail-tailwind="../examples/tailwind/03-stagger.html" data-demo-src="../examples/css/03-stagger.html">
+        data-demo-src="../examples/css/03-stagger.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">03</span> <span class="card__slug">stagger</span></p>
           <h3 class="card__title">スタッガー</h3>
@@ -534,10 +562,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/03-stagger.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/03-stagger.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/03-stagger.html"
@@ -583,6 +611,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除し、全項目を同時に表示する */
+  .stagger &gt; * {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -669,6 +704,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では初期非表示を解除し、全項目を同時に表示する */
+  .stagger &gt; * {
+    opacity: 1;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -744,11 +786,11 @@
               <ul><li>遅延の合計は 400ms 程度に収め、読み始めを妨げない</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/03-stagger.html"><code>examples/css/03-stagger.html</code></a> / <a href="../examples/tailwind/03-stagger.html"><code>examples/tailwind/03-stagger.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/03-stagger.html"><code>examples/css/03-stagger.html</code></a> / <a href="../examples/tailwind/03-stagger.html"><code>examples/tailwind/03-stagger.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-04" data-effect="04" data-current-lang="css"
-        data-detail-css="../examples/css/04-text-reveal.html" data-detail-tailwind="../examples/tailwind/04-text-reveal.html" data-demo-src="../examples/css/04-text-reveal.html">
+        data-demo-src="../examples/css/04-text-reveal.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">04</span> <span class="card__slug">text-reveal</span></p>
           <h3 class="card__title">テキストリビール</h3>
@@ -760,10 +802,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/04-text-reveal.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/04-text-reveal.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/04-text-reveal.html"
@@ -800,6 +842,17 @@
     color: #33415c;
   }
 
+  /* 行マスク: 親で切り取り、内側を transform で押し上げる。
+     Tailwind 版では block / overflow-hidden / inline-block のユーティリティが同じ役割を担う。 */
+  .line {
+    display: block;
+    overflow: hidden;
+  }
+
+  .line__inner {
+    display: inline-block;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .line__inner {
       transform: translate3d(0, 110%, 0);
@@ -812,6 +865,12 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では押し上げ状態を解除して全文を表示する */
+  .reveal-lines .line__inner {
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -886,6 +945,17 @@
     color: #33415c;
   }
 
+  /* 行マスク: 親で切り取り、内側を transform で押し上げる。
+     Tailwind 版では block / overflow-hidden / inline-block のユーティリティが同じ役割を担う。 */
+  .line {
+    display: block;
+    overflow: hidden;
+  }
+
+  .line__inner {
+    display: inline-block;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .line__inner {
       transform: translate3d(0, 110%, 0);
@@ -898,6 +968,12 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では押し上げ状態を解除して全文を表示する */
+  .reveal-lines .line__inner {
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -970,11 +1046,11 @@
               <ul><li>行を分割しても読み上げ順が崩れない構造にする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/04-text-reveal.html"><code>examples/css/04-text-reveal.html</code></a> / <a href="../examples/tailwind/04-text-reveal.html"><code>examples/tailwind/04-text-reveal.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/04-text-reveal.html"><code>examples/css/04-text-reveal.html</code></a> / <a href="../examples/tailwind/04-text-reveal.html"><code>examples/tailwind/04-text-reveal.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-05" data-effect="05" data-current-lang="css"
-        data-detail-css="../examples/css/05-mask-reveal.html" data-detail-tailwind="../examples/tailwind/05-mask-reveal.html" data-demo-src="../examples/css/05-mask-reveal.html">
+        data-demo-src="../examples/css/05-mask-reveal.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">05</span> <span class="card__slug">mask-reveal</span></p>
           <h3 class="card__title">マスクリビール</h3>
@@ -986,10 +1062,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/05-mask-reveal.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/05-mask-reveal.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/05-mask-reveal.html"
@@ -1057,6 +1133,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境ではマスクを解除して図版をそのまま表示する */
+  .reveal-mask .mask-visual,
+  .reveal-mask--vertical .mask-visual {
+    clip-path: none;
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1160,6 +1244,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境ではマスクを解除して図版をそのまま表示する */
+  .reveal-mask .mask-visual,
+  .reveal-mask--vertical .mask-visual {
+    clip-path: none;
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1230,11 +1322,11 @@
               <ul><li>マスク中も代替テキストの情報は失われないようにする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/05-mask-reveal.html"><code>examples/css/05-mask-reveal.html</code></a> / <a href="../examples/tailwind/05-mask-reveal.html"><code>examples/tailwind/05-mask-reveal.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/05-mask-reveal.html"><code>examples/css/05-mask-reveal.html</code></a> / <a href="../examples/tailwind/05-mask-reveal.html"><code>examples/tailwind/05-mask-reveal.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-06" data-effect="06" data-current-lang="css"
-        data-detail-css="../examples/css/06-blur-in.html" data-detail-tailwind="../examples/tailwind/06-blur-in.html" data-demo-src="../examples/css/06-blur-in.html">
+        data-demo-src="../examples/css/06-blur-in.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">06</span> <span class="card__slug">blur-in</span></p>
           <h3 class="card__title">ブラーイン</h3>
@@ -1246,10 +1338,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/06-blur-in.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/06-blur-in.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/06-blur-in.html"
@@ -1294,6 +1386,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境ではブラーと拡大を解除して表示する */
+  .reveal-blur {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1371,6 +1471,14 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境ではブラーと拡大を解除して表示する */
+  .reveal-blur {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1438,11 +1546,11 @@
               <ul><li>ぼけた状態を長く維持せず、本文テキストには掛けない</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/06-blur-in.html"><code>examples/css/06-blur-in.html</code></a> / <a href="../examples/tailwind/06-blur-in.html"><code>examples/tailwind/06-blur-in.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/06-blur-in.html"><code>examples/css/06-blur-in.html</code></a> / <a href="../examples/tailwind/06-blur-in.html"><code>examples/tailwind/06-blur-in.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-07" data-effect="07" data-current-lang="css"
-        data-detail-css="../examples/css/07-typewriter.html" data-detail-tailwind="../examples/tailwind/07-typewriter.html" data-demo-src="../examples/css/07-typewriter.html">
+        data-demo-src="../examples/css/07-typewriter.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">07</span> <span class="card__slug">typewriter</span></p>
           <h3 class="card__title">タイプライター</h3>
@@ -1455,10 +1563,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/07-typewriter.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/07-typewriter.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/07-typewriter.html"
@@ -1510,6 +1618,22 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では打ち出しが動かないため、読み上げ用に置いた全文をそのまま表示する */
+  .type .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .type__caret {
+    display: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1618,6 +1742,22 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では打ち出しが動かないため、読み上げ用に置いた全文をそのまま表示する */
+  .type .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .type__caret {
+    display: none;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1709,11 +1849,11 @@
               <ul><li>1文字ずつ読み上げさせない（aria-hidden の装飾表現として扱う）</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/07-typewriter.html"><code>examples/css/07-typewriter.html</code></a> / <a href="../examples/tailwind/07-typewriter.html"><code>examples/tailwind/07-typewriter.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/07-typewriter.html"><code>examples/css/07-typewriter.html</code></a> / <a href="../examples/tailwind/07-typewriter.html"><code>examples/tailwind/07-typewriter.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-08" data-effect="08" data-current-lang="css"
-        data-detail-css="../examples/css/08-count-up.html" data-detail-tailwind="../examples/tailwind/08-count-up.html" data-demo-src="../examples/css/08-count-up.html">
+        data-demo-src="../examples/css/08-count-up.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">08</span> <span class="card__slug">count-up</span></p>
           <h3 class="card__title">カウントアップ</h3>
@@ -1726,10 +1866,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/08-count-up.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/08-count-up.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/08-count-up.html"
@@ -1793,6 +1933,23 @@
     color: #55627a;
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では 0 のままの装飾値を隠し、確定値のテキストを表示する */
+  .stat__value,
+  .stat__unit {
+    display: none;
+  }
+
+  .stat .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -1928,6 +2085,23 @@
     color: #55627a;
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では 0 のままの装飾値を隠し、確定値のテキストを表示する */
+  .stat__value,
+  .stat__unit {
+    display: none;
+  }
+
+  .stat .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -2034,7 +2208,7 @@
               <ul><li>途中の値を読み上げさせない（aria-hidden の装飾扱いまたは確定値の併記）</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/08-count-up.html"><code>examples/css/08-count-up.html</code></a> / <a href="../examples/tailwind/08-count-up.html"><code>examples/tailwind/08-count-up.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/08-count-up.html"><code>examples/css/08-count-up.html</code></a> / <a href="../examples/tailwind/08-count-up.html"><code>examples/tailwind/08-count-up.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
     </section>
@@ -2044,7 +2218,7 @@
         <p>スクロール量を 0–1 の進捗に変換し、CSS Scroll-driven Animations か rAF の JS フォールバックで連続的に動かす。</p>
       </header>
       <article class="card" id="effect-09" data-effect="09" data-current-lang="css"
-        data-detail-css="../examples/css/09-scroll-linked.html" data-detail-tailwind="../examples/tailwind/09-scroll-linked.html" data-demo-src="../examples/css/09-scroll-linked.html">
+        data-demo-src="../examples/css/09-scroll-linked.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">09</span> <span class="card__slug">scroll-linked</span></p>
           <h3 class="card__title">スクロール連動</h3>
@@ -2057,10 +2231,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/09-scroll-linked.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/09-scroll-linked.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/09-scroll-linked.html"
@@ -2323,11 +2497,11 @@
               <ul><li>進捗は色だけでなく数値やテキストでも示す</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/09-scroll-linked.html"><code>examples/css/09-scroll-linked.html</code></a> / <a href="../examples/tailwind/09-scroll-linked.html"><code>examples/tailwind/09-scroll-linked.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/09-scroll-linked.html"><code>examples/css/09-scroll-linked.html</code></a> / <a href="../examples/tailwind/09-scroll-linked.html"><code>examples/tailwind/09-scroll-linked.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-10" data-effect="10" data-current-lang="css"
-        data-detail-css="../examples/css/10-parallax.html" data-detail-tailwind="../examples/tailwind/10-parallax.html" data-demo-src="../examples/css/10-parallax.html">
+        data-demo-src="../examples/css/10-parallax.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">10</span> <span class="card__slug">parallax</span></p>
           <h3 class="card__title">パララックス</h3>
@@ -2340,10 +2514,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/10-parallax.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/10-parallax.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/10-parallax.html"
@@ -2664,11 +2838,11 @@
               <ul><li>動く背景の上に本文を直接置かない</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/10-parallax.html"><code>examples/css/10-parallax.html</code></a> / <a href="../examples/tailwind/10-parallax.html"><code>examples/tailwind/10-parallax.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/10-parallax.html"><code>examples/css/10-parallax.html</code></a> / <a href="../examples/tailwind/10-parallax.html"><code>examples/tailwind/10-parallax.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-11" data-effect="11" data-current-lang="css"
-        data-detail-css="../examples/css/11-scroll-zoom.html" data-detail-tailwind="../examples/tailwind/11-scroll-zoom.html" data-demo-src="../examples/css/11-scroll-zoom.html">
+        data-demo-src="../examples/css/11-scroll-zoom.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">11</span> <span class="card__slug">scroll-zoom</span></p>
           <h3 class="card__title">スクロールズーム</h3>
@@ -2681,10 +2855,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/11-scroll-zoom.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/11-scroll-zoom.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/11-scroll-zoom.html"
@@ -2965,11 +3139,11 @@
               <ul><li>拡大中もテキストが読みやすいサイズを保つ</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/11-scroll-zoom.html"><code>examples/css/11-scroll-zoom.html</code></a> / <a href="../examples/tailwind/11-scroll-zoom.html"><code>examples/tailwind/11-scroll-zoom.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/11-scroll-zoom.html"><code>examples/css/11-scroll-zoom.html</code></a> / <a href="../examples/tailwind/11-scroll-zoom.html"><code>examples/tailwind/11-scroll-zoom.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-12" data-effect="12" data-current-lang="css"
-        data-detail-css="../examples/css/12-image-sequence.html" data-detail-tailwind="../examples/tailwind/12-image-sequence.html" data-demo-src="../examples/css/12-image-sequence.html">
+        data-demo-src="../examples/css/12-image-sequence.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">12</span> <span class="card__slug">image-sequence</span></p>
           <h3 class="card__title">画像シーケンス</h3>
@@ -2981,10 +3155,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/12-image-sequence.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/12-image-sequence.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/12-image-sequence.html"
@@ -3297,11 +3471,11 @@
               <ul><li>フレーム差し替えは装飾。説明テキストを必ず併記する</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/12-image-sequence.html"><code>examples/css/12-image-sequence.html</code></a> / <a href="../examples/tailwind/12-image-sequence.html"><code>examples/tailwind/12-image-sequence.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/12-image-sequence.html"><code>examples/css/12-image-sequence.html</code></a> / <a href="../examples/tailwind/12-image-sequence.html"><code>examples/tailwind/12-image-sequence.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-13" data-effect="13" data-current-lang="css"
-        data-detail-css="../examples/css/13-svg-line-draw.html" data-detail-tailwind="../examples/tailwind/13-svg-line-draw.html" data-demo-src="../examples/css/13-svg-line-draw.html">
+        data-demo-src="../examples/css/13-svg-line-draw.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">13</span> <span class="card__slug">svg-line-draw</span></p>
           <h3 class="card__title">SVGラインドロー</h3>
@@ -3313,10 +3487,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/13-svg-line-draw.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/13-svg-line-draw.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/13-svg-line-draw.html"
@@ -3405,10 +3579,16 @@
         var path = entry.target.querySelector(&#x27;[data-draw-path]&#x27;);
         if (!path || typeof path.getTotalLength !== &#x27;function&#x27;) { return; }
         var length = path.getTotalLength();
+        /* 初期状態は transition を切って確定させる。
+           そのまま設定すると 0 → パス長 の逆方向 transition が始まり、
+           直後の 0 への変更が「反転」とみなされて一瞬で塗り終えてしまう。 */
+        path.style.transitionProperty = &#x27;none&#x27;;
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
+        void path.getBoundingClientRect(); /* 強制リフローで初期値を確定させる */
+        path.style.transitionProperty = &#x27;&#x27;; /* CSS の transition 定義に戻す */
         window.requestAnimationFrame(function () {
-          path.style.strokeDashoffset = &#x27;0&#x27;; /* 初期値を適用してから描き始める */
+          path.style.strokeDashoffset = &#x27;0&#x27;; /* ここから 1400ms の線描画が走る */
         });
       });
     }, { threshold: 0.4 });
@@ -3494,10 +3674,16 @@
         var path = entry.target.querySelector(&#x27;[data-draw-path]&#x27;);
         if (!path || typeof path.getTotalLength !== &#x27;function&#x27;) { return; }
         var length = path.getTotalLength();
+        /* 初期状態は transition を切って確定させる。
+           そのまま設定すると 0 → パス長 の逆方向 transition が始まり、
+           直後の 0 への変更が「反転」とみなされて一瞬で塗り終えてしまう。 */
+        path.style.transitionProperty = &#x27;none&#x27;;
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
+        void path.getBoundingClientRect(); /* 強制リフローで初期値を確定させる */
+        path.style.transitionProperty = &#x27;&#x27;; /* CSS の transition 定義に戻す */
         window.requestAnimationFrame(function () {
-          path.style.strokeDashoffset = &#x27;0&#x27;; /* 初期値を適用してから描き始める */
+          path.style.strokeDashoffset = &#x27;0&#x27;; /* ここから 1400ms の線描画が走る */
         });
       });
     }, { threshold: 0.4 });
@@ -3529,11 +3715,11 @@
               <ul><li>装飾 SVG には aria-hidden=&quot;true&quot; を付ける</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/13-svg-line-draw.html"><code>examples/css/13-svg-line-draw.html</code></a> / <a href="../examples/tailwind/13-svg-line-draw.html"><code>examples/tailwind/13-svg-line-draw.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/13-svg-line-draw.html"><code>examples/css/13-svg-line-draw.html</code></a> / <a href="../examples/tailwind/13-svg-line-draw.html"><code>examples/tailwind/13-svg-line-draw.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-14" data-effect="14" data-current-lang="css"
-        data-detail-css="../examples/css/14-text-fill.html" data-detail-tailwind="../examples/tailwind/14-text-fill.html" data-demo-src="../examples/css/14-text-fill.html">
+        data-demo-src="../examples/css/14-text-fill.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">14</span> <span class="card__slug">text-fill</span></p>
           <h3 class="card__title">テキストフィル</h3>
@@ -3546,10 +3732,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/14-text-fill.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/14-text-fill.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/14-text-fill.html"
@@ -3816,11 +4002,11 @@
               <ul><li>色のコントラストは塗り前後とも WCAG AA を目安に確保する</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/14-text-fill.html"><code>examples/css/14-text-fill.html</code></a> / <a href="../examples/tailwind/14-text-fill.html"><code>examples/tailwind/14-text-fill.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/14-text-fill.html"><code>examples/css/14-text-fill.html</code></a> / <a href="../examples/tailwind/14-text-fill.html"><code>examples/tailwind/14-text-fill.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-15" data-effect="15" data-current-lang="css"
-        data-detail-css="../examples/css/15-bg-transition.html" data-detail-tailwind="../examples/tailwind/15-bg-transition.html" data-demo-src="../examples/css/15-bg-transition.html">
+        data-demo-src="../examples/css/15-bg-transition.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">15</span> <span class="card__slug">bg-transition</span></p>
           <h3 class="card__title">背景色トランジション</h3>
@@ -3832,10 +4018,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/15-bg-transition.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/15-bg-transition.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/15-bg-transition.html"
@@ -4062,11 +4248,11 @@
               <ul><li>背景色の変化だけに意味を持たせない</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/15-bg-transition.html"><code>examples/css/15-bg-transition.html</code></a> / <a href="../examples/tailwind/15-bg-transition.html"><code>examples/tailwind/15-bg-transition.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/15-bg-transition.html"><code>examples/css/15-bg-transition.html</code></a> / <a href="../examples/tailwind/15-bg-transition.html"><code>examples/tailwind/15-bg-transition.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-16" data-effect="16" data-current-lang="css"
-        data-detail-css="../examples/css/16-marquee.html" data-detail-tailwind="../examples/tailwind/16-marquee.html" data-demo-src="../examples/css/16-marquee.html">
+        data-demo-src="../examples/css/16-marquee.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">16</span> <span class="card__slug">marquee</span></p>
           <h3 class="card__title">マーキー（スクロール速度連動）</h3>
@@ -4078,10 +4264,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/16-marquee.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/16-marquee.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/16-marquee.html"
@@ -4360,7 +4546,7 @@
               <ul><li>流れるテキストは装飾扱いを基本とし、同一内容を通常テキストでも置く</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/16-marquee.html"><code>examples/css/16-marquee.html</code></a> / <a href="../examples/tailwind/16-marquee.html"><code>examples/tailwind/16-marquee.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/16-marquee.html"><code>examples/css/16-marquee.html</code></a> / <a href="../examples/tailwind/16-marquee.html"><code>examples/tailwind/16-marquee.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
     </section>
@@ -4370,7 +4556,7 @@
         <p>position: sticky とスクロール位置の検出を使い、固定表示・横送り・ナビゲーション状態を作る。</p>
       </header>
       <article class="card" id="effect-17" data-effect="17" data-current-lang="css"
-        data-detail-css="../examples/css/17-sticky.html" data-detail-tailwind="../examples/tailwind/17-sticky.html" data-demo-src="../examples/css/17-sticky.html">
+        data-demo-src="../examples/css/17-sticky.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">17</span> <span class="card__slug">sticky</span></p>
           <h3 class="card__title">スティッキー</h3>
@@ -4382,10 +4568,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/17-sticky.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/17-sticky.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/17-sticky.html"
@@ -4601,11 +4787,11 @@
               <ul><li>sticky 内のリンクはキーボードで到達可能にする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/17-sticky.html"><code>examples/css/17-sticky.html</code></a> / <a href="../examples/tailwind/17-sticky.html"><code>examples/tailwind/17-sticky.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/17-sticky.html"><code>examples/css/17-sticky.html</code></a> / <a href="../examples/tailwind/17-sticky.html"><code>examples/tailwind/17-sticky.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-18" data-effect="18" data-current-lang="css"
-        data-detail-css="../examples/css/18-pinned-scrub.html" data-detail-tailwind="../examples/tailwind/18-pinned-scrub.html" data-demo-src="../examples/css/18-pinned-scrub.html">
+        data-demo-src="../examples/css/18-pinned-scrub.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">18</span> <span class="card__slug">pinned-scrub</span></p>
           <h3 class="card__title">ピン留め＋スクラブ</h3>
@@ -4619,10 +4805,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/18-pinned-scrub.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/18-pinned-scrub.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/18-pinned-scrub.html"
@@ -4829,6 +5015,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では is-active が付かないため、全ステップを表示する
+     （スクロールタイムライン対応ブラウザでは keyframes が優先されるため影響しない） */
+  .pin__step {
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -5096,6 +5289,13 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では is-active が付かないため、全ステップを表示する
+     （スクロールタイムライン対応ブラウザでは keyframes が優先されるため影響しない） */
+  .pin__step {
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -5191,11 +5391,11 @@
               <ul><li>固定中もコンテンツは DOM 順に読めるようにする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/18-pinned-scrub.html"><code>examples/css/18-pinned-scrub.html</code></a> / <a href="../examples/tailwind/18-pinned-scrub.html"><code>examples/tailwind/18-pinned-scrub.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/18-pinned-scrub.html"><code>examples/css/18-pinned-scrub.html</code></a> / <a href="../examples/tailwind/18-pinned-scrub.html"><code>examples/tailwind/18-pinned-scrub.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-19" data-effect="19" data-current-lang="css"
-        data-detail-css="../examples/css/19-scrollytelling.html" data-detail-tailwind="../examples/tailwind/19-scrollytelling.html" data-demo-src="../examples/css/19-scrollytelling.html">
+        data-demo-src="../examples/css/19-scrollytelling.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">19</span> <span class="card__slug">scrollytelling</span></p>
           <h3 class="card__title">スクロールテリング</h3>
@@ -5208,10 +5408,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/19-scrollytelling.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/19-scrollytelling.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/19-scrollytelling.html"
@@ -5330,6 +5530,17 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では図を切り替えられないため、図とステップをすべて表示する */
+  .story__view {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .story__step {
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -5481,6 +5692,17 @@
     }
   }
 &lt;/style&gt;
+&lt;noscript&gt;&lt;style&gt;
+  /* JS が無効な環境では図を切り替えられないため、図とステップをすべて表示する */
+  .story__view {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .story__step {
+    opacity: 1;
+  }
+&lt;/style&gt;&lt;/noscript&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;main class=&quot;demo-shell&quot;&gt;
@@ -5581,11 +5803,11 @@
               <ul><li>図の切り替えは aria-live を使わず、説明は本文側に置く</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/19-scrollytelling.html"><code>examples/css/19-scrollytelling.html</code></a> / <a href="../examples/tailwind/19-scrollytelling.html"><code>examples/tailwind/19-scrollytelling.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/19-scrollytelling.html"><code>examples/css/19-scrollytelling.html</code></a> / <a href="../examples/tailwind/19-scrollytelling.html"><code>examples/tailwind/19-scrollytelling.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-20" data-effect="20" data-current-lang="css"
-        data-detail-css="../examples/css/20-card-stack.html" data-detail-tailwind="../examples/tailwind/20-card-stack.html" data-demo-src="../examples/css/20-card-stack.html">
+        data-demo-src="../examples/css/20-card-stack.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">20</span> <span class="card__slug">card-stack</span></p>
           <h3 class="card__title">カードスタック</h3>
@@ -5597,10 +5819,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/20-card-stack.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/20-card-stack.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/20-card-stack.html"
@@ -5841,11 +6063,11 @@
               <ul><li>カードの並び順が DOM 順と一致するようにする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/20-card-stack.html"><code>examples/css/20-card-stack.html</code></a> / <a href="../examples/tailwind/20-card-stack.html"><code>examples/tailwind/20-card-stack.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/20-card-stack.html"><code>examples/css/20-card-stack.html</code></a> / <a href="../examples/tailwind/20-card-stack.html"><code>examples/tailwind/20-card-stack.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-21" data-effect="21" data-current-lang="css"
-        data-detail-css="../examples/css/21-scroll-snap.html" data-detail-tailwind="../examples/tailwind/21-scroll-snap.html" data-demo-src="../examples/css/21-scroll-snap.html">
+        data-demo-src="../examples/css/21-scroll-snap.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">21</span> <span class="card__slug">scroll-snap</span></p>
           <h3 class="card__title">スクロールスナップ</h3>
@@ -5857,10 +6079,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/21-scroll-snap.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/21-scroll-snap.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/21-scroll-snap.html"
@@ -6107,11 +6329,11 @@
               <ul><li>スナップ枠の中にフォーカス可能な要素を置き、キーボードで送れるようにする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/21-scroll-snap.html"><code>examples/css/21-scroll-snap.html</code></a> / <a href="../examples/tailwind/21-scroll-snap.html"><code>examples/tailwind/21-scroll-snap.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/21-scroll-snap.html"><code>examples/css/21-scroll-snap.html</code></a> / <a href="../examples/tailwind/21-scroll-snap.html"><code>examples/tailwind/21-scroll-snap.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-22" data-effect="22" data-current-lang="css"
-        data-detail-css="../examples/css/22-horizontal-scroll.html" data-detail-tailwind="../examples/tailwind/22-horizontal-scroll.html" data-demo-src="../examples/css/22-horizontal-scroll.html">
+        data-demo-src="../examples/css/22-horizontal-scroll.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">22</span> <span class="card__slug">horizontal-scroll</span></p>
           <h3 class="card__title">横スクロール</h3>
@@ -6125,10 +6347,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/22-horizontal-scroll.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/22-horizontal-scroll.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/22-horizontal-scroll.html"
@@ -6306,7 +6528,6 @@
       update();
     }
 
-    var ticking = false;
     window.addEventListener(&#x27;scroll&#x27;, function () {
       if (ticking) { return; }
       ticking = true;
@@ -6518,11 +6739,11 @@
               <ul><li>横送りでも本文は DOM 順に読めるようにする</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/22-horizontal-scroll.html"><code>examples/css/22-horizontal-scroll.html</code></a> / <a href="../examples/tailwind/22-horizontal-scroll.html"><code>examples/tailwind/22-horizontal-scroll.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/22-horizontal-scroll.html"><code>examples/css/22-horizontal-scroll.html</code></a> / <a href="../examples/tailwind/22-horizontal-scroll.html"><code>examples/tailwind/22-horizontal-scroll.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-23" data-effect="23" data-current-lang="css"
-        data-detail-css="../examples/css/23-hide-header.html" data-detail-tailwind="../examples/tailwind/23-hide-header.html" data-demo-src="../examples/css/23-hide-header.html">
+        data-demo-src="../examples/css/23-hide-header.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">23</span> <span class="card__slug">hide-header</span></p>
           <h3 class="card__title">隠れるヘッダー</h3>
@@ -6534,10 +6755,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/23-hide-header.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/23-hide-header.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--md" data-demo-frame src="../examples/css/23-hide-header.html"
@@ -6788,11 +7009,11 @@
               <ul><li>隠れた状態でもヘッダー内リンクのフォーカス順を壊さない</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/23-hide-header.html"><code>examples/css/23-hide-header.html</code></a> / <a href="../examples/tailwind/23-hide-header.html"><code>examples/tailwind/23-hide-header.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/23-hide-header.html"><code>examples/css/23-hide-header.html</code></a> / <a href="../examples/tailwind/23-hide-header.html"><code>examples/tailwind/23-hide-header.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
       <article class="card" id="effect-24" data-effect="24" data-current-lang="css"
-        data-detail-css="../examples/css/24-scrollspy.html" data-detail-tailwind="../examples/tailwind/24-scrollspy.html" data-demo-src="../examples/css/24-scrollspy.html">
+        data-demo-src="../examples/css/24-scrollspy.html">
         <header class="card__header">
           <p class="card__eyebrow"><span class="card__id">24</span> <span class="card__slug">scrollspy</span></p>
           <h3 class="card__title">スクロールスパイ</h3>
@@ -6804,10 +7025,10 @@
         </header>
         <div class="card__demo">
           <div class="demo-toolbar">
-            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）</p>
+            <p class="demo-label">ライブデモ（CSS版・カード内 iframe）／Tailwind版はコード表示用のサンプル</p>
             <div class="demo-actions">
               <button type="button" class="btn" data-action="rerun">再実行</button>
-              <a class="btn btn--link" data-detail-link href="../examples/css/24-scrollspy.html" target="_blank" rel="noopener">詳細デモを開く</a>
+              <a class="btn btn--link" data-detail-link href="../examples/css/24-scrollspy.html" target="_blank" rel="noopener">詳細デモを開く（CSS版）</a>
             </div>
           </div>
           <iframe class="demo-frame demo-frame--lg" data-demo-frame src="../examples/css/24-scrollspy.html"
@@ -7114,7 +7335,7 @@
               <ul><li>現在地の強調は色だけでなく aria-current で伝える</li></ul>
             </section>
           </div>
-          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/24-scrollspy.html"><code>examples/css/24-scrollspy.html</code></a> / <a href="../examples/tailwind/24-scrollspy.html"><code>examples/tailwind/24-scrollspy.html</code></a></p>
+          <p class="card__files">正本: <code>catalog.json</code> / <a href="../examples/css/24-scrollspy.html"><code>examples/css/24-scrollspy.html</code></a> / <a href="../examples/tailwind/24-scrollspy.html"><code>examples/tailwind/24-scrollspy.html</code></a>（Tailwind 導入済みプロジェクト向け・単体で開くとユーティリティは未適用）</p>
         </footer>
       </article>
     </section>
