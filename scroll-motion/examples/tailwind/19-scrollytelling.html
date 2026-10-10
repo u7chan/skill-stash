@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>19 スクロールテリング | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  /* 図の切り替えと固定（Tailwind の sticky top-2 でも表現できるが、効果の核として
+     カスタムCSS側にも置いている。レイアウトはユーティリティ側で組む） */
+  .story__stage {
+    display: grid;
+    gap: 8px;
+    position: sticky;
+    top: 8px;
+  }
+
+  .story__view {
+    display: none;
+  }
+
+  .story__view.is-active {
+    display: block;
+  }
+
+  .story__figure {
+    height: 180px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1d4ed8, #22d3ee);
+  }
+
+  .story__figure--two {
+    background: linear-gradient(135deg, #0f766e, #a7f3d0);
+  }
+
+  .story__figure--three {
+    background: linear-gradient(135deg, #b45309, #fde68a);
+  }
+
+  .story__step {
+    min-height: 62vh;
+  }
+
+  .story__step.is-current {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .story__step {
+      opacity: 0.45;
+      transition: opacity 300ms ease;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story__stage {
+      position: static;
+    }
+
+    .story__view {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .story__step {
+      min-height: auto;
+      opacity: 1;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 19 / scrollytelling / Tailwind版</p>
+  <h1 class="demo-title">スクロールテリング</h1>
+  <p class="demo-lead">固定した図の横を文章が通り過ぎ、ステップに合わせて図が切り替わります。検出はしきい値ベースです。</p>
+
+  <div class="story grid gap-5 sm:grid-cols-2 sm:items-start">
+    <div class="story__stage">
+      <div class="story__view is-active" data-scene="1">
+        <div class="story__figure story__figure--one rounded-2xl" role="img" aria-label="計画のイメージ図（装飾）"></div>
+        <p class="story__caption mt-2 text-sm text-slate-500">図1: 要件を演出 ID へ対応づける</p>
+      </div>
+      <div class="story__view" data-scene="2">
+        <div class="story__figure story__figure--two rounded-2xl" role="img" aria-label="実装のイメージ図（装飾）"></div>
+        <p class="story__caption mt-2 text-sm text-slate-500">図2: CSS を先に、JS は必要な分だけ</p>
+      </div>
+      <div class="story__view" data-scene="3">
+        <div class="story__figure story__figure--three rounded-2xl" role="img" aria-label="検証のイメージ図（装飾）"></div>
+        <p class="story__caption mt-2 text-sm text-slate-500">図3: reduce とモバイル幅で確認する</p>
+      </div>
+    </div>
+    <ol class="story__steps m-0 list-none p-0">
+      <li class="story__step" data-step="1">
+        <h2 class="text-base font-semibold">1. 計画</h2>
+        <p>要求を演出 ID へ対応づけ、既存の CSS 環境に合わせて実装方針を選ぶ。図は文章の補助であり、文章だけで意味が通るように書く。</p>
+      </li>
+      <li class="story__step" data-step="2">
+        <h2 class="text-base font-semibold">2. 実装</h2>
+        <p>固定は position: sticky で作る。固定区間の高さはステップ数から決め、派手さより読みやすさを優先する。</p>
+      </li>
+      <li class="story__step" data-step="3">
+        <h2 class="text-base font-semibold">3. 検証</h2>
+        <p>reduce では固定を解除して図を縦に並べる。図とステップの対応が崩れないことを確認する。</p>
+      </li>
+    </ol>
+  </div>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/19-scrollytelling.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var steps = document.querySelectorAll('[data-step]');
+    var views = document.querySelectorAll('[data-scene]');
+    if (!steps.length || !views.length) { return; }
+
+    function activate(id) {
+      steps.forEach(function (step) {
+        step.classList.toggle('is-current', step.getAttribute('data-step') === id);
+      });
+      views.forEach(function (view) {
+        view.classList.toggle('is-active', view.getAttribute('data-scene') === id);
+      });
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      /* 未対応環境では全ステップを通常表示にして、文章だけで読めるようにする */
+      steps.forEach(function (step) { step.classList.add('is-current'); });
+      return;
+    }
+    /* ビューポート中央の帯に入ったステップだけを現在地にする（連続イベントは使わない） */
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          activate(entry.target.getAttribute('data-step'));
+        }
+      });
+    }, { rootMargin: '-40% 0px -40% 0px', threshold: 0 });
+    steps.forEach(function (step) { observer.observe(step); });
+    activate(steps[0].getAttribute('data-step'));
+  })();
+</script>
+</body>
+</html>

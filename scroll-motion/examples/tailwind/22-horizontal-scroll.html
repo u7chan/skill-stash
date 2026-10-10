@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>22 横スクロール | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  .hscroll {
+    position: relative;
+    min-height: 320vh; /* 横送りの距離を縦スクロールで確保する */
+    view-timeline-name: --hscroll;
+    view-timeline-axis: block;
+  }
+
+  .hscroll__stage {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    min-height: min(70vh, 520px);
+    overflow: hidden;
+  }
+
+  .hscroll__track {
+    display: flex;
+    gap: 16px;
+    padding: 0 16px;
+    will-change: transform;
+  }
+
+  .hscroll__panel {
+    flex: 0 0 min(72%, 300px);
+    min-height: 230px;
+    padding: 24px;
+    border: 1px solid #d6dde9;
+    border-radius: 16px;
+    background: #ffffff;
+  }
+
+  .hscroll__index {
+    margin: 0 0 8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: #55627a;
+  }
+
+  .hscroll__panel h2 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+  }
+
+  .hscroll__panel p {
+    margin: 0;
+  }
+
+  @keyframes hscroll-move {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(calc(var(--travel, 0px) * -1), 0, 0);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hscroll__track {
+        animation: hscroll-move linear both;
+        animation-timeline: --hscroll;
+        /* 固定区間（320vh のセクション）だけを進捗の範囲にする */
+        animation-range: cover 24% cover 76%;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 横送りをやめ、通常の横スクロールで読めるようにする */
+    .hscroll {
+      min-height: auto;
+    }
+
+    .hscroll__stage {
+      position: static;
+      display: block;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .hscroll__track {
+      transform: none;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 22 / horizontal-scroll / Tailwind版</p>
+  <h1 class="demo-title">横スクロール</h1>
+  <p class="demo-lead">縦スクロールを横方向の移動へ置き換えて、パネルを送ります。移動量は実測して設定します。</p>
+
+  <section class="hscroll" data-hscroll-section>
+    <div class="hscroll__stage">
+      <div class="hscroll__track" data-hscroll-track>
+        <article class="hscroll__panel rounded-2xl">
+          <p class="hscroll__index">01</p>
+          <h2 class="mb-1.5 text-base font-semibold">要件</h2>
+          <p>何を伝えるのかを決める。</p>
+        </article>
+        <article class="hscroll__panel rounded-2xl">
+          <p class="hscroll__index">02</p>
+          <h2 class="mb-1.5 text-base font-semibold">選定</h2>
+          <p>演出 ID から必要なものを選ぶ。</p>
+        </article>
+        <article class="hscroll__panel rounded-2xl">
+          <p class="hscroll__index">03</p>
+          <h2 class="mb-1.5 text-base font-semibold">実装</h2>
+          <p>CSS を先に、JS は必要な分だけ。</p>
+        </article>
+        <article class="hscroll__panel rounded-2xl">
+          <p class="hscroll__index">04</p>
+          <h2 class="mb-1.5 text-base font-semibold">検証</h2>
+          <p>reduce とモバイル幅で確認する。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/22-horizontal-scroll.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var section = document.querySelector('[data-hscroll-section]');
+    var track = document.querySelector('[data-hscroll-track]');
+    if (!section || !track) { return; }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var supportsTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    var travel = 0;
+    var ticking = false;
+
+    function update() {
+      ticking = false;
+      if (supportsTimeline || reduceMotion.matches) { return; }
+      var rect = section.getBoundingClientRect();
+      var span = section.offsetHeight - window.innerHeight;
+      var progress = span > 0 ? (-rect.top) / span : 0;
+      progress = Math.max(0, Math.min(1, progress));
+      track.style.transform = 'translate3d(' + (-progress * travel).toFixed(1) + 'px, 0, 0)';
+    }
+
+    function measure() {
+      var stage = section.querySelector('.hscroll__stage');
+      var viewportWidth = stage ? stage.clientWidth : window.innerWidth;
+      travel = Math.max(0, track.scrollWidth - viewportWidth);
+      section.style.setProperty('--travel', travel.toFixed(0) + 'px'); /* CSS タイムライン用に距離を渡す */
+      update();
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', measure);
+    measure();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>21 スクロールスナップ | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  .snap {
+    height: 320px;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-padding: 12px;
+    border: 1px solid #d6dde9;
+    border-radius: 16px;
+    background: #ffffff;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+
+  .snap__panel {
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    min-height: 296px;
+    padding: 24px;
+    scroll-snap-align: center;
+  }
+
+  .snap__panel + .snap__panel {
+    border-top: 1px dashed #d6dde9;
+  }
+
+  .snap__index {
+    margin: 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: #55627a;
+  }
+
+  .snap__panel h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .snap__panel p {
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .snap {
+      scroll-behavior: smooth; /* アンカー移動のアニメーションだけ reduce で止める */
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 21 / scroll-snap / Tailwind版</p>
+  <h1 class="demo-title">スクロールスナップ</h1>
+  <p class="demo-lead">スクロールを1枚ずつで止め、ページ送りのように見せます。スナップは CSS だけで完結します。</p>
+
+  <section class="mb-14">
+    <h2 class="mb-3 text-base font-semibold">1枚ずつ止まるスナップ</h2>
+    <div class="snap" tabindex="0" role="region" aria-label="スクロールスナップのデモ（ホイール・矢印キー・下のリンクで送れます）">
+      <article class="snap__panel" id="snap-1">
+        <p class="snap__index">1 / 4</p>
+        <h3 class="text-base font-semibold">概要</h3>
+        <p>スナップは CSS だけで作れる。スクロール枠の高さを固定し、子要素に scroll-snap-align を指定する。</p>
+      </article>
+      <article class="snap__panel" id="snap-2">
+        <p class="snap__index">2 / 4</p>
+        <h3 class="text-base font-semibold">用途</h3>
+        <p>オンボーディングやモバイルのカード送りと相性がよい。ページ全体には掛けず、枠の中だけに適用する。</p>
+      </article>
+      <article class="snap__panel" id="snap-3">
+        <p class="snap__index">3 / 4</p>
+        <h3 class="text-base font-semibold">注意</h3>
+        <p>固定ヘッダーがある場合は scroll-padding で重なりを調整する。キーボード操作でも送れるようにする。</p>
+      </article>
+      <article class="snap__panel" id="snap-4">
+        <p class="snap__index">4 / 4</p>
+        <h3 class="text-base font-semibold">代替</h3>
+        <p>スナップが不要な場面では通常のスクロールのままにする。位置決めは演出ではないため reduce でも維持してよい。</p>
+      </article>
+    </div>
+    <p class="mt-3 text-sm text-slate-500">目印への送り:
+      <a href="#snap-1">1</a> / <a href="#snap-2">2</a> / <a href="#snap-3">3</a> / <a href="#snap-4">4</a>
+    </p>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/21-scroll-snap.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+</body>
+</html>

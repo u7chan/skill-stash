@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 スクロール連動 | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .progress {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: 6px;
+    margin: 0 0 24px;
+    border-radius: 3px;
+    background: rgba(29, 78, 216, 0.16);
+    /* overflow: hidden を置くとここがスクロールコンテナになり、
+       子の animation-timeline: scroll() がルートではなくこの要素を参照して不活性になる */
+  }
+
+  .progress__bar {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, #1d4ed8, #22d3ee);
+  }
+
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress__bar {
+        animation: progress-grow linear both;
+        animation-timeline: scroll();
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 進行アニメーションは行わず、静的なアクセントバーとして表示する */
+    .progress__bar {
+      transform: scaleX(1);
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 09 / scroll-linked / CSS版</p>
+  <h1 class="demo-title">スクロール連動</h1>
+  <p class="demo-lead">スクロール量を 0–1 の進捗に変換し、進捗バーを伸ばします。CSS で動かし、非対応環境では JS が同じ動きを再現します。</p>
+
+  <div class="progress" role="presentation"><span class="progress__bar" data-progress></span></div>
+
+  <section class="demo-section">
+    <h2>読み進めるとバーが伸びる</h2>
+    <div class="surface">
+      <p>上部のバーがスクロール量に連動します。<code>animation-timeline: scroll()</code> が使える環境では CSS だけで動き、使えない環境では JS が <code>requestAnimationFrame</code> で同じ進捗を再現します。</p>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>余白をスクロール</h2>
+    <div class="demo-spacer"></div>
+    <div class="surface"><p>ここまで来るとバーは 100% 付近になります。</p></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/09-scroll-linked.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var bar = document.querySelector('[data-progress]');
+    if (!bar) { return; }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var supportsTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()');
+    if (supportsTimeline || reduceMotion.matches) {
+      return; /* CSS だけで動く。reduce では動かさない */
+    }
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var ratio = max > 0 ? window.scrollY / max : 0;
+      bar.style.transform = 'scaleX(' + ratio.toFixed(4) + ')';
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update); /* passive + rAF で間引く */
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+</body>
+</html>

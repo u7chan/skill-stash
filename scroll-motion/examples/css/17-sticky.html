@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>17 スティッキー | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .sticky-layout {
+    display: grid;
+    gap: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .sticky-layout {
+      grid-template-columns: 200px 1fr;
+      align-items: start;
+    }
+  }
+
+  .sticky-panel {
+    position: sticky;
+    top: 16px;
+  }
+
+  .sticky-panel h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+  }
+
+  .sticky-panel ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+  }
+
+  .sticky-panel li + li {
+    margin-top: 4px;
+  }
+
+  @media (max-width: 639px) {
+    .sticky-panel {
+      position: static;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth; /* 目次リンクの移動も reduce では即時にする */
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 17 / sticky / CSS版</p>
+  <h1 class="demo-title">スティッキー</h1>
+  <p class="demo-lead">追従する目次パネルを position: sticky だけで固定します。JS は使いません。</p>
+
+  <div class="sticky-layout">
+    <aside class="sticky-panel surface">
+      <h2>目次</h2>
+      <ol>
+        <li><a href="#sticky-1">1. 目的</a></li>
+        <li><a href="#sticky-2">2. 実装</a></li>
+        <li><a href="#sticky-3">3. 検証</a></li>
+      </ol>
+      <p class="demo-note"><code>position: sticky</code> だけで追従します。</p>
+    </aside>
+    <div class="sticky-content">
+      <section class="demo-section" id="sticky-1">
+        <h2>1. 目的</h2>
+        <p>長い記事では、読者が現在地を見失いやすい。目次を追従させておくと、読み返すときの移動コストが下がる。</p>
+        <p>sticky は固定ではなく「親の範囲内でのみ粘る」挙動なので、記事の終わりでは自然に流れて消える。固定ヘッダーのように画面を占有し続けない。</p>
+      </section>
+      <section class="demo-section" id="sticky-2">
+        <h2>2. 実装</h2>
+        <p>親をグリッドにして、パネル側に position: sticky と top を指定するだけでよい。JS のスクロール監視は不要で、合成もブラウザに任せられる。</p>
+        <p>注意点は2つ。親要素に overflow: hidden があると sticky が効かないこと、top の値が固定ヘッダーの高さと重なると読みにくくなること。</p>
+      </section>
+      <section class="demo-section" id="sticky-3">
+        <h2>3. 検証</h2>
+        <p>狭い幅では2カラムをやめてパネルを通常配置に戻す。sticky を維持すると本文の幅が狭くなり、モバイルではかえって読みにくくなる。</p>
+        <p>キーボード操作では、目次内のリンクに Tab で到達できることを確認する。sticky はフォーカス順に影響しない。</p>
+      </section>
+    </div>
+  </div>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/17-sticky.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+</body>
+</html>

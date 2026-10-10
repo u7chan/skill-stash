@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 スクロールズーム | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .zoom {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 460px;
+    padding: 32px 0;
+    margin-bottom: 56px;
+    border-radius: 16px;
+    background: #eef2f9;
+    overflow: hidden;
+    view-timeline-name: --zoom;
+    view-timeline-axis: block;
+  }
+
+  .zoom__media {
+    position: absolute;
+    inset: 8% 10%;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1d4ed8, #22d3ee 60%, #e0f2fe);
+    transform: scale(0.92);
+    transform-origin: 50% 50%;
+  }
+
+  .zoom__caption {
+    position: relative;
+    max-width: 360px;
+    margin: 0 16px;
+  }
+
+  @keyframes zoom-scrub {
+    from {
+      transform: scale(0.92);
+    }
+
+    50% {
+      transform: scale(1.06);
+    }
+
+    to {
+      transform: scale(0.92);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .zoom__media {
+        animation: zoom-scrub linear both;
+        animation-timeline: --zoom;
+      }
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 11 / scroll-zoom / CSS版</p>
+  <h1 class="demo-title">スクロールズーム</h1>
+  <p class="demo-lead">スクロールに合わせて図版を拡大・縮小します。scale の変化幅は小さく保ちます。</p>
+
+  <section class="zoom" data-zoom-section>
+    <div class="zoom__media" data-zoom="0.92" aria-hidden="true"></div>
+    <div class="zoom__caption surface">
+      <h2>スクロールで拡大 → 縮小</h2>
+      <p>scale は 0.92 〜 1.06 の範囲に留め、文字は拡大の対象にしていません。</p>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>余白</h2>
+    <div class="demo-spacer"></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/11-scroll-zoom.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var supportsTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    var sections = document.querySelectorAll('[data-zoom-section]');
+    if (!sections.length || supportsTimeline || reduceMotion.matches) {
+      return;
+    }
+    var ticking = false;
+    function update() {
+      ticking = false;
+      sections.forEach(function (section) {
+        var media = section.querySelector('[data-zoom]');
+        if (!media) { return; }
+        var base = Number(media.getAttribute('data-zoom')) || 0.92;
+        var rect = section.getBoundingClientRect();
+        var span = window.innerHeight + rect.height;
+        var progress = span > 0 ? (window.innerHeight - rect.top) / span : 0;
+        progress = Math.max(0, Math.min(1, progress));
+        var scale = base + Math.sin(progress * Math.PI) * 0.14;
+        media.style.transform = 'scale(' + scale.toFixed(3) + ')';
+      });
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+</body>
+</html>

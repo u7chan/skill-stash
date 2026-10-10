@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12 画像シーケンス | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .sequence {
+    position: relative;
+    min-height: 300vh; /* 詳細デモ向けに十分なスクロール領域を確保する */
+  }
+
+  .sequence__stage {
+    position: sticky;
+    top: 0;
+    display: grid;
+    place-items: center;
+    gap: 10px;
+    min-height: min(70vh, 520px);
+    padding: 24px 0;
+  }
+
+  .sequence__frame {
+    display: block;
+    width: min(100%, 360px);
+    height: auto;
+    border-radius: 12px;
+    background: #0b1220;
+  }
+
+  .sequence__counter {
+    margin: 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: #55627a;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sequence {
+      min-height: auto;
+    }
+
+    .sequence__stage {
+      position: static;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 12 / image-sequence / CSS版</p>
+  <h1 class="demo-title">画像シーケンス</h1>
+  <p class="demo-lead">スクロール位置に応じて連番フレームを差し替え、動画のように見せます。フレームは data URI の SVG で生成します。</p>
+
+  <section class="sequence" data-sequence>
+    <div class="sequence__stage">
+      <img class="sequence__frame" data-sequence-frame alt="" width="320" height="200">
+      <p class="sequence__counter" data-sequence-counter>01 / 12</p>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>フレームはインライン SVG</h2>
+    <div class="surface">
+      <p>外部画像を読み込まず、スクロール位置に応じて 12 フレームを差し替えています。変化したフレームだけを DOM に反映します。</p>
+    </div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/12-image-sequence.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var section = document.querySelector('[data-sequence]');
+    if (!section) { return; }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var frameElement = section.querySelector('[data-sequence-frame]');
+    var counter = section.querySelector('[data-sequence-counter]');
+    var total = 12;
+
+    function frameSource(index) {
+      var angle = (index / total) * 360;
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">'
+        + '<rect width="320" height="200" fill="#0b1220"/>'
+        + '<g transform="translate(160 100) rotate(' + angle.toFixed(1) + ')">'
+        + '<rect x="-54" y="-54" width="108" height="108" rx="18" fill="#1d4ed8"/>'
+        + '<rect x="-36" y="-36" width="72" height="72" rx="12" fill="#22d3ee"/>'
+        + '</g>'
+        + '<text x="12" y="188" fill="#8fa2c0" font-family="monospace" font-size="12">frame '
+        + String(index + 1).padStart(2, '0') + ' / ' + total + '</text>'
+        + '</svg>';
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    var frames = [];
+    for (var index = 0; index < total; index += 1) {
+      frames.push(frameSource(index));
+    }
+
+    var current = -1;
+    function render(index) {
+      if (index === current) { return; }
+      current = index;
+      frameElement.src = frames[index];
+      counter.textContent = String(index + 1).padStart(2, '0') + ' / ' + total;
+    }
+
+    if (reduceMotion.matches) {
+      render(Math.floor(total / 2)); /* reduce では代表フレームを1枚だけ表示する */
+      return;
+    }
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var rect = section.getBoundingClientRect();
+      var span = section.offsetHeight - window.innerHeight;
+      var progress = span > 0 ? (-rect.top) / span : 0;
+      progress = Math.max(0, Math.min(1, progress));
+      render(Math.min(total - 1, Math.round(progress * (total - 1))));
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+</body>
+</html>

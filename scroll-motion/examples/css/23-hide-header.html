@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>23 隠れるヘッダー | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .appbar {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 12px;
+    margin: 0 0 20px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #eef4ff;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .appbar__title {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .appbar__hint {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #a5b4cd;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .appbar {
+      transition: transform 260ms ease;
+    }
+
+    .appbar.is-hidden {
+      transform: translate3d(0, -110%, 0);
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 23 / hide-header / CSS版</p>
+  <h1 class="demo-title">隠れるヘッダー</h1>
+  <p class="demo-lead">下スクロールで隠れ、上スクロールで再表示するヘッダーです。方向の判定だけに絞ります。</p>
+
+  <div class="appbar" data-appbar>
+    <p class="appbar__title">デモ用ヘッダー</p>
+    <p class="appbar__hint">下スクロールで隠れます</p>
+  </div>
+
+  <section class="demo-section">
+    <h2>下へスクロール</h2>
+    <div class="surface">
+      <p>下向きにスクロールするとヘッダーが上へ隠れます。少し上へ戻すと再表示します。判定は移動方向と rAF の間引きだけで行います。</p>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>余白</h2>
+    <div class="demo-spacer"></div>
+    <div class="demo-spacer"></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/23-hide-header.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var appbar = document.querySelector('[data-appbar]');
+    if (!appbar) { return; }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduceMotion.matches) {
+      appbar.classList.remove('is-hidden'); /* reduce では常時表示 */
+      return;
+    }
+    var lastY = window.scrollY;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      var delta = y - lastY;
+      if (Math.abs(delta) < 4) { return; }
+      appbar.classList.toggle('is-hidden', delta > 0 && y > 80);
+      lastY = y;
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 カウントアップ | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  .stats {
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 560px) {
+    .stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .stat {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid #d6dde9;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  .stat__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat__unit {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .stat__label {
+    flex-basis: 100%;
+    font-size: 0.8rem;
+    color: #55627a;
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 08 / count-up / Tailwind版</p>
+  <h1 class="demo-title">カウントアップ</h1>
+  <p class="demo-lead">数値を 0 から目標値まで増やして表示します。確定値はスクリーンリーダー向けに併記します。</p>
+
+  <section class="mb-14">
+    <h2 class="mb-3 text-base font-semibold">実績数値をカウントアップ</h2>
+    <div class="stats grid gap-3 sm:grid-cols-3">
+      <p class="stat m-0 rounded-xl border border-slate-200 bg-white p-4">
+        <span class="stat__value" data-count-to="1280" data-count-format="comma" aria-hidden="true">0</span><span class="stat__unit">件</span>
+        <span class="stat__label">導入支援</span><span class="sr-only">導入支援 1,280 件</span>
+      </p>
+      <p class="stat m-0 rounded-xl border border-slate-200 bg-white p-4">
+        <span class="stat__value" data-count-to="98" data-count-format="plain" aria-hidden="true">0</span><span class="stat__unit">%</span>
+        <span class="stat__label">改善率</span><span class="sr-only">改善率 98 %</span>
+      </p>
+      <p class="stat m-0 rounded-xl border border-slate-200 bg-white p-4">
+        <span class="stat__value" data-count-to="24" data-count-format="plain" aria-hidden="true">0</span><span class="stat__unit">種</span>
+        <span class="stat__label">演出サンプル</span><span class="sr-only">演出サンプル 24 種</span>
+      </p>
+    </div>
+    <p class="mt-3 text-sm text-slate-500">確定値は <code class="font-mono text-sm">sr-only</code> で併記し、途中の値を読み上げさせません。</p>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="mb-3 text-base font-semibold">検出後に再実行しない</h2>
+    <div class="h-60"></div>
+    <div class="surface"><p>このサンプルは一度検出したら <code>unobserve</code> して停止します。</p></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/08-count-up.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function format(value, kind) {
+      return kind === 'comma' ? value.toLocaleString('ja-JP') : String(value);
+    }
+
+    function run(element) {
+      var target = Number(element.getAttribute('data-count-to')) || 0;
+      var kind = element.getAttribute('data-count-format') || 'plain';
+      if (reduceMotion.matches) {
+        element.textContent = format(target, kind); /* reduce では最終値のみ */
+        return;
+      }
+      var startedAt = null;
+      var duration = 1200;
+      function frame(now) {
+        if (startedAt === null) { startedAt = now; }
+        var progress = Math.min((now - startedAt) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        element.textContent = format(Math.round(target * eased), kind);
+        if (progress < 1) {
+          window.requestAnimationFrame(frame);
+        }
+      }
+      window.requestAnimationFrame(frame);
+    }
+
+    var targets = document.querySelectorAll('[data-count-to]');
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(run);
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        observer.unobserve(entry.target);
+        run(entry.target);
+      });
+    }, { threshold: 0.6 });
+    targets.forEach(function (target) { observer.observe(target); });
+  })();
+</script>
+</body>
+</html>

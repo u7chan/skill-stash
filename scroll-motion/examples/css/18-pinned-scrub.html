@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>18 ピン留め＋スクラブ | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .pin {
+    position: relative;
+    min-height: 300vh; /* 固定区間を確保する（詳細デモ向け） */
+    margin-bottom: 32px;
+    view-timeline-name: --pin;
+    view-timeline-axis: block;
+  }
+
+  .pin__stage {
+    position: sticky;
+    top: 0;
+    display: grid;
+    place-items: center;
+    min-height: min(70vh, 520px);
+    padding: 16px 0;
+  }
+
+  .pin__card {
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .pin__kicker {
+    margin: 0 0 8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: #55627a;
+  }
+
+  .pin__steps {
+    display: grid;
+  }
+
+  .pin__step {
+    grid-area: 1 / 1;
+  }
+
+  .pin__step h2 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+  }
+
+  .pin__step p {
+    margin: 0;
+  }
+
+  .pin__bar {
+    height: 6px;
+    margin-top: 16px;
+    border-radius: 3px;
+    background: rgba(29, 78, 216, 0.16);
+    overflow: hidden;
+  }
+
+  .pin__bar-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, #1d4ed8, #22d3ee);
+  }
+
+  .pin__count {
+    margin: 8px 0 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: #55627a;
+  }
+
+  @keyframes pin-bar {
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes pin-step-1 {
+    0%,
+    26% {
+      opacity: 1;
+    }
+
+    33%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pin-step-2 {
+    0%,
+    26% {
+      opacity: 0;
+    }
+
+    33%,
+    59% {
+      opacity: 1;
+    }
+
+    66%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pin-step-3 {
+    0%,
+    59% {
+      opacity: 0;
+    }
+
+    66%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pin__bar-fill {
+        animation: pin-bar linear both;
+        animation-timeline: --pin;
+        /* 固定区間（300vh のセクション）だけを進捗の範囲にする */
+        animation-range: cover 25% cover 75%;
+      }
+
+      .pin__step[data-pin-step='1'] {
+        animation: pin-step-1 linear both;
+        animation-timeline: --pin;
+        animation-range: cover 25% cover 75%;
+      }
+
+      .pin__step[data-pin-step='2'] {
+        animation: pin-step-2 linear both;
+        animation-timeline: --pin;
+        animation-range: cover 25% cover 75%;
+      }
+
+      .pin__step[data-pin-step='3'] {
+        animation: pin-step-3 linear both;
+        animation-timeline: --pin;
+        animation-range: cover 25% cover 75%;
+      }
+    }
+  }
+
+  /* タイムライン非対応の環境では JS が is-active を切り替える */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports not (animation-timeline: view()) {
+      .pin__step {
+        opacity: 0;
+      }
+
+      .pin__step.is-active {
+        opacity: 1;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 固定を解除し、ステップを縦積みで表示する */
+    .pin {
+      min-height: auto;
+    }
+
+    .pin__stage {
+      position: static;
+    }
+
+    .pin__steps {
+      display: block;
+    }
+
+    .pin__step {
+      grid-area: auto;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 18 / pinned-scrub / CSS版</p>
+  <h1 class="demo-title">ピン留め＋スクラブ</h1>
+  <p class="demo-lead">セクションを固定したまま、スクロール量でステップを切り替えます。reduce では固定を解除して縦積みにします。</p>
+
+  <section class="pin" data-pin-section>
+    <div class="pin__stage">
+      <div class="pin__card surface">
+        <p class="pin__kicker">PINNED / SCRUB</p>
+        <div class="pin__steps">
+          <div class="pin__step" data-pin-step="1">
+            <h2>1. 計画</h2>
+            <p>要求を演出 ID へ対応づけ、必要な技術だけを選ぶ。</p>
+          </div>
+          <div class="pin__step" data-pin-step="2">
+            <h2>2. 実装</h2>
+            <p>CSS で書けるなら CSS だけで組む。JS は最後の手段にする。</p>
+          </div>
+          <div class="pin__step" data-pin-step="3">
+            <h2>3. 検証</h2>
+            <p>reduce とモバイル幅で破綻しないことを確認する。</p>
+          </div>
+        </div>
+        <div class="pin__bar" aria-hidden="true"><span class="pin__bar-fill" data-pin-bar></span></div>
+        <p class="pin__count">スクロール量に応じてステップとバーが進みます</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/18-pinned-scrub.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var supportsTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    var section = document.querySelector('[data-pin-section]');
+    if (!section || supportsTimeline || reduceMotion.matches) {
+      return;
+    }
+    var steps = section.querySelectorAll('[data-pin-step]');
+    var bar = section.querySelector('[data-pin-bar]');
+    var total = steps.length;
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var rect = section.getBoundingClientRect();
+      var span = section.offsetHeight - window.innerHeight;
+      var progress = span > 0 ? (-rect.top) / span : 0;
+      progress = Math.max(0, Math.min(1, progress));
+      var active = Math.min(total - 1, Math.floor(progress * total));
+      steps.forEach(function (step, index) {
+        step.classList.toggle('is-active', index === active);
+      });
+      if (bar) { bar.style.transform = 'scaleX(' + progress.toFixed(4) + ')'; }
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+</body>
+</html>

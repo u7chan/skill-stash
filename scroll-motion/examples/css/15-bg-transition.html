@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15 背景色トランジション | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .scene {
+    margin: 0;
+    padding: 40px 24px;
+    border: 1px solid #d6dde9;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #16202f;
+  }
+
+  .scene h2 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+  }
+
+  .scene p {
+    margin: 0;
+  }
+
+  .scene.is-active {
+    background: var(--scene-bg, #ffffff);
+    color: var(--scene-ink, #16202f);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scene {
+      transition: background-color 480ms ease, color 480ms ease;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 15 / bg-transition / CSS版</p>
+  <h1 class="demo-title">背景色トランジション</h1>
+  <p class="demo-lead">セクションごとに背景色を切り替え、場面転換を示します。検出はしきい値ベースで行います。</p>
+
+  <section class="scene" data-scene style="--scene-bg: #e4ebff; --scene-ink: #16202f">
+    <h2>1. 導入</h2>
+    <p>画面中央付近に入ったセクションだけが色を持ちます。</p>
+  </section>
+
+  <div class="demo-spacer"></div>
+
+  <section class="scene" data-scene style="--scene-bg: #0f172a; --scene-ink: #eef4ff">
+    <h2>2. 実装</h2>
+    <p>色は意味の補助なので、見出しのテキストだけでも区別できます。</p>
+  </section>
+
+  <div class="demo-spacer"></div>
+
+  <section class="scene" data-scene style="--scene-bg: #0f766e; --scene-ink: #f0fdfa">
+    <h2>3. 検証</h2>
+    <p>背景色の変化だけに意味を持たせず、番号と見出しで伝えています。</p>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/15-bg-transition.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var scenes = document.querySelectorAll('[data-scene]');
+    if (!scenes.length) { return; }
+    if (!('IntersectionObserver' in window)) {
+      scenes.forEach(function (scene) { scene.classList.add('is-active'); });
+      return;
+    }
+    /* ビューポート中央の細い帯だけを検出対象にする（連続イベントを使わない） */
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        /* 中央の帯に入ったセクションだけをアクティブにし、他は解除する
+           （帯から外れた瞬間に全解除すると、どの色でもない状態が生まれる） */
+        scenes.forEach(function (scene) {
+          scene.classList.toggle('is-active', scene === entry.target);
+        });
+      });
+    }, { rootMargin: '-30% 0px -30% 0px', threshold: 0 });
+    scenes.forEach(function (scene) { observer.observe(scene); });
+  })();
+</script>
+</body>
+</html>
