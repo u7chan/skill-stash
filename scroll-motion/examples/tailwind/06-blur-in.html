@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 ブラーイン | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  .blur-visual {
+    height: 180px;
+    border-radius: 12px;
+    background: radial-gradient(circle at 30% 30%, #22d3ee, #1d4ed8 60%, #0f172a);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-blur {
+      opacity: 0;
+      filter: blur(14px);
+      transform: scale(1.02);
+      transition: opacity 620ms ease, filter 760ms ease, transform 760ms ease;
+    }
+
+    .reveal-blur.is-visible {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+</style>
+<noscript><style>
+  /* JS が無効な環境ではブラーと拡大を解除して表示する */
+  .reveal-blur {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+</style></noscript>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 06 / blur-in / Tailwind版</p>
+  <h1 class="demo-title">ブラーイン</h1>
+  <p class="demo-lead">ぼかした状態からピントが合うように表示します。ぼかしは小さめの対象に限定します。</p>
+
+  <section class="mb-14">
+    <h2 class="mb-3 text-base font-semibold">ぼかしからピント合わせ</h2>
+    <div class="reveal-blur rounded-xl border border-slate-200 bg-white p-5">
+      <p><code class="font-mono text-sm">filter: blur(14px)</code> と <code class="font-mono text-sm">scale(1.02)</code> を戻しながら表示します。</p>
+    </div>
+  </section>
+
+  <section class="mb-14">
+    <h2 class="mb-3 text-base font-semibold">図版でも同じ動き</h2>
+    <div class="h-60"></div>
+    <div class="blur-visual reveal-blur rounded-xl" role="img" aria-label="ぼかしが取れるグラデーション図版"></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/06-blur-in.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var targets = document.querySelectorAll('.reveal-blur');
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(function (element) { element.classList.add('is-visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.3 });
+    targets.forEach(function (element) { observer.observe(element); });
+  })();
+</script>
+</body>
+</html>

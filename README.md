@@ -25,6 +25,7 @@
 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |
 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
+| [scroll-motion](scroll-motion/SKILL.md) | スクロール演出24種をCSS優先で選定・実装し、静的ショールームとCSS/Tailwindのサンプルから適用する |
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的に設計・検証する |

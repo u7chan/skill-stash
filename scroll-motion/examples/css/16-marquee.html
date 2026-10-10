@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>16 マーキー（スクロール速度連動） | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .marquee {
+    overflow: hidden;
+    padding: 14px 0;
+    border: 1px solid #d6dde9;
+    border-radius: 16px;
+    background: #ffffff;
+  }
+
+  .marquee__track {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: max-content;
+    padding: 0 14px;
+    will-change: transform;
+  }
+
+  .marquee__item {
+    font-size: 1.1rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .marquee__sep {
+    color: #9fb0c8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 自動再生を止め、内容は折り返して静的表示する */
+    .marquee__track {
+      flex-wrap: wrap;
+      width: auto;
+      transform: none;
+    }
+  }
+</style>
+<noscript><style>
+  /* JS が無効な環境では流れないため、行を折り返して全部を表示する */
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    transform: none;
+  }
+</style></noscript>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 16 / marquee / CSS版</p>
+  <h1 class="demo-title">マーキー（スクロール速度連動）</h1>
+  <p class="demo-lead">流れる行の速度をスクロール速度に連動させます。reduce では自動再生を止めて静的表示にします。</p>
+
+  <section class="demo-section">
+    <h2>スクロール速度で流れが変わる</h2>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track" data-marquee>
+        <span class="marquee__item">スクロール</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">モーション</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">余白</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">速度</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">スクロール</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">モーション</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">余白</span><span class="marquee__sep">/</span>
+        <span class="marquee__item">速度</span><span class="marquee__sep">/</span>
+      </div>
+    </div>
+    <p class="demo-note">読み上げ用に同じ語を通常テキストでも置いています: スクロール / モーション / 余白 / 速度。</p>
+  </section>
+
+  <section class="demo-section">
+    <h2>速くスクロールしてみる</h2>
+    <div class="demo-spacer"></div>
+    <div class="demo-spacer"></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/16-marquee.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var track = document.querySelector('[data-marquee]');
+    if (!track) { return; }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduceMotion.matches) {
+      track.style.transform = 'none'; /* reduce では自動再生しない */
+      return;
+    }
+    var offset = 0;
+    var baseSpeed = 0.55;
+    var velocity = 0;
+    var lastY = window.scrollY;
+    var half = 0;
+
+    function measure() {
+      half = track.scrollWidth / 2; /* 内容を2周分持っているので半分でループする */
+    }
+
+    function loop() {
+      var y = window.scrollY;
+      velocity += (y - lastY - velocity) * 0.12; /* スクロール速度を平滑化して使う */
+      lastY = y;
+      var speed = baseSpeed + Math.min(Math.abs(velocity) * 0.35, 14);
+      offset -= speed;
+      if (half > 0 && offset <= -half) {
+        offset += half;
+      }
+      track.style.transform = 'translate3d(' + offset.toFixed(2) + 'px, 0, 0)';
+      window.requestAnimationFrame(loop);
+    }
+
+    measure();
+    window.addEventListener('resize', measure);
+    window.requestAnimationFrame(loop);
+  })();
+</script>
+</body>
+</html>

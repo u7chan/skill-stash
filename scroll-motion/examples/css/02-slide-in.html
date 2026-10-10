@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 スライドイン | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .grid-2 {
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 560px) {
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* 入場中の横方向の移動でページ幅が広がらないようにクリップする */
+  .slide-zone {
+    overflow-x: clip;
+  }
+
+  .reveal {
+    transition: opacity 640ms ease, transform 640ms ease;
+  }
+
+  .reveal--delay {
+    transition-delay: 160ms;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 0;
+    }
+
+    .reveal[data-slide='up'] {
+      transform: translate3d(0, 28px, 0);
+    }
+
+    .reveal[data-slide='left'] {
+      transform: translate3d(-32px, 0, 0);
+    }
+
+    .reveal[data-slide='right'] {
+      transform: translate3d(32px, 0, 0);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+</style>
+<noscript><style>
+  /* JS が無効な環境では初期非表示を解除して内容を読めるようにする */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+</style></noscript>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 02 / slide-in / CSS版</p>
+  <h1 class="demo-title">スライドイン</h1>
+  <p class="demo-lead">要素を上下・左右から移動させながら表示します。方向は data-slide で切り替えます。</p>
+
+  <section class="demo-section">
+    <h2>上下左右からスライド</h2>
+    <div class="grid-2 slide-zone">
+      <div class="surface reveal" data-slide="up"><p>下から（translate3d(0, 28px, 0)）</p></div>
+      <div class="surface reveal" data-slide="left"><p>左から（translate3d(-32px, 0, 0)）</p></div>
+      <div class="surface reveal" data-slide="right"><p>右から（translate3d(32px, 0, 0)）</p></div>
+      <div class="surface reveal" data-slide="up"><p>4枚とも同じタイミングで表示</p></div>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2>1枚だけ遅らせる</h2>
+    <div class="demo-spacer"></div>
+    <div class="grid-2 slide-zone">
+      <div class="surface reveal reveal--delay" data-slide="left"><p>本文側（160ms 遅延）</p></div>
+      <div class="surface reveal" data-slide="right"><p>図版側（遅延なし）</p></div>
+    </div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/02-slide-in.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var targets = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(function (element) { element.classList.add('is-visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.2 });
+    targets.forEach(function (element) { observer.observe(element); });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>24 スクロールスパイ | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .spy {
+    display: grid;
+    gap: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .spy {
+      grid-template-columns: 200px 1fr;
+      align-items: start;
+    }
+  }
+
+  .spy__nav {
+    position: sticky;
+    top: 16px;
+  }
+
+  .spy__nav h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+  }
+
+  .spy__nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+  }
+
+  .spy__link {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 6px;
+    color: #33415c;
+    text-decoration: none;
+  }
+
+  .spy__link[aria-current='true'] {
+    background: #e4ebff;
+    color: #1d4ed8;
+    font-weight: 700;
+  }
+
+  .spy__section {
+    min-height: 68vh;
+    padding-bottom: 24px;
+  }
+
+  .spy__section h2 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+  }
+
+  .spy__section p {
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto; /* 移動は即時にする */
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 24 / scrollspy / CSS版</p>
+  <h1 class="demo-title">スクロールスパイ</h1>
+  <p class="demo-lead">現在位置に対応する目次項目を強調します。強調は色だけでなく aria-current でも伝えます。</p>
+
+  <div class="spy">
+    <nav class="spy__nav surface" aria-label="セクション目次">
+      <h2>目次</h2>
+      <ul>
+        <li><a class="spy__link" data-spy-link="spy-1" href="#spy-1">1. 目的</a></li>
+        <li><a class="spy__link" data-spy-link="spy-2" href="#spy-2">2. 実装</a></li>
+        <li><a class="spy__link" data-spy-link="spy-3" href="#spy-3">3. 検証</a></li>
+      </ul>
+    </nav>
+    <div class="spy__content">
+      <section class="spy__section" id="spy-1" data-spy-section="spy-1">
+        <h2>1. 目的</h2>
+        <p>長いページでは、今どこを読んでいるかが分からなくなる。目次側に現在地を示す。</p>
+      </section>
+      <section class="spy__section" id="spy-2" data-spy-section="spy-2">
+        <h2>2. 実装</h2>
+        <p>検出は IntersectionObserver の rootMargin でビューポート中央付近の細い帯に限定する。連続スクロールイベントは使わない。</p>
+      </section>
+      <section class="spy__section" id="spy-3" data-spy-section="spy-3">
+        <h2>3. 検証</h2>
+        <p>強調は背景色と太字だけでなく aria-current でも伝える。reduce ではスムーススクロールだけを無効化する。</p>
+      </section>
+    </div>
+  </div>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/24-scrollspy.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var links = document.querySelectorAll('[data-spy-link]');
+    var sections = document.querySelectorAll('[data-spy-section]');
+    if (!links.length || !sections.length) { return; }
+
+    function activate(id) {
+      links.forEach(function (link) {
+        if (link.getAttribute('data-spy-link') === id) {
+          link.setAttribute('aria-current', 'true');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      activate(sections[0].getAttribute('data-spy-section'));
+      return;
+    }
+    /* ビューポート中央付近の細い帯に入ったセクションを現在地とする */
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          activate(entry.target.getAttribute('data-spy-section'));
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    sections.forEach(function (section) { observer.observe(section); });
+    activate(sections[0].getAttribute('data-spy-section'));
+  })();
+</script>
+</body>
+</html>

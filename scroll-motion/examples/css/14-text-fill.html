@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14 テキストフィル | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .fill-wrap {
+    padding: 24px 0;
+    view-timeline-name: --fill;
+    view-timeline-axis: block;
+  }
+
+  .fill-text {
+    margin: 0;
+    font-size: clamp(1.15rem, 3.4vw, 1.6rem);
+    font-weight: 700;
+    line-height: 1.7;
+    color: transparent;
+    background-image: linear-gradient(90deg, #1d4ed8, #0f766e), linear-gradient(90deg, #c3cde0, #c3cde0);
+    background-repeat: no-repeat;
+    background-size: 0% 100%, 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+    .fill-text {
+      color: #16202f;
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+    }
+  }
+
+  @keyframes fill-scrub {
+    from {
+      background-size: 0% 100%, 100% 100%;
+    }
+
+    to {
+      background-size: 100% 100%, 100% 100%;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .fill-text {
+        animation: fill-scrub linear both;
+        animation-timeline: --fill;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 塗り切った状態で表示する */
+    .fill-text {
+      background-size: 100% 100%, 100% 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 14 / text-fill / CSS版</p>
+  <h1 class="demo-title">テキストフィル</h1>
+  <p class="demo-lead">スクロールに合わせて文字を色で塗りつぶします。塗り前後ともコントラストを確保します。</p>
+
+  <section class="demo-section">
+    <h2>読み進めると色が満ちる</h2>
+    <div class="fill-wrap">
+      <p class="fill-text">動きは意味を強めるために使う。読み終えた文から色が満ちていくので、視線の速度と演出の速度が一致する。装飾だけの動きは足さない。</p>
+    </div>
+    <div class="demo-spacer"></div>
+    <div class="demo-spacer"></div>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/14-text-fill.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var supportsTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    var target = document.querySelector('.fill-text');
+    var wrap = document.querySelector('.fill-wrap');
+    if (!target || !wrap || supportsTimeline || reduceMotion.matches) {
+      return;
+    }
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var rect = wrap.getBoundingClientRect();
+      var span = window.innerHeight + rect.height;
+      var progress = span > 0 ? (window.innerHeight - rect.top) / span : 0;
+      progress = Math.max(0, Math.min(1, progress));
+      target.style.backgroundSize = (progress * 100).toFixed(1) + '% 100%, 100% 100%';
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+</body>
+</html>

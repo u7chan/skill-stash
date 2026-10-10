@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 タイプライター | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .type {
+    margin: 0;
+    min-height: 1.75em;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .type__caret {
+    display: inline-block;
+    width: 0.6ch;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: -0.15em;
+    background: #1d4ed8;
+  }
+
+  @keyframes caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .type__caret {
+      animation: caret-blink 1s steps(1, end) infinite;
+    }
+  }
+</style>
+<noscript><style>
+  /* JS が無効な環境では打ち出しが動かないため、読み上げ用に置いた全文をそのまま表示する */
+  .type .sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .type__caret {
+    display: none;
+  }
+</style></noscript>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 07 / typewriter / CSS版</p>
+  <h1 class="demo-title">タイプライター</h1>
+  <p class="demo-lead">テキストを1文字ずつ打ち出します。カーソルの点滅は CSS、打ち出しは JS で行います。</p>
+
+  <section class="demo-section">
+    <h2>キャッチコピーを打ち出す</h2>
+    <p class="type" data-type="スクロールが止まる場所に、意味を置く。">
+      <span class="type__text" aria-hidden="true"></span><span class="type__caret" aria-hidden="true"></span>
+      <span class="sr-only">スクロールが止まる場所に、意味を置く。</span>
+    </p>
+    <p class="demo-note">読み上げ用には同じ文を <code>sr-only</code> で置いています（1文字ずつ読み上げさせない）。</p>
+  </section>
+
+  <section class="demo-section">
+    <h2>2つ目は下で開始</h2>
+    <div class="demo-spacer"></div>
+    <p class="type" data-type="アニメーションは要点だけに使う。">
+      <span class="type__text" aria-hidden="true"></span><span class="type__caret" aria-hidden="true"></span>
+      <span class="sr-only">アニメーションは要点だけに使う。</span>
+    </p>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/07-typewriter.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function start(target) {
+      var textNode = target.querySelector('.type__text');
+      var text = target.getAttribute('data-type') || '';
+      if (reduceMotion.matches) {
+        textNode.textContent = text; /* reduce では全文を即時表示 */
+        return;
+      }
+      var index = 0;
+      (function step() {
+        textNode.textContent = text.slice(0, index);
+        index += 1;
+        if (index <= text.length) {
+          window.setTimeout(step, 90);
+        }
+      })();
+    }
+
+    var targets = document.querySelectorAll('[data-type]');
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(start);
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        observer.unobserve(entry.target);
+        start(entry.target);
+      });
+    }, { threshold: 0.5 });
+    targets.forEach(function (target) { observer.observe(target); });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+{
+  "schemaVersion": 1,
+  "id": "scroll-motion",
+  "title": "scroll-motion 演出カタログ",
+  "description": "スクロール演出24種の正本。ID・名称・概要・必要技術・実装サンプル（CSS / Tailwind）・ブラウザ制約・アクセシビリティ注意をここで一元管理し、SKILL.md・references/catalog.md・showroom/index.html はこのファイルから生成する。",
+  "categories": [
+    {
+      "id": "enter",
+      "name": "画面に入ると再生",
+      "summary": "ビューポートへの進入を IntersectionObserver で検出し、再生は CSS の transition / animation に任せる。"
+    },
+    {
+      "id": "progress",
+      "name": "スクロール進捗と連動",
+      "summary": "スクロール量を 0–1 の進捗に変換し、CSS Scroll-driven Animations か rAF の JS フォールバックで連続的に動かす。"
+    },
+    {
+      "id": "pin",
+      "name": "固定・送り・ナビ",
+      "summary": "position: sticky とスクロール位置の検出を使い、固定表示・横送り・ナビゲーション状態を作る。"
+    }
+  ],
+  "techGlossary": {
+    "CSS": "HTML/CSS のみ（JS 不要）",
+    "IO": "IntersectionObserver（標準API・ライブラリ不要）",
+    "JS": "素の JS（標準API・フレームワーク/ライブラリ不要）",
+    "scroll-timeline": "CSS Scroll-driven Animations（Chrome/Edge 115+・Safari 26+。非対応ブラウザ向けに JS フォールバックあり）"
+  },
+  "effects": [
+    {
+      "id": "01",
+      "slug": "fade-in",
+      "name": "フェードイン",
+      "category": "enter",
+      "summary": "ビューポートに入った要素の透明度を上げて表示する。最も基本的な入場演出。",
+      "useCases": ["見出し・カードの入場", "セクションの切り替わり"],
+      "keywords": ["fade", "フェードイン", "opacity", "入場", "表示", "appear"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると再生されます。",
+      "keyPoints": [
+        "初期の非表示状態は @media (prefers-reduced-motion: no-preference) の中だけに置く",
+        "IntersectionObserver は一度検出したら unobserve して常時監視を避ける",
+        "transition は opacity と transform に限定し、レイアウトを動かさない"
+      ],
+      "browserNotes": ["IntersectionObserver はモダンブラウザ対応（Safari 12.1+）"],
+      "reducedMotion": "初期状態を作らないため、reduce 時は最初から表示される（no-preference でゲート）",
+      "a11yNotes": ["reduce 時に opacity: 0 が残らないようにする（本文が読めない事故を防ぐ）"],
+      "cssPath": "examples/css/01-fade-in.html",
+      "tailwindPath": "examples/tailwind/01-fade-in.html"
+    },
+    {
+      "id": "02",
+      "slug": "slide-in",
+      "name": "スライドイン",
+      "category": "enter",
+      "summary": "要素を左右・上下から移動させながら表示する。方向のバリエーションを持つ。",
+      "useCases": ["左右2カラムの同時入場", "リスト項目の入場"],
+      "keywords": ["slide", "スライド", "translate", "入場", "横から"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると再生されます。",
+      "keyPoints": [
+        "方向は data-slide=\"up|left|right\" で切り替える",
+        "translate3d を使い、合成レイヤーでの描画に任せる",
+        "移動距離は 24–40px 程度に抑え、レイアウトは動かさない"
+      ],
+      "browserNotes": ["IntersectionObserver はモダンブラウザ対応"],
+      "reducedMotion": "移動をやめて常時表示にする（方向付きの初期状態も no-preference 内に限定）",
+      "a11yNotes": ["左右から入る要素を画面外固定にしない（横スクロールを生まない）"],
+      "cssPath": "examples/css/02-slide-in.html",
+      "tailwindPath": "examples/tailwind/02-slide-in.html"
+    },
+    {
+      "id": "03",
+      "slug": "stagger",
+      "name": "スタッガー",
+      "category": "enter",
+      "summary": "複数要素を時間差で順に表示し、視線の流れを作る。",
+      "useCases": ["カードグリッド", "ナビゲーション項目", "価格表"],
+      "keywords": ["stagger", "スタッガー", "順番", "遅延", "delay", "リスト"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると順番に再生されます。",
+      "keyPoints": [
+        "CSS 変数 --i から transition-delay: calc(var(--i) * 90ms) を計算する",
+        "delay には上限を設け、長い待ち時間を作らない",
+        "Observer は親要素だけに付け、子要素ごとに作らない"
+      ],
+      "browserNotes": ["CSS 変数は全モダンブラウザ対応"],
+      "reducedMotion": "遅延を 0 にし、全要素を同時に表示する",
+      "a11yNotes": ["遅延の合計は 400ms 程度に収め、読み始めを妨げない"],
+      "cssPath": "examples/css/03-stagger.html",
+      "tailwindPath": "examples/tailwind/03-stagger.html"
+    },
+    {
+      "id": "04",
+      "slug": "text-reveal",
+      "name": "テキストリビール",
+      "category": "enter",
+      "summary": "行ごとにマスクを掛け、下から押し上げるように文字を表示する。",
+      "useCases": ["ヒーローの見出し", "章タイトル"],
+      "keywords": ["text reveal", "テキストリビール", "行", "マスク", "見出し"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると再生されます。",
+      "keyPoints": [
+        "行を span でラップし、overflow: hidden の親でマスクする",
+        "transform のみを動かし、行送りを変えない",
+        "テキストは選択・コピーできる状態のまま残す"
+      ],
+      "browserNotes": ["overflow: hidden + transform は全モダンブラウザ対応"],
+      "reducedMotion": "マスクと移動をやめ、全文を静的表示する",
+      "a11yNotes": ["行を分割しても読み上げ順が崩れない構造にする"],
+      "cssPath": "examples/css/04-text-reveal.html",
+      "tailwindPath": "examples/tailwind/04-text-reveal.html"
+    },
+    {
+      "id": "05",
+      "slug": "mask-reveal",
+      "name": "マスクリビール",
+      "category": "enter",
+      "summary": "画像やカードを左から右へワイプするように表示する。",
+      "useCases": ["ヒーロー画像", "ギャラリー", "バナー"],
+      "keywords": ["mask", "マスク", "wipe", "ワイプ", "clip-path", "リビール"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると再生されます。",
+      "keyPoints": [
+        "clip-path: inset() の変化でマスクする（transition 可能・レイアウト非依存）",
+        "画像を使わず CSS グラデーションで完結させ、外部リクエストを出さない",
+        "@supports not (clip-path: inset(0)) で非対応の環境ではフェードに差し替える"
+      ],
+      "browserNotes": ["clip-path: inset() はモダンブラウザ対応（IE 非対応）"],
+      "reducedMotion": "マスクを掛けずに完成形を表示する",
+      "a11yNotes": ["マスク中も代替テキストの情報は失われないようにする"],
+      "cssPath": "examples/css/05-mask-reveal.html",
+      "tailwindPath": "examples/tailwind/05-mask-reveal.html"
+    },
+    {
+      "id": "06",
+      "slug": "blur-in",
+      "name": "ブラーイン",
+      "category": "enter",
+      "summary": "ぼかした状態からピントが合うように表示する。",
+      "useCases": ["写真・図版の強調", "モーダルやポップオーバー"],
+      "keywords": ["blur", "ブラー", "ぼかし", "filter", "フォーカス"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると再生されます。",
+      "keyPoints": [
+        "filter: blur() は合成コストが高いので対象を小さく絞る",
+        "blur と同時に scale(1.02) を戻し、自然な収束に見せる",
+        "reduce ではぼかしを掛けずに表示する"
+      ],
+      "browserNotes": ["filter は全モダンブラウザ対応。ぼかし半径を大きくしすぎない"],
+      "reducedMotion": "ぼかし・拡大を適用せず静止表示する",
+      "a11yNotes": ["ぼけた状態を長く維持せず、本文テキストには掛けない"],
+      "cssPath": "examples/css/06-blur-in.html",
+      "tailwindPath": "examples/tailwind/06-blur-in.html"
+    },
+    {
+      "id": "07",
+      "slug": "typewriter",
+      "name": "タイプライター",
+      "category": "enter",
+      "summary": "テキストを1文字ずつ打ち出す。カーソルは CSS で点滅させる。",
+      "useCases": ["キャッチコピー", "ターミナル風UI", "チャット風UI"],
+      "keywords": ["typewriter", "タイプライター", "1文字", "カーソル", "typing"],
+      "tech": ["IO", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると打ち出しが始まります。",
+      "keyPoints": [
+        "1文字ずつの追記はタイマーで行い、速度を一定に保つ",
+        "aria-live は使わず、全文はスクリーンリーダー向けに別要素で持つ",
+        "点滅カーソルは reduce で停止・非表示にする"
+      ],
+      "browserNotes": ["標準APIのみ。ライブラリ不要"],
+      "reducedMotion": "打ち出しを行わず全文を即時表示し、カーソルの点滅も止める",
+      "a11yNotes": ["1文字ずつ読み上げさせない（aria-hidden の装飾表現として扱う）"],
+      "cssPath": "examples/css/07-typewriter.html",
+      "tailwindPath": "examples/tailwind/07-typewriter.html"
+    },
+    {
+      "id": "08",
+      "slug": "count-up",
+      "name": "カウントアップ",
+      "category": "enter",
+      "summary": "数値を 0 から目標値まで増やして表示する。",
+      "useCases": ["実績数値", "料金", "統計カード"],
+      "keywords": ["count up", "カウントアップ", "数値", "数字", "統計"],
+      "tech": ["IO", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると数値が動きます。",
+      "keyPoints": [
+        "値の更新は requestAnimationFrame で行い、DOM 書き換えは必要な1要素だけ",
+        "書式（桁区切り・接頭辞・単位）は文字列として固定し、途中で崩さない",
+        "reduce では最終値を即時表示する"
+      ],
+      "browserNotes": ["IntersectionObserver + requestAnimationFrame（標準API）"],
+      "reducedMotion": "アニメーションせず最終値を即時表示する",
+      "a11yNotes": ["途中の値を読み上げさせない（aria-hidden の装飾扱いまたは確定値の併記）"],
+      "cssPath": "examples/css/08-count-up.html",
+      "tailwindPath": "examples/tailwind/08-count-up.html"
+    },
+    {
+      "id": "09",
+      "slug": "scroll-linked",
+      "name": "スクロール連動",
+      "category": "progress",
+      "summary": "スクロール量に応じて進捗バーや強調線の幅を変える。",
+      "useCases": ["記事の読了プログレス", "章の進捗表示"],
+      "keywords": ["progress", "進捗", "スクロール連動", "バー", "読了"],
+      "tech": ["scroll-timeline", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内をスクロールすると上部のバーが伸びます。",
+      "keyPoints": [
+        "animation-timeline: scroll() を @supports で判定し、非対応時は rAF の JS フォールバックに切り替える",
+        "スクロール購読は passive: true + rAF で間引く",
+        "scaleX で描画し、width アニメーションで再レイアウトさせない"
+      ],
+      "browserNotes": [
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox は未対応（フラグ付き）",
+        "フォールバックは requestAnimationFrame で完結し、依存ライブラリは不要"
+      ],
+      "reducedMotion": "進捗バーは表示するが、埋まるアニメーションは行わず現在位置を静的表示する",
+      "a11yNotes": ["進捗は色だけでなく数値やテキストでも示す"],
+      "cssPath": "examples/css/09-scroll-linked.html",
+      "tailwindPath": "examples/tailwind/09-scroll-linked.html"
+    },
+    {
+      "id": "10",
+      "slug": "parallax",
+      "name": "パララックス",
+      "category": "progress",
+      "summary": "背景と前景を異なる速度で動かし、奥行きを作る。",
+      "useCases": ["ヒーローセクション", "ストーリー記事", "LP の中盤"],
+      "keywords": ["parallax", "パララックス", "奥行き", "背景", "速度差"],
+      "tech": ["scroll-timeline", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をゆっくりスクロールすると層が別々に動きます。",
+      "keyPoints": [
+        "translate3d のみを使い、レイアウトを動かさない",
+        "背景は CSS グラデーションで作り、外部画像に依存しない",
+        "移動量は ±15% 程度に抑え、本文の可読性を守る"
+      ],
+      "browserNotes": [
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox 未対応",
+        "JS フォールバックは view() 相当の進捗を scrollY から算出する"
+      ],
+      "reducedMotion": "層の移動を止めて静的配置にする",
+      "a11yNotes": ["動く背景の上に本文を直接置かない"],
+      "cssPath": "examples/css/10-parallax.html",
+      "tailwindPath": "examples/tailwind/10-parallax.html"
+    },
+    {
+      "id": "11",
+      "slug": "scroll-zoom",
+      "name": "スクロールズーム",
+      "category": "progress",
+      "summary": "スクロールに合わせて画像・カードを拡大縮小する。",
+      "useCases": ["ヒーロービジュアル", "製品ショット", "章の転換"],
+      "keywords": ["zoom", "ズーム", "拡大", "縮小", "scale"],
+      "tech": ["scroll-timeline", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をゆっくりスクロールすると拡大 → 縮小します。",
+      "keyPoints": [
+        "view() タイムラインで拡大 → 縮小を制御する",
+        "scale は 0.9〜1.1 程度に留め、画像の再サンプリングを避ける",
+        "transform-origin を中央に固定し、起点の跳ねを防ぐ"
+      ],
+      "browserNotes": [
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox 未対応",
+        "image-rendering は指定せず、等倍付近を中心に動かす"
+      ],
+      "reducedMotion": "拡大縮小をやめ、等倍で表示する",
+      "a11yNotes": ["拡大中もテキストが読みやすいサイズを保つ"],
+      "cssPath": "examples/css/11-scroll-zoom.html",
+      "tailwindPath": "examples/tailwind/11-scroll-zoom.html"
+    },
+    {
+      "id": "12",
+      "slug": "image-sequence",
+      "name": "画像シーケンス",
+      "category": "progress",
+      "summary": "スクロール位置に応じて連番フレームを差し替え、動画のように見せる。",
+      "useCases": ["製品の回転表示", "工程の分解表示", "Apple 風スクラブ"],
+      "keywords": ["sequence", "シーケンス", "フレーム", "連番", "回転", "スクラブ"],
+      "tech": ["JS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールするとフレームが切り替わります。",
+      "keyPoints": [
+        "rAF で進捗を計算し、変化したフレームだけを差し替える",
+        "画像はインライン SVG の data URI で生成し、外部リクエストを出さない",
+        "先読みは最小限に留め、フレーム数は 12 前後から始める"
+      ],
+      "browserNotes": ["data URI の SVG は外部通信なしで描画できる（オフライン動作）"],
+      "reducedMotion": "代表フレームを1枚だけ静的に表示する",
+      "a11yNotes": ["フレーム差し替えは装飾。説明テキストを必ず併記する"],
+      "cssPath": "examples/css/12-image-sequence.html",
+      "tailwindPath": "examples/tailwind/12-image-sequence.html"
+    },
+    {
+      "id": "13",
+      "slug": "svg-line-draw",
+      "name": "SVGラインドロー",
+      "category": "progress",
+      "summary": "線が引かれていくように SVG パスを描画する。",
+      "useCases": ["図解・チャートの導入", "ロゴの描画", "工程図"],
+      "keywords": ["svg", "line draw", "ラインドロー", "パス", "stroke"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールすると線が引かれます。",
+      "keyPoints": [
+        "stroke-dasharray / stroke-dashoffset を変化させて描く",
+        "パス長は getTotalLength() で取得し、数値をハードコードしない",
+        "reduce では完成形を即時表示する"
+      ],
+      "browserNotes": ["SVGGeometryElement.getTotalLength はモダンブラウザ対応"],
+      "reducedMotion": "dash を初期化せず、完成した線を表示する",
+      "a11yNotes": ["装飾 SVG には aria-hidden=\"true\" を付ける"],
+      "cssPath": "examples/css/13-svg-line-draw.html",
+      "tailwindPath": "examples/tailwind/13-svg-line-draw.html"
+    },
+    {
+      "id": "14",
+      "slug": "text-fill",
+      "name": "テキストフィル",
+      "category": "progress",
+      "summary": "スクロールに合わせて文字を色で塗りつぶしていく。",
+      "useCases": ["引用・キーメッセージ", "章の導入文"],
+      "keywords": ["text fill", "テキストフィル", "塗り", "background-clip", "蛍光"],
+      "tech": ["scroll-timeline", "JS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールすると文字が塗られます。",
+      "keyPoints": [
+        "background-clip: text と background-size で塗り進める",
+        "途中状態でも読めるよう、下地色にも十分なコントラストを確保する",
+        "reduce では最初から塗り切った状態で表示する"
+      ],
+      "browserNotes": [
+        "background-clip: text は -webkit- 接頭辞が必要（Chrome/Safari）。Firefox は標準対応",
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox 未対応"
+      ],
+      "reducedMotion": "塗りの進行を止め、完成状態で表示する",
+      "a11yNotes": ["色のコントラストは塗り前後とも WCAG AA を目安に確保する"],
+      "cssPath": "examples/css/14-text-fill.html",
+      "tailwindPath": "examples/tailwind/14-text-fill.html"
+    },
+    {
+      "id": "15",
+      "slug": "bg-transition",
+      "name": "背景色トランジション",
+      "category": "progress",
+      "summary": "セクションごとに背景色を切り替え、場面転換を示す。",
+      "useCases": ["章の切り替え", "LP のセクション区切り", "ダーク/ライトの反転"],
+      "keywords": ["背景色", "bg", "色", "セクション", "トランジション"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内をスクロールすると背景色が切り替わります。",
+      "keyPoints": [
+        "連続的な色補間ではなく、IntersectionObserver のしきい値で離散的に切り替える",
+        "CSS 変数を差し替えて transition で補間する",
+        "色は意味の補助に留め、テキストのラベルも併記する"
+      ],
+      "browserNotes": ["IntersectionObserver + CSS 変数（モダンブラウザ対応）"],
+      "reducedMotion": "色は切り替えるが、補間アニメーションは行わず即時反映する",
+      "a11yNotes": ["背景色の変化だけに意味を持たせない"],
+      "cssPath": "examples/css/15-bg-transition.html",
+      "tailwindPath": "examples/tailwind/15-bg-transition.html"
+    },
+    {
+      "id": "16",
+      "slug": "marquee",
+      "name": "マーキー（スクロール速度連動）",
+      "category": "progress",
+      "summary": "流れる行の速度をスクロール速度に連動させる。",
+      "useCases": ["キーワードの帯", "ブランドのロゴ列", "実績の連続表示"],
+      "keywords": ["marquee", "マーキー", "流れる", "速度", "ベルト"],
+      "tech": ["JS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を速くスクロールすると流れが加速します。",
+      "keyPoints": [
+        "scroll は passive: true で購読し、rAF 内で速度を平滑化する",
+        "translate3d で描画し、内容を複製して途切れを防ぐ",
+        "reduce では自動再生を止め、内容は静的に読める状態で残す"
+      ],
+      "browserNotes": ["標準APIのみ。スクロール速度は scrollY の差分から算出する"],
+      "reducedMotion": "自動再生を停止し、行を折り返して静的表示する",
+      "a11yNotes": ["流れるテキストは装飾扱いを基本とし、同一内容を通常テキストでも置く"],
+      "cssPath": "examples/css/16-marquee.html",
+      "tailwindPath": "examples/tailwind/16-marquee.html"
+    },
+    {
+      "id": "17",
+      "slug": "sticky",
+      "name": "スティッキー",
+      "category": "pin",
+      "summary": "追従する目次や情報パネルを固定表示する。",
+      "useCases": ["記事の目次", "商品情報パネル", "フィルタUI"],
+      "keywords": ["sticky", "スティッキー", "追従", "目次", "固定"],
+      "tech": ["CSS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールすると左のパネルが追従します。",
+      "keyPoints": [
+        "position: sticky と親の高さだけで完結させ、JSを使わない",
+        "top の値は固定ヘッダーの高さと重ならないように決め、重なりを避ける",
+        "親要素に overflow: hidden があると sticky が効かない点に注意する"
+      ],
+      "browserNotes": ["position: sticky は全モダンブラウザ対応（旧 Safari は -webkit- 接頭辞）"],
+      "reducedMotion": "動きを伴わないため常時固定のまま（reduce 専用の分岐は不要）",
+      "a11yNotes": ["sticky 内のリンクはキーボードで到達可能にする"],
+      "cssPath": "examples/css/17-sticky.html",
+      "tailwindPath": "examples/tailwind/17-sticky.html"
+    },
+    {
+      "id": "18",
+      "slug": "pinned-scrub",
+      "name": "ピン留め＋スクラブ",
+      "category": "pin",
+      "summary": "セクションを固定し、スクロール量で進捗（スクラブ）を動かす。",
+      "useCases": ["製品の工程説明", "タイムライン", "ステップ表示"],
+      "keywords": ["pin", "ピン留め", "スクラブ", "固定", "進捗"],
+      "tech": ["CSS", "scroll-timeline", "JS"],
+      "optionalLibs": ["GSAP/ScrollTrigger は複数のピン留めを連結する場合の任意候補（本サンプルでは未使用）"],
+      "demoHeight": "lg",
+      "demoHint": "カード内を下までスクロールすると固定した舞台の進捗が進みます。",
+      "keyPoints": [
+        "sticky の親に十分な高さ（例: 300vh）を確保し、animation-range で固定区間だけを進捗に対応させる",
+        "進捗はスクロールタイムラインまたは rAF で 0–1 に正規化する",
+        "reduce では固定をやめ、要素を通常フローで順に表示する"
+      ],
+      "browserNotes": [
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox 未対応",
+        "JS フォールバックでは sticky の親の位置から進捗を計算する"
+      ],
+      "reducedMotion": "ピン留めを解除し、進捗に応じた内容を縦積みで表示する",
+      "a11yNotes": ["固定中もコンテンツは DOM 順に読めるようにする"],
+      "cssPath": "examples/css/18-pinned-scrub.html",
+      "tailwindPath": "examples/tailwind/18-pinned-scrub.html"
+    },
+    {
+      "id": "19",
+      "slug": "scrollytelling",
+      "name": "スクロールテリング",
+      "category": "pin",
+      "summary": "固定した舞台の上で、文章のステップに合わせて内容を切り替える。",
+      "useCases": ["データ解説", "インタラクティブ記事", "製品ストーリー"],
+      "keywords": ["scrollytelling", "スクロールテリング", "ストーリー", "ステップ", "解説"],
+      "tech": ["IO", "CSS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールすると右の図がステップごとに切り替わります。",
+      "keyPoints": [
+        "ステップの検出は IntersectionObserver のしきい値で行い、連続イベントを使わない",
+        "ステップは DOM 順に並べ、スクリーンリーダーでも読める構造にする",
+        "reduce では固定を解除し、図と文を縦積みで対応させる"
+      ],
+      "browserNotes": ["IntersectionObserver + position: sticky（モダンブラウザ対応）"],
+      "reducedMotion": "固定を解除し、各ステップの直後に図を並べる",
+      "a11yNotes": ["図の切り替えは aria-live を使わず、説明は本文側に置く"],
+      "cssPath": "examples/css/19-scrollytelling.html",
+      "tailwindPath": "examples/tailwind/19-scrollytelling.html"
+    },
+    {
+      "id": "20",
+      "slug": "card-stack",
+      "name": "カードスタック",
+      "category": "pin",
+      "summary": "カードが上に重なっていくように見せる。",
+      "useCases": ["機能一覧", "ステップ紹介", "プラン比較"],
+      "keywords": ["card stack", "カードスタック", "重なり", "積み上げ"],
+      "tech": ["CSS"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールするとカードが順に重なります。",
+      "keyPoints": [
+        "sticky と top オフセットのずらしで表現し、JSを使わない",
+        "カードごとに top オフセットをずらして重なりを作り、transform の競合を避ける",
+        "reduce では重なりを止め、等間隔のカード一覧にする"
+      ],
+      "browserNotes": ["position: sticky は全モダンブラウザ対応"],
+      "reducedMotion": "sticky を解除し、通常の縦積みカードとして表示する",
+      "a11yNotes": ["カードの並び順が DOM 順と一致するようにする"],
+      "cssPath": "examples/css/20-card-stack.html",
+      "tailwindPath": "examples/tailwind/20-card-stack.html"
+    },
+    {
+      "id": "21",
+      "slug": "scroll-snap",
+      "name": "スクロールスナップ",
+      "category": "pin",
+      "summary": "スクロールを1枚ずつで止め、ページ送りのように見せる。",
+      "useCases": ["スライドショー", "オンボーディング", "モバイルのカード送り"],
+      "keywords": ["scroll snap", "スナップ", "ページ送り", "スライド"],
+      "tech": ["CSS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内をスクロールすると1枚ずつで止まります。",
+      "keyPoints": [
+        "scroll-snap-type と scroll-snap-align の組み合わせで完結させる",
+        "スナップさせる枠の高さを固定し、ページ全体には掛けない",
+        "scroll-padding で固定ヘッダーとの重なりを調整する"
+      ],
+      "browserNotes": ["scroll-snap は全モダンブラウザ対応（Safari 15+）"],
+      "reducedMotion": "スナップは位置決めであり動きの演出ではないため維持する（reduce 専用の分岐は不要）",
+      "a11yNotes": ["スナップ枠の中にフォーカス可能な要素を置き、キーボードで送れるようにする"],
+      "cssPath": "examples/css/21-scroll-snap.html",
+      "tailwindPath": "examples/tailwind/21-scroll-snap.html"
+    },
+    {
+      "id": "22",
+      "slug": "horizontal-scroll",
+      "name": "横スクロール",
+      "category": "pin",
+      "summary": "縦スクロールを横方向の移動に置き換えて、パネルを送る。",
+      "useCases": ["ギャラリー", "タイムライン", "比較パネル"],
+      "keywords": ["horizontal", "横スクロール", "横送り", "パネル"],
+      "tech": ["CSS", "scroll-timeline", "JS"],
+      "optionalLibs": ["GSAP/ScrollTrigger は横送りと他のピン留めを連結する場合の任意候補（本サンプルでは未使用）"],
+      "demoHeight": "lg",
+      "demoHint": "カード内を下へスクロールするとパネルが右へ流れます。",
+      "keyPoints": [
+        "sticky のビューポートと横長トラックの translateX を進捗に結びつける",
+        "必要な移動量はスクロール枠の幅とトラック幅から計算し、リサイズ時に再計算する",
+        "reduce では translate をやめ、通常の縦スクロールで読ませる"
+      ],
+      "browserNotes": [
+        "CSS Scroll-driven Animations: Chrome/Edge 115+、Safari 26+、Firefox 未対応",
+        "JS フォールバックでも横スクロール枠自体は通常の縦スクロールで機能する"
+      ],
+      "reducedMotion": "横送りをやめ、パネルを縦に積んで表示する",
+      "a11yNotes": ["横送りでも本文は DOM 順に読めるようにする"],
+      "cssPath": "examples/css/22-horizontal-scroll.html",
+      "tailwindPath": "examples/tailwind/22-horizontal-scroll.html"
+    },
+    {
+      "id": "23",
+      "slug": "hide-header",
+      "name": "隠れるヘッダー",
+      "category": "pin",
+      "summary": "下スクロールで隠れ、上スクロールで再表示するヘッダー。",
+      "useCases": ["記事ページ", "モバイルのヘッダー", "商品一覧"],
+      "keywords": ["header", "ヘッダー", "隠れる", "hide", "上スクロール"],
+      "tech": ["JS"],
+      "optionalLibs": [],
+      "demoHeight": "md",
+      "demoHint": "カード内を下へスクロールするとヘッダーが隠れ、上へ戻すと再表示します。",
+      "keyPoints": [
+        "scroll は passive + rAF で間引き、移動方向だけを見る",
+        "ヘッダーの高さぶんの余白を本文に確保し、レイアウトシフトを避ける",
+        "隠れている間もキーボード操作は維持し、reduce では常時表示にする"
+      ],
+      "browserNotes": ["標準APIのみ。transform: translateY で移動する"],
+      "reducedMotion": "ヘッダーを隠さず、常時表示にする",
+      "a11yNotes": ["隠れた状態でもヘッダー内リンクのフォーカス順を壊さない"],
+      "cssPath": "examples/css/23-hide-header.html",
+      "tailwindPath": "examples/tailwind/23-hide-header.html"
+    },
+    {
+      "id": "24",
+      "slug": "scrollspy",
+      "name": "スクロールスパイ",
+      "category": "pin",
+      "summary": "現在位置に対応する目次項目をハイライトする。",
+      "useCases": ["長い記事の目次", "設定画面", "ドキュメント"],
+      "keywords": ["scrollspy", "スクロールスパイ", "目次", "現在位置", "ナビ"],
+      "tech": ["IO"],
+      "optionalLibs": [],
+      "demoHeight": "lg",
+      "demoHint": "カード内をスクロールすると該当の目次項目が強調されます。",
+      "keyPoints": [
+        "rootMargin でビューポート中央付近のセクションを検出対象にする",
+        "aria-current=\"true\" を切り替え、視覚以外でも現在位置が分かるようにする",
+        "reduce では scroll-behavior: smooth を無効化する"
+      ],
+      "browserNotes": ["IntersectionObserver + CSS 変数（モダンブラウザ対応）"],
+      "reducedMotion": "スムーススクロールを無効化し、移動を即時反映にする",
+      "a11yNotes": ["現在地の強調は色だけでなく aria-current で伝える"],
+      "cssPath": "examples/css/24-scrollspy.html",
+      "tailwindPath": "examples/tailwind/24-scrollspy.html"
+    }
+  ]
+}

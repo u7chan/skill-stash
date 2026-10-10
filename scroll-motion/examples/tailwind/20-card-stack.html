@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>20 カードスタック | scroll-motion（Tailwind版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  /* カスタムCSS: Tailwind ユーティリティで表現できない部分（@keyframes / マスク / スクロール連動 / reduce 対応）。
+     Tailwind プロジェクトへは、この block と <script> のロジックをコピーすれば同じ挙動になる。 */
+
+  .stack {
+    display: grid;
+    gap: 20px;
+    padding-bottom: 40px;
+  }
+
+  .stack__card {
+    position: sticky;
+    top: calc(12px + var(--i, 0) * 12px);
+    /* カード自体を高くして、重なりながら積み上がるスクロール量を確保する */
+    min-height: min(52vh, 340px);
+    margin: 0;
+    padding: 24px;
+    border: 1px solid #d6dde9;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(22, 32, 47, 0.08);
+  }
+
+  .stack__card:nth-child(2) {
+    background: #f8fafc;
+  }
+
+  .stack__card:nth-child(3) {
+    background: #f1f5f9;
+  }
+
+  .stack__card:nth-child(4) {
+    background: #e9eef7;
+  }
+
+  .stack__card h2 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+  }
+
+  .stack__card p {
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .stack__card {
+      transition: transform 200ms ease;
+    }
+
+    .stack__card:hover {
+      transform: translate3d(0, -2px, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* 重なりを止めて等間隔のカード一覧にする */
+    .stack__card {
+      position: static;
+      top: auto;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 20 / card-stack / Tailwind版</p>
+  <h1 class="demo-title">カードスタック</h1>
+  <p class="demo-lead">カードが上に重なっていくように見せます。sticky と top オフセットだけで表現します。</p>
+
+  <div class="stack grid gap-5 pb-10">
+    <article class="stack__card rounded-2xl" style="--i: 0">
+      <h2 class="mb-1.5 text-base font-semibold">01 要件</h2>
+      <p>何を伝えたいのかを先に決める。演出は目的ではなく手段。</p>
+    </article>
+    <article class="stack__card rounded-2xl" style="--i: 1">
+      <h2 class="mb-1.5 text-base font-semibold">02 選定</h2>
+      <p>24 の候補から、目的に合うものだけを選ぶ。</p>
+    </article>
+    <article class="stack__card rounded-2xl" style="--i: 2">
+      <h2 class="mb-1.5 text-base font-semibold">03 実装</h2>
+      <p>CSS で足りるなら CSS だけ。JS は必要な演出に限る。</p>
+    </article>
+    <article class="stack__card rounded-2xl" style="--i: 3">
+      <h2 class="mb-1.5 text-base font-semibold">04 確認</h2>
+      <p>reduce とモバイル幅で破綻しないことを確認して完了。</p>
+    </article>
+  </div>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/tailwind/20-card-stack.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+</body>
+</html>

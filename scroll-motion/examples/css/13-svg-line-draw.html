@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>13 SVGラインドロー | scroll-motion（CSS版）</title>
+<link rel="stylesheet" href="../_shared/demo-frame.css">
+<style>
+  .draw-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid #d6dde9;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-draw [data-draw-path] {
+      transition: stroke-dashoffset 1400ms ease;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="demo-shell">
+  <a class="demo-back" href="../../showroom/index.html">← ショールームに戻る</a>
+  <p class="demo-kicker">scroll-motion / 13 / svg-line-draw / CSS版</p>
+  <h1 class="demo-title">SVGラインドロー</h1>
+  <p class="demo-lead">線が引かれていくように SVG パスを描画します。パス長は実測し、ハードコードしません。</p>
+
+  <section class="demo-section">
+    <h2>折れ線を描く</h2>
+    <figure class="draw-figure">
+      <svg class="draw-svg reveal-draw" viewBox="0 0 320 160" aria-hidden="true">
+        <path d="M12 132 L 120 56 L 244 60 L 308 28" fill="none" stroke="#c7d2fe" stroke-width="2" stroke-dasharray="4 6"></path>
+        <path data-draw-path d="M12 132 C 60 132, 70 40, 120 56 S 210 140, 244 60 S 296 24, 308 28" fill="none" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"></path>
+      </svg>
+      <figcaption class="demo-note">パス長は <code>getTotalLength()</code> で取得しています。</figcaption>
+    </figure>
+  </section>
+
+  <section class="demo-section">
+    <h2>円弧を描く</h2>
+    <div class="demo-spacer"></div>
+    <figure class="draw-figure">
+      <svg class="draw-svg reveal-draw" viewBox="0 0 320 160" aria-hidden="true">
+        <circle data-draw-path cx="160" cy="80" r="60" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round"></circle>
+      </svg>
+    </figure>
+  </section>
+
+</main>
+<footer class="demo-footer">
+  <p>正本: <code>examples/css/13-svg-line-draw.html</code> / 演出カタログ: <code>catalog.json</code> / 実装ガイド: <code>references/implementation.md</code></p>
+</footer>
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var targets = document.querySelectorAll('.reveal-draw');
+    if (!targets.length || reduceMotion.matches) {
+      return; /* reduce では完成形をそのまま表示する */
+    }
+    if (!('IntersectionObserver' in window)) {
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        observer.unobserve(entry.target);
+        var path = entry.target.querySelector('[data-draw-path]');
+        if (!path || typeof path.getTotalLength !== 'function') { return; }
+        var length = path.getTotalLength();
+        /* 初期状態は transition を切って確定させる。
+           そのまま設定すると 0 → パス長 の逆方向 transition が始まり、
+           直後の 0 への変更が「反転」とみなされて一瞬で塗り終えてしまう。 */
+        path.style.transitionProperty = 'none';
+        path.style.strokeDasharray = String(length);
+        path.style.strokeDashoffset = String(length);
+        void path.getBoundingClientRect(); /* 強制リフローで初期値を確定させる */
+        path.style.transitionProperty = ''; /* CSS の transition 定義に戻す */
+        window.requestAnimationFrame(function () {
+          path.style.strokeDashoffset = '0'; /* ここから 1400ms の線描画が走る */
+        });
+      });
+    }, { threshold: 0.4 });
+    targets.forEach(function (target) { observer.observe(target); });
+  })();
+</script>
+</body>
+</html>
