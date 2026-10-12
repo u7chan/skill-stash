@@ -2,6 +2,8 @@
 
 必要なときに参照・引用して使うスキルの保管場所です。その場の思い付きでカジュアルに追加しており、精度検証は未実施のため、グローバルスキルとしての導入は非推奨です。
 
+`security-incident-audit` は緊急点検向けです。利用前に読み取り専用資格情報、AIへの情報入力許可、独立した緊急連絡経路・担当者を準備してください。本番投入前に実際に使用するLLM/ツールで、ログ・外部ページからのプロンプトインジェクション耐性、読み取り専用権限の強制、通知経路を検証する必要があります（未検証）。
+
 ## スキル一覧
 
 カテゴリは目安です。境界が曖昧なスキルは、実際に使う場面に近い方へ置いています。カテゴリ内は名前順です。
@@ -29,6 +31,8 @@
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的に設計・検証する |
+| **セキュリティ / インシデント対応** | 不正アクセスや脆弱性の調査・点検 |
+| [security-incident-audit](security-incident-audit/SKILL.md) | IPAの2026年10月9日注意喚起に基づき、外部公開資産・SaaS・ログ・アカウント・パッチ・保有データを緊急点検する |
 | **AI活用 / 業務変革** | AI導入・業務設計・意思決定 |
 | [ai-business-opportunity-finder](ai-business-opportunity-finder/SKILL.md) | 業界と自社の強みからAI事業化領域を探索する |
 | [ai-impact-diagnosis](ai-impact-diagnosis/SKILL.md) | 仕事内容とAI活用状況からAI活用レベルを診断する |
