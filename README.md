@@ -42,6 +42,7 @@
 | [daily-ai-work-orchestrator](daily-ai-work-orchestrator/SKILL.md) | 予定一覧から1日の生産性と仕事の質を最大化する |
 | [meeting-to-actions](meeting-to-actions/SKILL.md) | 会議ログを次のアクションに使える形へ整理する |
 | **表現 / 可視化** | 文章品質・図解 |
+| [ffmpeg-video-edit](ffmpeg-video-edit/SKILL.md) | 動画の指定区間だけを倍速化し、下部中央に背景付きテロップを焼き込み、iOS向けのH.264/AAC MP4へ正規化する |
 | [japanese-writing-quality](japanese-writing-quality/SKILL.md) | 日本語文書を意味と書き手の特徴を保ちながら、校正・自然化・執筆・構造推敲し、読解負荷と情報密度を改善する |
 | [visualize](visualize/SKILL.md) | 理解したい対象から最適な可視化形式を選び、ASCII・Mermaid・HTML・画像生成へ振り分ける |
 | **学習 / 実験** | 教育スキル・チュートリアル |
