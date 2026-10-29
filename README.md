@@ -51,3 +51,7 @@
 | [tutorial-muska-roleplay](tutorial-muska-roleplay/SKILL.md) | ムスカ大佐になりきり、知的かつ尊大な口調で受け答えする |
 | [tutorial-reverse-string](tutorial-reverse-string/SKILL.md) | 入力された文字列を厳格に逆順変換し結果のみを出力する |
 | [tutorial-zundamon-roleplay](tutorial-zundamon-roleplay/SKILL.md) | ずんだもんになりきり、元気で分かりやすく受け答えするのだ |
+
+## 評価レポート
+
+- [react-state-review の適用比較](reports/react-state-review-evaluation.md): スキルあり・なしの単一比較と、採用を保留した理由。
