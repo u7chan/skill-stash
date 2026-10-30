@@ -10,6 +10,20 @@ description: React / React NativeでuseEffectを設計・実装・レビュー�
 Effectを書く前に、必ず「Reactの外にある何と同期するのか」を説明する。
 説明できないならEffectを使わない。
 
+## Quick Reference
+
+既存のEffectや追加候補を見たら、処理の原因から代替候補を絞る。以下は一律禁止ではなく、同期理由を確認するための目安。
+
+| 兆候 | 第一候補 |
+| --- | --- |
+| props/stateから計算した値をEffectでsetStateする | render中に導出。重い計算だけ`useMemo`を検討 |
+| Effect内でfetchしてstateへ保存する | framework / query libraryの取得機構 |
+| イベントでフラグを立て、Effectで処理を実行する | event handlerで直接処理 |
+| IDなどの変更時にローカルstateを全resetする | `key`でcomponent identityを変更 |
+| `useEffect + useState`で外部storeを購読する | `useSyncExternalStore` |
+| DOM nodeのattach/detachに応じて処理する | callback ref |
+| WebSocket / SSE / timer / 外部widgetと同期する | `useEffect`と正しいdependencies / cleanup |
+
 ## Decision Gate
 
 次の順で判定する。
@@ -130,6 +144,8 @@ stateをフラグとして立て、その変化をEffectが監視して本処理
 
 指摘では「Effectが悪い」ではなく、**何を同期しているか / なぜ代替の方が自然か**を説明する。
 
+変更を推奨する場合は対象箇所、処理が発火する経路、現在の挙動、最小の代替案、守るべき挙動を示す。既存のguard・`key`・非同期キャンセルを確認し、到達しない不具合を断定しない。小さな修正で十分なら大きな再設計を強要しない。
+
 ## Custom Hook Rule
 
 外部同期の再利用にはcustom hookを使ってよい。
@@ -161,5 +177,6 @@ Effectを追加・変更したら確認する。
 - race / stale closure / reconnect loopを考慮した
 - specialized APIがあるならそちらを優先した
 - `useEffectEvent` を使う場合はReactバージョン/API availabilityを確認した
+- 変更した場合は対象プロジェクトの既存lint / typecheck / testsを可能な範囲で実行し、実施・未実施を明記した
 
 詳細なパターンとBefore/After例は [references/patterns.md](references/patterns.md) を参照する。
