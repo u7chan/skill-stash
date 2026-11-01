@@ -75,10 +75,24 @@ escape hatchを完全に消して複雑な迂回を生むより、**局所的・
 - lint / static analysis / tests / CI
 - Agent instructions / design documentation
 - 実際に発生しているUI driftやレビュー指摘
+- 可能であれば実画面で確認できる情報階層・余白・強調・操作状態の不整合
 
 特定技術への移行を前提にしない。
 
-### 2. Identify design invariants
+### 2. Qualify visual findings
+
+視覚的な違和感を、直ちにデザイントークンや禁止ルールへ変換しない。まず具体的な問題として記述する。
+
+- **観測**: どの画面・状態・要素で問題が起きるか
+- **影響**: 読み順、判別、操作、アクセシビリティの何が損なわれるか
+- **再発性**: 局所的な実装ミスか、複数箇所で繰り返される設計上の問題か
+- **既存方針**: プロダクトが意図して採用している表現か、未決定の選択か
+
+再発する問題で、共有すべき設計判断が明確なものだけを次の制約候補へ進める。単発の見た目の修正は、その場で直して終えてよい。
+
+具体例と見極め方は [references/constraint-model.md](references/constraint-model.md) を参照する。
+
+### 3. Identify design invariants
 
 ルールを次の3つに分ける。
 
@@ -88,7 +102,7 @@ escape hatchを完全に消して複雑な迂回を生むより、**局所的・
 
 `Invariant` を中心に設計する。LLM対策という理由だけで `Guided choice` や `Free choice` を固定しない。
 
-### 3. Choose the enforcement boundary
+### 4. Choose the enforcement boundary
 
 Invariantごとに、最も自然な境界で制約する。
 
@@ -103,7 +117,7 @@ Invariantごとに、最も自然な境界で制約する。
 
 実装例は [references/enforcement-patterns.md](references/enforcement-patterns.md) を参照する。
 
-### 4. Apply the smallest coherent change
+### 5. Apply the smallest coherent change
 
 一度にUI全体を作り直さない。
 
@@ -118,7 +132,7 @@ Invariantごとに、最も自然な境界で制約する。
 
 既存システムへの導入は [references/incremental-adoption.md](references/incremental-adoption.md) を参照する。
 
-### 5. Validate the constraint
+### 6. Validate the constraint
 
 正常系だけでなく、**誤った実装が実際に拒否されるか**を確認する。
 
@@ -130,6 +144,7 @@ Invariantごとに、最も自然な境界で制約する。
 - responsive / theme / interaction stateが必要な範囲で表現できる
 - escape hatchが通常経路より簡単になっていない
 - 既存UIに意図しない見た目の差分を作っていない
+- 制約の導入が観測された問題を防ぎ、意図した表現まで禁止していない
 
 ## Review Mode
 
@@ -157,6 +172,7 @@ UIアーキテクチャをレビューするときは、まずLLM生成コード
 - documentationで十分な判断事項までCI failureにする
 - escape hatchを隠し、非公式な回避策を誘発する
 - migrationと無関係なvisual redesignを同時に行う
+- 画面固有の美的判断を、根拠なく全画面共通の禁止事項へ昇格する
 
 ## Completion Report
 
