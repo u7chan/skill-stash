@@ -26,6 +26,7 @@
 | [frontend-engineering-baseline](frontend-engineering-baseline/SKILL.md) | TypeScriptフロントエンドの開発基盤を調査し、必要な品質・安全性・再現性を最小変更で整える |
 | [llm-safe-ui-architecture](llm-safe-ui-architecture/SKILL.md) | LLMが生成・変更するUIの設計判断を実行可能な制約へ落とし込み、UI driftを防ぐ |
 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |
+| [pyxel-cube](pyxel-cube/SKILL.md) | Pyxel CubeのNodeツリー・3D描画・GLB・物理演算でレトロ3Dゲームを実装・検証する |
 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
 | [scroll-motion](scroll-motion/SKILL.md) | スクロール演出24種をCSS優先で選定・実装し、静的ショールームとCSS/Tailwindのサンプルから適用する |
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
