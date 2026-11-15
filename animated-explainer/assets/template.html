@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style>
+    :root {
+      --light-background: #f5f5f5;
+      --light-surface: #ffffff;
+      --light-text: #171717;
+      --light-muted: #575757;
+      --light-border: #a3a3a3;
+      --light-accent: #262626;
+      --dark-background: #141414;
+      --dark-surface: #202020;
+      --dark-text: #f5f5f5;
+      --dark-muted: #c2c2c2;
+      --dark-border: #888888;
+      --dark-accent: #ededed;
+      --radius: 12px;
+      color-scheme: light dark;
+      background: light-dark(var(--light-background), var(--dark-background));
+      color: light-dark(var(--light-text), var(--dark-text));
+      font-family: Inter, "Noto Sans JP", system-ui, sans-serif;
+    }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      --background: light-dark(var(--light-background), var(--dark-background));
+      --surface: light-dark(var(--light-surface), var(--dark-surface));
+      --text: light-dark(var(--light-text), var(--dark-text));
+      --muted: light-dark(var(--light-muted), var(--dark-muted));
+      --border: light-dark(var(--light-border), var(--dark-border));
+      --accent: light-dark(var(--light-accent), var(--dark-accent));
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(100%, max(17rem, calc((100svh - 3.75rem) * 9 / 16)), 36rem);
+    }
+    article {
+      container-type: inline-size;
+      position: relative;
+      aspect-ratio: 9 / 16;
+    }
+    .stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3cqw;
+      padding: 5cqw;
+    }
+    .stage > * { flex: none; }
+    header { text-align: center; }
+    h1 { margin: 0; font-size: 7.6cqw; line-height: 1.16; overflow-wrap: anywhere; }
+    #subtitle { margin: 2cqw 0 0; color: var(--muted); font-size: 3.7cqw; }
+    #metrics {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5cqw;
+      min-height: 6.5cqw;
+      margin: 0;
+      font-size: 3.5cqw;
+    }
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 1cqw;
+      padding: 0.7cqw 2cqw;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    dt { color: var(--muted); }
+    dd { margin: 0; font-weight: 700; }
+    #diagram { flex: 1 1 auto; position: relative; min-height: 30cqw; }
+    #edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .edge { color: var(--border); }
+    .edge.is-active { color: var(--accent); }
+    .edge line { stroke: currentColor; stroke-width: 1.5; marker-end: url(#arrow); }
+    .edge.is-active line { stroke-width: 2.5; marker-end: url(#arrow-active); }
+    .edge.is-undirected line { marker-end: none; }
+    .edge.is-dashed line { stroke-dasharray: 4 4; }
+    #arrow path { fill: var(--border); }
+    #arrow-active path { fill: var(--accent); }
+    .edge text {
+      fill: var(--text);
+      stroke: var(--background);
+      stroke-width: 4;
+      paint-order: stroke;
+      dominant-baseline: middle;
+      text-anchor: middle;
+      font-size: 3cqw;
+    }
+    .flow {
+      opacity: 0;
+      fill: var(--accent);
+      stroke: var(--background);
+      stroke-width: 1.5;
+    }
+    .flow.is-moving { animation: move var(--flow-duration) ease-in-out both; }
+    .stage[data-frozen="true"] .flow { animation-play-state: paused; }
+    @keyframes move {
+      0% { transform: var(--from); opacity: 0; }
+      18%, 82% { opacity: 1; }
+      100% { transform: var(--to); opacity: 0; }
+    }
+    .node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      padding: 2.6cqw 1.5cqw;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .node.is-focused { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .node.is-entering {
+      animation-duration: 420ms;
+      animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation-fill-mode: both;
+      animation-delay: calc(var(--order, 0) * 70ms);
+    }
+    .stage[data-effect="fade"] .node.is-entering { animation-name: enter-fade; }
+    .stage[data-effect="rise"] .node.is-entering { animation-name: enter-rise; }
+    .stage[data-effect="drop"] .node.is-entering { animation-name: enter-drop; }
+    .stage[data-effect="left"] .node.is-entering { animation-name: enter-left; }
+    .stage[data-effect="right"] .node.is-entering { animation-name: enter-right; }
+    .stage[data-effect="pop"] .node.is-entering {
+      animation-name: enter-pop;
+      animation-timing-function: cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+    .stage[data-effect="zoom"] .node.is-entering { animation-name: enter-zoom; }
+    @keyframes enter-fade { from { opacity: 0; } }
+    @keyframes enter-rise { from { opacity: 0; translate: 0 5cqw; } }
+    @keyframes enter-drop { from { opacity: 0; translate: 0 -5cqw; } }
+    @keyframes enter-left { from { opacity: 0; translate: -6cqw 0; } }
+    @keyframes enter-right { from { opacity: 0; translate: 6cqw 0; } }
+    @keyframes enter-pop { 0% { opacity: 0; scale: 0.8; } 65% { scale: 1.06; } }
+    @keyframes enter-zoom { from { opacity: 0; scale: 1.14; } }
+    .node strong { display: block; font-size: 4.3cqw; line-height: 1.25; }
+    .node small { display: block; margin-top: 1cqw; color: var(--muted); font-size: 3.2cqw; }
+    #caption {
+      min-height: 14cqw;
+      margin: 0;
+      display: grid;
+      align-content: center;
+      text-align: center;
+      font-size: 5.1cqw;
+      font-weight: 750;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    #code {
+      max-height: 38cqw;
+      margin: 0;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    #code-label { padding: 1.7cqw 2.5cqw 0; color: var(--muted); font-size: 3cqw; }
+    pre { margin: 0; padding: 1.5cqw 0; font: 3cqw/1.6 ui-monospace, Consolas, monospace; }
+    #code-lines { display: block; min-width: max-content; }
+    .code-line { display: block; padding: 0 2.25cqw; border-inline-start: 2px solid transparent; }
+    .code-line.is-highlighted {
+      border-inline-start-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+    }
+    nav {
+      min-height: 3.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.25rem;
+    }
+    button {
+      min-height: 2.25rem;
+      padding: 0.3rem 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+    button:disabled { color: var(--muted); opacity: 0.55; cursor: default; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+    #step { padding: 0 0.25rem; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) {
+      .node.is-entering, .flow.is-moving { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article aria-labelledby="title">
+      <div class="stage" data-playing="false">
+        <header>
+          <h1 id="title"></h1>
+          <p id="subtitle" hidden></p>
+        </header>
+        <dl id="metrics" class="metrics" hidden></dl>
+        <div id="diagram">
+          <svg id="edges" aria-hidden="true">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 Z"/>
+              </marker>
+              <marker id="arrow-active" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 Z"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <p id="caption" aria-live="polite"></p>
+        <figure id="code" hidden>
+          <figcaption id="code-label" hidden></figcaption>
+          <pre><code id="code-lines"></code></pre>
+        </figure>
+      </div>
+    </article>
+    <nav id="controls">
+      <button type="button" id="prev"></button>
+      <button type="button" id="play"></button>
+      <button type="button" id="restart"></button>
+      <button type="button" id="next"></button>
+      <span id="step"></span>
+    </nav>
+  </main>
+  <script id="explainer-data" type="application/json">/* EMBED_EXPLAINER_DATA */</script>
+  <script>
+    const byId = (id) => document.getElementById(id);
+    const { content, theme } = JSON.parse(byId('explainer-data').textContent);
+    const root = document.documentElement;
+    root.lang = content.lang ?? 'ja';
+    root.dataset.theme = theme.mode ?? 'system';
+    if (theme.radius !== undefined) root.style.setProperty('--radius', `${theme.radius}px`);
+    for (const mode of ['light', 'dark']) {
+      for (const [name, value] of Object.entries(theme[mode] ?? {})) {
+        root.style.setProperty(`--${mode}-${name}`, value);
+      }
+    }
+
+    const labels = root.lang.toLowerCase().split('-')[0] === 'ja'
+      ? { controls: '再生操作', prev: '前へ', next: '次へ', play: '再生', pause: '一時停止', restart: '最初から' }
+      : { controls: 'Playback controls', prev: 'Back', next: 'Next', play: 'Play', pause: 'Pause', restart: 'Restart' };
+    document.title = content.title;
+    byId('title').textContent = content.title;
+    byId('subtitle').textContent = content.subtitle ?? '';
+    byId('subtitle').hidden = !content.subtitle;
+    byId('controls').setAttribute('aria-label', labels.controls);
+    for (const id of ['prev', 'next', 'restart']) byId(id).textContent = labels[id];
+    byId('prev').title = `${labels.prev} (←)`;
+    byId('next').title = `${labels.next} (→)`;
+    byId('prev').setAttribute('aria-keyshortcuts', 'ArrowLeft');
+    byId('next').setAttribute('aria-keyshortcuts', 'ArrowRight');
+    byId('play').setAttribute('aria-keyshortcuts', 'Space');
+
+    const stage = document.querySelector('.stage');
+    const article = document.querySelector('article');
+    const diagram = byId('diagram');
+    const svg = byId('edges');
+    const caption = byId('caption');
+    const metrics = byId('metrics');
+    const code = byId('code');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const effects = new Set(['fade', 'rise', 'drop', 'left', 'right', 'pop', 'zoom']);
+    const { scenes } = content;
+
+    function element(tag, className, text = '') {
+      const result = document.createElement(tag);
+      result.className = className;
+      result.textContent = text;
+      return result;
+    }
+
+    function fitText(target, maxCqw, sizes) {
+      const limit = (maxCqw * article.getBoundingClientRect().width) / 100;
+      for (const size of sizes) {
+        target.style.fontSize = `${size}cqw`;
+        if (target.getBoundingClientRect().height <= limit) return;
+      }
+    }
+
+    const nodes = new Map();
+    for (const node of content.nodes) {
+      const box = element('div', 'node');
+      box.hidden = true;
+      box.style.left = `${node.x}%`;
+      box.style.top = `${node.y}%`;
+      box.style.width = `${node.width ?? 30}%`;
+      const detail = element('small', 'detail');
+      box.append(element('strong', 'node-label', node.label), detail);
+      diagram.append(box);
+      nodes.set(node.id, { box, detail, defaultDetail: node.detail ?? '' });
+    }
+
+    const svgElement = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
+    const links = new Map();
+    for (const link of content.links ?? []) {
+      const group = svgElement('g');
+      const line = svgElement('line');
+      const label = svgElement('text');
+      const dot = svgElement('circle');
+      group.setAttribute('hidden', '');
+      group.classList.add('edge');
+      group.classList.toggle('is-dashed', link.style === 'dashed');
+      group.classList.toggle('is-undirected', link.directed === false);
+      label.textContent = link.label ?? '';
+      dot.classList.add('flow');
+      dot.setAttribute('r', '4');
+      group.append(line, label, dot);
+      svg.append(group);
+      links.set(link.id, { group, line, label, dot, from: nodes.get(link.from), to: nodes.get(link.to) });
+    }
+
+    // Layout box of a node in diagram coordinates. Measured from offset* so
+    // the entrance transform (translate/scale) never moves the edges.
+    function boxWithin(box) {
+      return {
+        x: box.offsetLeft,
+        y: box.offsetTop,
+        width: box.offsetWidth,
+        height: box.offsetHeight,
+      };
+    }
+
+    function intersection(from, to) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (dx === 0 && dy === 0) return [from.x, from.y];
+      const scale = Math.min((from.width / 2 + 3) / Math.abs(dx), (from.height / 2 + 3) / Math.abs(dy));
+      return [from.x + dx * scale, from.y + dy * scale];
+    }
+
+    function drawEdges() {
+      for (const { group, line, label, dot, from, to } of links.values()) {
+        if (group.hasAttribute('hidden')) continue;
+        const start = boxWithin(from.box);
+        const end = boxWithin(to.box);
+        const [x1, y1] = intersection(start, end);
+        const [x2, y2] = intersection(end, start);
+        for (const [key, value] of Object.entries({ x1, y1, x2, y2 })) line.setAttribute(key, value);
+        const length = Math.hypot(x2 - x1, y2 - y1);
+        let nx = 0;
+        let ny = -1;
+        if (length > 0) {
+          nx = -(y2 - y1) / length;
+          ny = (x2 - x1) / length;
+          if (ny > 0) { nx = -nx; ny = -ny; }
+        }
+        const size = parseFloat(getComputedStyle(label).fontSize) || 14;
+        const sideways = Math.abs(nx) > Math.abs(ny);
+        const offset = size * (sideways ? 0.7 : 1.1);
+        label.style.textAnchor = sideways ? 'end' : 'middle';
+        label.setAttribute('x', (x1 + x2) / 2 + nx * offset);
+        label.setAttribute('y', (y1 + y2) / 2 + ny * offset);
+        dot.style.setProperty('--from', `translate(${x1}px, ${y1}px)`);
+        dot.style.setProperty('--to', `translate(${x2}px, ${y2}px)`);
+      }
+    }
+
+    function renderCode(config) {
+      code.hidden = !config;
+      const label = byId('code-label');
+      label.textContent = config?.label ?? '';
+      label.hidden = !config?.label;
+      const highlighted = new Set(config?.highlight ?? []);
+      const lines = (config?.lines ?? []).map((text, index) => {
+        const line = element('span', 'code-line', text || '\u00a0');
+        line.classList.toggle('is-highlighted', highlighted.has(index + 1));
+        return line;
+      });
+      byId('code-lines').replaceChildren(...lines);
+      code.scrollTo(0, 0);
+    }
+
+    function render(scene) {
+      const shownNodes = new Set(scene.nodes);
+      const shownLinks = new Set(scene.links ?? []);
+      const focused = new Set(scene.focus ?? []);
+      const flowing = new Set(scene.flow ?? []);
+      stage.dataset.effect = effects.has(scene.effect) ? scene.effect : 'fade';
+      let entering = 0;
+      for (const id of scene.nodes) {
+        const entry = nodes.get(id);
+        if (entry) entry.box.style.setProperty('--order', entry.box.hidden ? entering++ : 0);
+      }
+      for (const [id, { box, detail, defaultDetail }] of nodes) {
+        const visible = shownNodes.has(id);
+        box.classList.toggle('is-entering', visible && box.hidden);
+        box.hidden = !visible;
+        box.classList.toggle('is-focused', focused.has(id));
+        detail.textContent = Object.hasOwn(scene.details ?? {}, id) ? scene.details[id] : defaultDetail;
+        detail.hidden = !detail.textContent;
+      }
+      for (const [id, { group, dot }] of links) {
+        group.toggleAttribute('hidden', !shownLinks.has(id));
+        group.classList.toggle('is-active', flowing.has(id));
+        dot.classList.remove('is-moving');
+      }
+      caption.textContent = scene.caption;
+      fitText(caption, 22, [5.1, 4.5, 3.9, 3.4]);
+      const items = scene.metrics ?? [];
+      metrics.replaceChildren(...items.map(({ label, value }) => {
+        const metric = element('div', 'metric');
+        metric.append(element('dt', 'metric-label', label), element('dd', 'metric-value', value));
+        return metric;
+      }));
+      metrics.hidden = items.length === 0;
+      renderCode(scene.code);
+      drawEdges();
+      stage.style.setProperty('--flow-duration', `${Math.min((scene.duration ?? 3) * 0.8, 1.5)}s`);
+      for (const id of flowing) links.get(id).dot.classList.add('is-moving');
+    }
+
+    let index = 0;
+    let playing = false;
+    let finished = false;
+    let timer = null;
+    let deadline = 0;
+    let remaining = 0;
+
+    function updateControls() {
+      byId('prev').disabled = index === 0;
+      byId('next').disabled = index === scenes.length - 1;
+      byId('play').textContent = playing ? labels.pause : labels.play;
+      byId('play').title = `${playing ? labels.pause : labels.play} (Space)`;
+      byId('step').textContent = `${index + 1} / ${scenes.length}`;
+      stage.dataset.playing = String(playing);
+      caption.setAttribute('aria-live', playing ? 'off' : 'polite');
+    }
+
+    function stopTimer() {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    function schedule() {
+      deadline = performance.now() + remaining;
+      timer = setTimeout(() => {
+        timer = null;
+        if (index < scenes.length - 1) {
+          show(index + 1);
+        } else {
+          finished = true;
+          playing = false;
+          updateControls();
+        }
+      }, remaining);
+    }
+
+    function show(position) {
+      stopTimer();
+      delete stage.dataset.frozen;
+      index = position;
+      finished = false;
+      remaining = (scenes[index].duration ?? 3) * 1000;
+      updateControls();
+      render(scenes[index]);
+      if (playing) schedule();
+    }
+
+    function pause() {
+      if (timer !== null) remaining = Math.max(0, deadline - performance.now());
+      stopTimer();
+      playing = false;
+      stage.dataset.frozen = 'true';
+      updateControls();
+    }
+
+    byId('play').onclick = () => {
+      if (playing) {
+        pause();
+        return;
+      }
+      playing = true;
+      delete stage.dataset.frozen;
+      if (finished) {
+        show(0);
+      } else {
+        updateControls();
+        schedule();
+      }
+    };
+    byId('restart').onclick = () => {
+      playing = !reducedMotion.matches;
+      show(0);
+    };
+    byId('prev').onclick = () => { playing = false; show(index - 1); };
+    byId('next').onclick = () => { playing = false; show(index + 1); };
+    reducedMotion.addEventListener('change', (event) => { if (event.matches) pause(); });
+    document.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key === ' ' || event.key === 'Spacebar') {
+        const target = event.target;
+        if (target instanceof Element && target.closest('button, input, textarea, select, [contenteditable]')) return;
+        event.preventDefault();
+        byId('play').click();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        byId('prev').click();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        byId('next').click();
+      }
+    });
+    new ResizeObserver(drawEdges).observe(diagram);
+    fitText(byId('title'), 24, [7.6, 6.6, 5.6, 4.8]);
+    byId('restart').onclick();
+  </script>
+</body>
+</html>
