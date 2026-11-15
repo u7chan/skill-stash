@@ -160,7 +160,7 @@
       overflow-wrap: anywhere;
     }
     #code {
-      max-height: 34cqw;
+      max-height: 38cqw;
       margin: 0;
       overflow: auto;
       border: 1px solid var(--border);
@@ -328,13 +328,14 @@
       links.set(link.id, { group, line, label, dot, from: nodes.get(link.from), to: nodes.get(link.to) });
     }
 
-    function rectWithin(box, frame) {
-      const rect = box.getBoundingClientRect();
+    // Layout box of a node in diagram coordinates. Measured from offset* so
+    // the entrance transform (translate/scale) never moves the edges.
+    function boxWithin(box) {
       return {
-        x: rect.left - frame.left + rect.width / 2,
-        y: rect.top - frame.top + rect.height / 2,
-        width: rect.width,
-        height: rect.height,
+        x: box.offsetLeft,
+        y: box.offsetTop,
+        width: box.offsetWidth,
+        height: box.offsetHeight,
       };
     }
 
@@ -347,11 +348,10 @@
     }
 
     function drawEdges() {
-      const frame = diagram.getBoundingClientRect();
       for (const { group, line, label, dot, from, to } of links.values()) {
         if (group.hasAttribute('hidden')) continue;
-        const start = rectWithin(from.box, frame);
-        const end = rectWithin(to.box, frame);
+        const start = boxWithin(from.box);
+        const end = boxWithin(to.box);
         const [x1, y1] = intersection(start, end);
         const [x2, y2] = intersection(end, start);
         for (const [key, value] of Object.entries({ x1, y1, x2, y2 })) line.setAttribute(key, value);
@@ -505,7 +505,7 @@
     byId('next').onclick = () => { playing = false; show(index + 1); };
     reducedMotion.addEventListener('change', (event) => { if (event.matches) pause(); });
     document.addEventListener('keydown', (event) => {
-      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
       if (event.key === ' ' || event.key === 'Spacebar') {
         const target = event.target;
         if (target instanceof Element && target.closest('button, input, textarea, select, [contenteditable]')) return;
