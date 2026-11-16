@@ -18,7 +18,7 @@ ICON_ID = re.compile(r'<symbol id="icon-([a-z0-9-]+)"')
 
 def check_icon(item, icons, where):
     if "icon" in item:
-        require(item["icon"] in icons,
+        require(isinstance(item["icon"], str) and item["icon"] in icons,
                 f"{where}.icon: unknown icon {item['icon']!r} (available: {', '.join(sorted(icons))})")
 
 

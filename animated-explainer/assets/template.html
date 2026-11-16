@@ -768,7 +768,9 @@
         done.add(id);
         ordered.push(id);
       };
-      for (const id of ids) visit(id);
+      // A canonical root order keeps even a cycle's start independent of the
+      // order in which the content lists its flow links.
+      for (const id of [...ids].sort()) visit(id);
       return ordered;
     }
 
@@ -1295,6 +1297,11 @@
       startFlows(scene.flow ?? [], delay);
       playSceneSounds(scene, entering);
       scheduleFlowSounds();
+      if (scene === scenes[index]) {
+        byId('step').textContent = `${index + 1} / ${scenes.length}`;
+        if (playing) schedule();
+        else updateGauge();
+      }
     }
 
     // Viewer settings (autoplay on open, sound) are remembered in this browser
@@ -1397,7 +1404,8 @@
         updateGauge();
       } else if (finished) {
         show(0);
-      } else {
+      } else if (renderedScene === scenes[index]) {
+        // While a scene is still exiting, render() starts the timer.
         schedule();
       }
     }
@@ -1408,10 +1416,9 @@
       index = Math.max(0, Math.min(scenes.length - 1, position));
       finished = false;
       remaining = (scenes[index].duration ?? 3) * 1000;
-      byId('step').textContent = `${index + 1} / ${scenes.length}`;
+      // Start the scene once its content is rendered, after the exit beat.
+      // Starting here would let a short duration outrun the pending render.
       transition(scenes[index], direction);
-      if (playing) schedule();
-      else updateGauge();
     }
 
     function go(delta) {
