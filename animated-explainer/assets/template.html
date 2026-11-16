@@ -12,12 +12,14 @@
       --light-muted: #575757;
       --light-border: #a3a3a3;
       --light-accent: #262626;
+      --light-flow: #e8590c;
       --dark-background: #141414;
       --dark-surface: #202020;
       --dark-text: #f5f5f5;
       --dark-muted: #c2c2c2;
       --dark-border: #888888;
       --dark-accent: #ededed;
+      --dark-flow: #ff7a1a;
       --radius: 12px;
       color-scheme: light dark;
       background: light-dark(var(--light-background), var(--dark-background));
@@ -35,14 +37,23 @@
       --muted: light-dark(var(--light-muted), var(--dark-muted));
       --border: light-dark(var(--light-border), var(--dark-border));
       --accent: light-dark(var(--light-accent), var(--dark-accent));
+      --flow: light-dark(var(--light-flow), var(--dark-flow));
       margin: 0;
       min-height: 100svh;
+      /* The bottom padding keeps the corner controls (3rem tall) off the slide at
+         any window shape, so the slide alone can be cropped for recording. */
+      padding: 0.5rem 0.5rem 3.5rem;
       display: grid;
       place-items: center;
     }
     main {
-      width: min(100%, max(17rem, calc((100svh - 3.75rem) * 9 / 16)), 36rem);
+      /* Fit the slide to both the available width and height. A minimum width
+         here would let a short window push the slide under the corner controls. */
+      width: min(100%, calc((100svh - 4rem) * 9 / 16), 36rem);
     }
+    /* Trim guide for recording: a line just outside the slide, so cropping along
+       its inner edge leaves the line out. */
+    article.has-frame { outline: 1px solid var(--accent); }
     article {
       container-type: inline-size;
       position: relative;
@@ -71,23 +82,65 @@
     }
     .metric {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 1cqw;
       padding: 0.7cqw 2cqw;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--surface);
     }
-    dt { color: var(--muted); }
+    dt { display: inline-flex; align-items: center; gap: 0.3em; color: var(--muted); }
+    .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .icon {
+      width: 1.1em;
+      height: 1.1em;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    /* "Before" / "After" tag above the figure of a paired scene. */
+    #phase {
+      align-self: center;
+      margin: 0;
+      padding: 0.6cqw 2.8cqw;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 3.4cqw;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    #phase[data-phase="after"] { border: 1.5px solid var(--accent); background: var(--accent); color: var(--surface); }
     dd { margin: 0; font-weight: 700; }
     #diagram { flex: 1 1 auto; position: relative; min-height: 30cqw; }
     #edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    .edge { color: var(--border); }
+    .edge { color: var(--border); transition: color 300ms ease; }
     .edge.is-active { color: var(--accent); }
-    .edge line { stroke: currentColor; stroke-width: 1.5; marker-end: url(#arrow); }
-    .edge.is-active line { stroke-width: 2.5; marker-end: url(#arrow-active); }
-    .edge.is-undirected line { marker-end: none; }
+    .edge line { stroke: currentColor; stroke-width: 1.5; marker-end: url(#arrow); transition: stroke-width 300ms ease; }
     .edge.is-dashed line { stroke-dasharray: 4 4; }
+    /* Flowing links: dashes march from `from` to `to` for as long as the scene is shown. */
+    .edge.is-active line {
+      stroke-width: 2.5;
+      marker-end: url(#arrow-active);
+      stroke-dasharray: 8 6;
+      animation: march 0.7s linear infinite;
+    }
+    .edge.is-undirected line { marker-end: none; }
+    @keyframes march { to { stroke-dashoffset: -14; } }
+    /* Blocked links: the line stops at a cross halfway, and the rest is faint. */
+    .edge.is-blocked line { marker-end: none; }
+    .edge line.rest { stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 2 5; animation: none; }
+    .edge .cross {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 3;
+      stroke-linecap: round;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
     #arrow path { fill: var(--border); }
     #arrow-active path { fill: var(--accent); }
     .edge text {
@@ -99,18 +152,35 @@
       text-anchor: middle;
       font-size: 3cqw;
     }
+    /* Packets take their own color, ringed with the surface color, so they stand out from the dashes. */
     .flow {
       opacity: 0;
-      fill: var(--accent);
-      stroke: var(--background);
-      stroke-width: 1.5;
+      fill: var(--flow);
+      stroke: var(--surface);
+      stroke-width: 2.5;
     }
-    .flow.is-moving { animation: move var(--flow-duration) ease-in-out both; }
-    .stage[data-frozen="true"] .flow { animation-play-state: paused; }
-    @keyframes move {
-      0% { transform: var(--from); opacity: 0; }
-      18%, 82% { opacity: 1; }
-      100% { transform: var(--to); opacity: 0; }
+    /* One segment per scene: past scenes are full, the current one fills until
+       the next scene while playing and holds while stopped. */
+    .gauge {
+      position: absolute;
+      left: 5cqw;
+      right: 5cqw;
+      bottom: 2cqw;
+      height: 0.9cqw;
+      display: flex;
+      gap: 0.8cqw;
+    }
+    .gauge-segment {
+      flex: 1;
+      overflow: hidden;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--border) 40%, transparent);
+    }
+    .gauge-fill {
+      height: 100%;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
     }
     .node {
       position: absolute;
@@ -122,7 +192,9 @@
       text-align: center;
       overflow-wrap: anywhere;
     }
-    .node.is-focused { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* The focus ring fades between scenes instead of snapping. */
+    .node { outline: 2px solid transparent; outline-offset: 2px; transition: outline-color 320ms ease; }
+    .node.is-focused { outline-color: var(--accent); }
     .node.is-entering {
       animation-duration: 420ms;
       animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -146,18 +218,88 @@
     @keyframes enter-right { from { opacity: 0; translate: 6cqw 0; } }
     @keyframes enter-pop { 0% { opacity: 0; scale: 0.8; } 65% { scale: 1.06; } }
     @keyframes enter-zoom { from { opacity: 0; scale: 1.14; } }
-    .node strong { display: block; font-size: 4.3cqw; line-height: 1.25; }
+    .node strong {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35em;
+      font-size: 4.3cqw;
+      line-height: 1.25;
+    }
+    /* Summary points for the closing scene; each enters in turn. */
+    #points {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 0 2cqw;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3.4cqw;
+    }
+    #points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 2.6cqw;
+      font-size: 4.6cqw;
+      font-weight: 650;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+    #points .icon {
+      width: 7.4cqw;
+      height: 7.4cqw;
+      margin-top: -0.6cqw;
+      padding: 1.5cqw;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--flow);
+    }
+    #points li.is-entering {
+      animation: enter-rise 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-delay: calc(var(--order, 0) * 160ms + 150ms);
+    }
     .node small { display: block; margin-top: 1cqw; color: var(--muted); font-size: 3.2cqw; }
+    /* The caption is a speech bubble; its tail points at the focused node (--tail-x). */
     #caption {
+      position: relative;
       min-height: 14cqw;
       margin: 0;
+      padding: 2.4cqw 3.5cqw;
       display: grid;
       align-content: center;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--surface);
       text-align: center;
       font-size: 5.1cqw;
       font-weight: 750;
       line-height: 1.35;
       overflow-wrap: anywhere;
+      transform-origin: var(--tail-x, 50%) 0;
+    }
+    #caption.is-paired { min-height: 26.5cqw; }
+    #caption::before,
+    #caption::after {
+      content: '';
+      position: absolute;
+      left: var(--tail-x, 50%);
+      translate: -50% 0;
+      border-style: solid;
+      border-color: transparent;
+      pointer-events: none;
+    }
+    #caption::before {
+      bottom: 100%;
+      border-width: 0 2.4cqw 2.8cqw;
+      border-bottom-color: var(--accent);
+    }
+    #caption::after {
+      bottom: calc(100% - 1px);
+      border-width: 0 calc(2.4cqw - 2px) calc(2.8cqw - 2px);
+      border-bottom-color: var(--surface);
     }
     #code {
       max-height: 38cqw;
@@ -171,41 +313,162 @@
     pre { margin: 0; padding: 1.5cqw 0; font: 3cqw/1.6 ui-monospace, Consolas, monospace; }
     #code-lines { display: block; min-width: max-content; }
     .code-line { display: block; padding: 0 2.25cqw; border-inline-start: 2px solid transparent; }
+    /* Highlighted lines take a light wash of the flow color, the page's one hue. */
+    /* Drawn as an image so the wash can sweep in from the left on a scene change. */
     .code-line.is-highlighted {
-      border-inline-start-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+      --wash: color-mix(in srgb, var(--flow) 15%, var(--surface));
+      border-inline-start-color: var(--flow);
+      background-image: linear-gradient(var(--wash), var(--wash));
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
     }
-    nav {
-      min-height: 3.75rem;
+    /* No playback buttons on screen: only the scene number and a settings gear in the corner. */
+    .corner {
+      position: fixed;
+      right: 0.75rem;
+      bottom: 0.75rem;
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      padding: 0.25rem;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.8rem;
     }
-    button {
-      min-height: 2.25rem;
-      padding: 0.3rem 0.45rem;
+    #step { font-variant-numeric: tabular-nums; }
+    #status { display: inline-flex; align-items: center; gap: 0.3rem; }
+    #status svg { width: 0.7rem; height: 0.7rem; fill: currentColor; }
+    #status[data-playing="true"] { color: var(--text); font-weight: 600; }
+    #status[data-playing="true"] .icon-stopped,
+    #status[data-playing="false"] .icon-playing { display: none; }
+    #toast { color: var(--text); font-weight: 600; }
+    #settings-toggle {
+      display: grid;
+      place-items: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--surface);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 600;
-      line-height: 1.2;
+      color: var(--muted);
       cursor: pointer;
     }
-    button:disabled { color: var(--muted); opacity: 0.55; cursor: default; }
-    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-    #step { padding: 0 0.25rem; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+    #settings-toggle:hover,
+    #settings-toggle[aria-expanded="true"] { color: var(--text); }
+    #settings-toggle svg { width: 1.15rem; height: 1.15rem; }
+    #settings-toggle:focus-visible,
+    .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+    #settings {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 0.5rem);
+      width: 15rem;
+      display: grid;
+      gap: 0.8rem;
+      padding: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .switch {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    .switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    .track {
+      position: relative;
+      flex: none;
+      width: 2.2rem;
+      height: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background);
+    }
+    .track::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0.15rem;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 50%;
+      background: var(--muted);
+      translate: 0 -50%;
+      transition: left 150ms;
+    }
+    .switch input:checked + .track { border-color: var(--accent); background: var(--accent); }
+    .switch input:checked + .track::after { left: calc(100% - 1rem); background: var(--surface); }
+    #help { margin: 0; color: var(--muted); font-size: 0.75rem; line-height: 1.55; }
+    /* Theme choice: Auto (the device setting), Light or Dark, as one segmented row. */
+    .theme-row { display: grid; gap: 0.4rem; }
+    .segments {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .segments label { position: relative; cursor: pointer; }
+    .segments input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    .segments span { display: block; padding: 0.3rem 0; color: var(--muted); font-size: 0.8rem; text-align: center; }
+    .segments label + label span { border-inline-start: 1px solid var(--border); }
+    .segments input:checked + span { background: var(--accent); color: var(--surface); font-weight: 600; }
+    .segments input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -3px; }
     @media (prefers-reduced-motion: reduce) {
-      .node.is-entering, .flow.is-moving { animation: none; }
+      .node.is-entering, .edge.is-active line, #points li.is-entering { animation: none; }
     }
   </style>
 </head>
 <body>
+  <!-- Icons drawn for this template (24x24, stroke). Content refers to them by
+       name with "icon"; build.py reads the names from the ids below. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+    <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.3c2.4.7 4 2.8 4 5.7"/></symbol>
+    <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M6 4h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></symbol>
+    <symbol id="icon-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V5"/><circle cx="12" cy="3.5" r="1.5"/><path d="M9 13v2M15 13v2M2 13v3M22 13v3"/></symbol>
+    <symbol id="icon-server" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+    <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 19a5 5 0 0 1-.6-9.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1 0 10z"/></symbol>
+    <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4" ry="9"/></symbol>
+    <symbol id="icon-monitor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+    <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M3 6a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="icon-package" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></symbol>
+    <symbol id="icon-terminal" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 9l3 3-3 3M12 15h5"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M19.15 10.08L21.88 10.44L21.88 13.56L19.15 13.92L18.41 15.70L20.09 17.88L17.88 20.09L15.70 18.41L13.92 19.15L13.56 21.88L10.44 21.88L10.08 19.15L8.30 18.41L6.12 20.09L3.91 17.88L5.59 15.70L4.85 13.92L2.12 13.56L2.12 10.44L4.85 10.08L5.59 8.30L3.91 6.12L6.12 3.91L8.30 5.59L10.08 4.85L10.44 2.12L13.56 2.12L13.92 4.85L15.70 5.59L17.88 3.91L20.09 6.12L18.41 8.30z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/></symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24"><path d="M12 3L2 20h20z"/><path d="M12 10v4M12 17h.01"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+    <symbol id="icon-block" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 3 3 7.5z"/><path d="M10 13.5L21 3"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 17v3h16v-3"/></symbol>
+    <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="icon-zap" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="icon-layers" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5z"/><path d="M2 12l10 5 10-5M2 17l10 5 10-5"/></symbol>
+    <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2l-4.6 9.6M13.2 7.2l4.6 9.6M7.5 19h9"/></symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+    <symbol id="icon-idea" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+  </svg>
   <main>
     <article aria-labelledby="title">
       <div class="stage" data-playing="false">
@@ -214,6 +477,7 @@
           <p id="subtitle" hidden></p>
         </header>
         <dl id="metrics" class="metrics" hidden></dl>
+        <p id="phase" hidden></p>
         <div id="diagram">
           <svg id="edges" aria-hidden="true">
             <defs>
@@ -225,6 +489,7 @@
               </marker>
             </defs>
           </svg>
+          <ol id="points" hidden></ol>
         </div>
         <p id="caption" aria-live="polite"></p>
         <figure id="code" hidden>
@@ -232,14 +497,34 @@
           <pre><code id="code-lines"></code></pre>
         </figure>
       </div>
+      <div class="gauge" aria-hidden="true"></div>
     </article>
-    <nav id="controls">
-      <button type="button" id="prev"></button>
-      <button type="button" id="play"></button>
-      <button type="button" id="restart"></button>
-      <button type="button" id="next"></button>
+    <div class="corner">
+      <span id="toast" role="status" hidden></span>
+      <span id="status" aria-live="polite">
+        <svg class="icon-playing" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>
+        <svg class="icon-stopped" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3.5v11H3.5zM9 2.5h3.5v11H9z"/></svg>
+        <span id="status-label"></span>
+      </span>
       <span id="step"></span>
-    </nav>
+      <button type="button" id="settings-toggle" aria-expanded="false" aria-controls="settings">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-settings"/></svg>
+      </button>
+      <div id="settings" role="group" hidden>
+        <label class="switch"><span id="autoplay-label"></span><input type="checkbox" id="autoplay" role="switch"><span class="track" aria-hidden="true"></span></label>
+        <label class="switch"><span id="sound-label"></span><input type="checkbox" id="sound" role="switch"><span class="track" aria-hidden="true"></span></label>
+        <label class="switch"><span id="frame-label"></span><input type="checkbox" id="frame" role="switch"><span class="track" aria-hidden="true"></span></label>
+        <div class="theme-row" role="radiogroup" aria-labelledby="theme-label">
+          <span id="theme-label"></span>
+          <div class="segments">
+            <label><input type="radio" name="theme" value="system"><span data-label="system"></span></label>
+            <label><input type="radio" name="theme" value="light"><span data-label="light"></span></label>
+            <label><input type="radio" name="theme" value="dark"><span data-label="dark"></span></label>
+          </div>
+        </div>
+        <p id="help"></p>
+      </div>
+    </div>
   </main>
   <script id="explainer-data" type="application/json">/* EMBED_EXPLAINER_DATA */</script>
   <script>
@@ -256,19 +541,34 @@
     }
 
     const labels = root.lang.toLowerCase().split('-')[0] === 'ja'
-      ? { controls: '再生操作', prev: '前へ', next: '次へ', play: '再生', pause: '一時停止', restart: '最初から' }
-      : { controls: 'Playback controls', prev: 'Back', next: 'Next', play: 'Play', pause: 'Pause', restart: 'Restart' };
+      ? {
+        settings: '設定', autoplay: '自動再生', sound: '音', frame: 'トリム用の枠', playing: '再生中', stopped: '停止中',
+        theme: 'テーマ', system: '自動', light: 'ライト', dark: 'ダーク',
+        before: '変更前', after: '変更後',
+        soundOn: '音: オン', soundOff: '音: オフ',
+        help: 'スペースで再生と停止を切り替え、← → で前後、Home で最初へ。画面の左側を押すと戻り、右側で進む。M で音のオンとオフ。トリム用の枠は、スライドのすぐ外側に線を引く。',
+      }
+      : {
+        settings: 'Settings', autoplay: 'Autoplay', sound: 'Sound', frame: 'Trim frame', playing: 'Playing', stopped: 'Stopped',
+        theme: 'Theme', system: 'Auto', light: 'Light', dark: 'Dark',
+        before: 'Before', after: 'After',
+        soundOn: 'Sound on', soundOff: 'Sound off',
+        help: 'Space switches between playing and stopped, ← → move between scenes, Home goes to the start. Click the left of the slide to go back and the right to go forward. M turns sound on and off. The trim frame draws a line just outside the slide.',
+      };
     document.title = content.title;
     byId('title').textContent = content.title;
     byId('subtitle').textContent = content.subtitle ?? '';
     byId('subtitle').hidden = !content.subtitle;
-    byId('controls').setAttribute('aria-label', labels.controls);
-    for (const id of ['prev', 'next', 'restart']) byId(id).textContent = labels[id];
-    byId('prev').title = `${labels.prev} (←)`;
-    byId('next').title = `${labels.next} (→)`;
-    byId('prev').setAttribute('aria-keyshortcuts', 'ArrowLeft');
-    byId('next').setAttribute('aria-keyshortcuts', 'ArrowRight');
-    byId('play').setAttribute('aria-keyshortcuts', 'Space');
+    byId('settings-toggle').setAttribute('aria-label', labels.settings);
+    byId('settings-toggle').title = labels.settings;
+    byId('settings').setAttribute('aria-label', labels.settings);
+    byId('autoplay-label').textContent = labels.autoplay;
+    byId('sound-label').textContent = labels.sound;
+    byId('frame-label').textContent = labels.frame;
+    byId('theme-label').textContent = labels.theme;
+    for (const span of document.querySelectorAll('.segments [data-label]')) span.textContent = labels[span.dataset.label];
+    byId('sound').setAttribute('aria-keyshortcuts', 'M');
+    byId('help').textContent = labels.help;
 
     const stage = document.querySelector('.stage');
     const article = document.querySelector('article');
@@ -296,6 +596,19 @@
       }
     }
 
+    // An icon from the sprite at the top of the page, by name.
+    function icon(name) {
+      const namespace = 'http://www.w3.org/2000/svg';
+      const graphic = document.createElementNS(namespace, 'svg');
+      graphic.setAttribute('class', 'icon');
+      graphic.setAttribute('viewBox', '0 0 24 24');
+      graphic.setAttribute('aria-hidden', 'true');
+      const use = document.createElementNS(namespace, 'use');
+      use.setAttribute('href', `#icon-${name}`);
+      graphic.append(use);
+      return graphic;
+    }
+
     const nodes = new Map();
     for (const node of content.nodes) {
       const box = element('div', 'node');
@@ -304,9 +617,11 @@
       box.style.top = `${node.y}%`;
       box.style.width = `${node.width ?? 30}%`;
       const detail = element('small', 'detail');
-      box.append(element('strong', 'node-label', node.label), detail);
+      const label = element('strong', 'node-label', node.label);
+      if (node.icon) label.prepend(icon(node.icon));
+      box.append(label, detail);
       diagram.append(box);
-      nodes.set(node.id, { box, detail, defaultDetail: node.detail ?? '' });
+      nodes.set(node.id, { box, detail, defaultDetail: node.detail ?? '', x: node.x, y: node.y });
     }
 
     const svgElement = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -320,12 +635,34 @@
       group.classList.add('edge');
       group.classList.toggle('is-dashed', link.style === 'dashed');
       group.classList.toggle('is-undirected', link.directed === false);
+      group.classList.toggle('is-blocked', link.blocked === true);
       label.textContent = link.label ?? '';
       dot.classList.add('flow');
-      dot.setAttribute('r', '4');
-      group.append(line, label, dot);
+      dot.setAttribute('r', '6');
+      // A blocked link draws its far half faintly, with a cross where it stops.
+      let rest = null;
+      let cross = null;
+      if (link.blocked === true) {
+        rest = svgElement('line');
+        rest.classList.add('rest');
+        cross = svgElement('path');
+        cross.classList.add('cross');
+        group.append(line, rest, label, dot, cross);
+      } else {
+        group.append(line, label, dot);
+      }
       svg.append(group);
-      links.set(link.id, { group, line, label, dot, from: nodes.get(link.from), to: nodes.get(link.to) });
+      // A clip circle that grows from the source draws the link out when it appears.
+      const reveal = svgElement('clipPath');
+      reveal.id = `reveal-${links.size}`;
+      const revealCircle = svgElement('circle');
+      revealCircle.setAttribute('r', '0');
+      reveal.append(revealCircle);
+      svg.querySelector('defs').append(reveal);
+      links.set(link.id, {
+        group, line, rest, cross, label, dot, link, geometry: null, from: nodes.get(link.from), to: nodes.get(link.to),
+        revealId: reveal.id, revealCircle,
+      });
     }
 
     // Layout box of a node in diagram coordinates. Measured from offset* so
@@ -347,14 +684,32 @@
       return [from.x + dx * scale, from.y + dy * scale];
     }
 
-    function drawEdges() {
-      for (const { group, line, label, dot, from, to } of links.values()) {
+    // Visual box of a node, with its running animations, in diagram coordinates.
+    // Used while nodes glide or enter so the links stay attached to them.
+    function visualBox(box) {
+      const rect = box.getBoundingClientRect();
+      const origin = diagram.getBoundingClientRect();
+      return {
+        x: rect.left - origin.left + rect.width / 2,
+        y: rect.top - origin.top + rect.height / 2,
+        width: rect.width,
+        height: rect.height,
+      };
+    }
+
+    // With visual, links follow the nodes as drawn; the packets keep the layout geometry.
+    function drawEdges(visual = false) {
+      const measure = visual ? visualBox : boxWithin;
+      for (const entry of links.values()) {
+        const { group, line, label, from, to } = entry;
         if (group.hasAttribute('hidden')) continue;
-        const start = boxWithin(from.box);
-        const end = boxWithin(to.box);
+        const start = measure(from.box);
+        const end = measure(to.box);
         const [x1, y1] = intersection(start, end);
         const [x2, y2] = intersection(end, start);
-        for (const [key, value] of Object.entries({ x1, y1, x2, y2 })) line.setAttribute(key, value);
+        const setLine = (target, points) => {
+          for (const [key, value] of Object.entries(points)) target.setAttribute(key, value);
+        };
         const length = Math.hypot(x2 - x1, y2 - y1);
         let nx = 0;
         let ny = -1;
@@ -369,10 +724,275 @@
         label.style.textAnchor = sideways ? 'end' : 'middle';
         label.setAttribute('x', (x1 + x2) / 2 + nx * offset);
         label.setAttribute('y', (y1 + y2) / 2 + ny * offset);
-        dot.style.setProperty('--from', `translate(${x1}px, ${y1}px)`);
-        dot.style.setProperty('--to', `translate(${x2}px, ${y2}px)`);
+        if (entry.rest) {
+          // The cross sits past the middle and the label before it, so they never touch.
+          const mx = x1 + (x2 - x1) * 0.55;
+          const my = y1 + (y2 - y1) * 0.55;
+          const arm = size * 0.45;
+          label.setAttribute('x', x1 + (x2 - x1) * 0.3 + nx * offset);
+          label.setAttribute('y', y1 + (y2 - y1) * 0.3 + ny * offset);
+          setLine(line, { x1, y1, x2: mx, y2: my });
+          setLine(entry.rest, { x1: mx, y1: my, x2, y2 });
+          entry.cross.setAttribute('d', `M${mx - arm} ${my - arm}L${mx + arm} ${my + arm}M${mx + arm} ${my - arm}L${mx - arm} ${my + arm}`);
+          if (!visual) entry.geometry = { x1, y1, x2: mx, y2: my, far: [x2, y2], blocked: true };
+        } else {
+          setLine(line, { x1, y1, x2, y2 });
+          if (!visual) entry.geometry = { x1, y1, x2, y2, far: [x2, y2], blocked: false };
+        }
       }
     }
+
+    // Packets loop along the flowing links for as long as the scene is shown,
+    // on a steady beat: each link takes one beat and the chain rests one beat,
+    // so the loop keeps its tempo. A link that starts where another flowing
+    // link ends takes the next step, so a packet travels along a chain;
+    // unrelated links run together.
+    const FLOW_BEAT = 600;
+    let flow = { ids: [], delay: 0, period: 0, beats: 0, arrive: new Map(), animations: [], scheduledUntil: -Infinity };
+
+    // Resolve chain predecessors before computing steps, so the beat order does
+    // not depend on the order of the `flow` array. The visiting guard cuts one
+    // back edge when the links form a cycle.
+    function orderedFlowIds(ids) {
+      const ordered = [];
+      const done = new Set();
+      const visiting = new Set();
+      const visit = (id) => {
+        if (done.has(id) || visiting.has(id)) return;
+        visiting.add(id);
+        const { link } = links.get(id);
+        for (const other of ids) {
+          if (other !== id && links.get(other).link.to === link.from) visit(other);
+        }
+        visiting.delete(id);
+        done.add(id);
+        ordered.push(id);
+      };
+      // A canonical root order keeps even a cycle's start independent of the
+      // order in which the content lists its flow links.
+      for (const id of [...ids].sort()) visit(id);
+      return ordered;
+    }
+
+    function flowSteps(ids) {
+      const steps = new Map();
+      for (const id of orderedFlowIds(ids)) {
+        const { link } = links.get(id);
+        let step = 0;
+        for (const [other, value] of steps) {
+          if (links.get(other).link.to === link.from) step = Math.max(step, value + 1);
+        }
+        steps.set(id, step);
+      }
+      return steps;
+    }
+
+    function startFlows(ids, delay, currentTime = null) {
+      for (const animation of flow.animations) animation.cancel();
+      for (const { dot } of links.values()) {
+        dot.style.opacity = '';
+        dot.style.transform = '';
+      }
+      const steps = flowSteps(ids);
+      const beats = steps.size === 0 ? 0 : Math.max(...steps.values()) + 1;
+      const period = (beats + 1) * FLOW_BEAT;
+      // A restart on resize keeps the sounds that are already scheduled.
+      const scheduledUntil = currentTime === null ? -Infinity : flow.scheduledUntil;
+      // What happens on each arrival beat: a packet passes into a node, is
+      // stopped at a blocked link's cross, or both on parallel links.
+      const arrive = new Map();
+      for (const [id, step] of steps) {
+        const kind = arrive.get(step + 1) ?? { pass: false, blocked: false };
+        if (links.get(id).link.blocked === true) kind.blocked = true;
+        else kind.pass = true;
+        arrive.set(step + 1, kind);
+      }
+      flow = { ids, delay, period, beats, arrive, animations: [], scheduledUntil };
+      if (reducedMotion.matches || typeof Element.prototype.animate !== 'function') {
+        // Keep the data path visible without moving it when motion is reduced.
+        for (const id of steps.keys()) {
+          const { dot, geometry } = links.get(id);
+          if (!geometry) continue;
+          const [x, y] = geometry.blocked
+            ? [geometry.x2, geometry.y2]
+            : [(geometry.x1 + geometry.x2) / 2, (geometry.y1 + geometry.y2) / 2];
+          dot.style.transform = `translate(${x}px, ${y}px)`;
+          dot.style.opacity = '1';
+        }
+        return;
+      }
+      const arrivals = new Map();
+      for (const [id, step] of steps) {
+        const { dot, geometry, link, cross } = links.get(id);
+        if (!geometry) continue;
+        const { x1, y1, x2, y2 } = geometry;
+        const at = (t) => `translate(${x1 + (x2 - x1) * t}px, ${y1 + (y2 - y1) * t}px)`;
+        const start = (step * FLOW_BEAT) / period;
+        const end = ((step + 1) * FLOW_BEAT) / period;
+        const span = end - start;
+        // Visible from leaving one node until it touches the next, on the beat.
+        flow.animations.push(dot.animate([
+          { offset: 0, transform: at(0), opacity: 0 },
+          { offset: start, transform: at(0), opacity: 0 },
+          { offset: start + span * 0.08, transform: at(0.08), opacity: 1 },
+          { offset: end - span * 0.03, transform: at(0.97), opacity: 1 },
+          { offset: end, transform: at(1), opacity: 0 },
+          { offset: 1, transform: at(1), opacity: 0 },
+        ], { duration: period, delay, iterations: Infinity, fill: 'backwards' }));
+        if (!geometry.blocked) {
+          const offsets = arrivals.get(link.to) ?? [];
+          offsets.push(end);
+          arrivals.set(link.to, offsets);
+          continue;
+        }
+        // The cross jolts when the packet hits it.
+        const jolt = 200 / period;
+        flow.animations.push(cross.animate([
+          { offset: 0, scale: 1 },
+          { offset: end, scale: 1 },
+          { offset: end + jolt * 0.35, scale: 1.4 },
+          { offset: end + jolt, scale: 1 },
+          { offset: 1, scale: 1 },
+        ], { duration: period, delay, iterations: Infinity }));
+      }
+      // The node a packet reaches bumps on the same beat as its sound. No fill,
+      // so the bump never overrides a node's entrance before the packets start.
+      const bump = 160 / period;
+      for (const [nodeId, offsets] of arrivals) {
+        // One animation per node, so every arrival at that node can bump; two
+        // animations on the same box would replace each other's scale.
+        const frames = [{ offset: 0, scale: 1 }];
+        for (const offset of [...new Set(offsets)].sort((a, b) => a - b)) {
+          frames.push(
+            { offset, scale: 1 },
+            { offset: offset + bump * 0.4, scale: 1.05 },
+            { offset: offset + bump, scale: 1 },
+          );
+        }
+        frames.push({ offset: 1, scale: 1 });
+        flow.animations.push(nodes.get(nodeId).box.animate(frames, { duration: period, delay, iterations: Infinity }));
+      }
+      if (currentTime !== null) {
+        for (const animation of flow.animations) animation.currentTime = currentTime;
+      }
+    }
+
+    // Sound effects are synthesized with Web Audio, so the HTML stays a single
+    // file. Browsers keep audio off until the first click or key press.
+    const SCENE_SOUNDS = {
+      chime: [{ freq: 784, dur: 0.22, gain: 0.04 }, { at: 0.09, freq: 1046.5, dur: 0.3, gain: 0.03 }],
+      alert: [
+        { freq: 330, type: 'triangle', dur: 0.22, gain: 0.09 },
+        { at: 0.2, freq: 247, type: 'triangle', dur: 0.36, gain: 0.09 },
+      ],
+      success: [
+        { freq: 523.25, dur: 0.2, gain: 0.045 },
+        { at: 0.1, freq: 659.25, dur: 0.2, gain: 0.045 },
+        { at: 0.2, freq: 783.99, dur: 0.38, gain: 0.045 },
+      ],
+      none: [],
+    };
+    const sound = { on: true, context: null, master: null, bus: null };
+
+    function unlockAudio() {
+      const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
+      if (!sound.on || !AudioContextClass) return;
+      if (!sound.context) {
+        sound.context = new AudioContextClass();
+        sound.master = sound.context.createGain();
+        sound.master.gain.value = 0.8;
+        sound.master.connect(sound.context.destination);
+      }
+      if (sound.context.state === 'suspended') sound.context.resume().catch(() => {});
+    }
+
+    // Each scene's sounds go through their own bus, so leaving the scene or
+    // muting also cuts the sounds that were scheduled but not yet played.
+    function sceneBus() {
+      if (!sound.bus) {
+        sound.bus = sound.context.createGain();
+        sound.bus.connect(sound.master);
+      }
+      return sound.bus;
+    }
+
+    function silence() {
+      const bus = sound.bus;
+      if (!bus) return;
+      sound.bus = null;
+      bus.gain.setTargetAtTime(0, sound.context.currentTime, 0.02);
+      setTimeout(() => bus.disconnect(), 250);
+    }
+
+    function tone(bus, { at = 0, freq, to, type = 'sine', dur = 0.16, gain = 0.05 }) {
+      const context = sound.context;
+      const start = context.currentTime + at;
+      const oscillator = context.createOscillator();
+      const envelope = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(freq, start);
+      if (to) oscillator.frequency.exponentialRampToValueAtTime(to, start + dur);
+      envelope.gain.setValueAtTime(0.0001, start);
+      envelope.gain.exponentialRampToValueAtTime(gain, start + 0.012);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      oscillator.connect(envelope).connect(bus);
+      oscillator.start(start);
+      oscillator.stop(start + dur + 0.05);
+    }
+
+    // A cue for the scene and a short blip for each node that appears.
+    // The flow sounds follow the packets (scheduleFlowSounds).
+    function playSceneSounds(scene, entering) {
+      silence();
+      if (!sound.on || !sound.context) return;
+      const bus = sceneBus();
+      for (const note of SCENE_SOUNDS[scene.sound ?? 'chime'] ?? []) tone(bus, note);
+      for (let order = 0; order < entering; order += 1) {
+        tone(bus, { at: 0.06 + order * 0.07, freq: 520 + order * 70, to: 760 + order * 70, dur: 0.09, gain: 0.03 });
+      }
+      // Summary points chime in turn, in step with their entrance.
+      (scene.points ?? []).forEach((_, order) => {
+        tone(bus, { at: 0.15 + order * 0.16, freq: FLOW_NOTES[Math.min(order, FLOW_NOTES.length - 1)], dur: 0.16, gain: 0.035 });
+      });
+    }
+
+    // On every loop: a low tick when a packet leaves the first node, then a
+    // note that climbs a pentatonic scale each time a packet reaches a node,
+    // held a little longer at the last node.
+    const FLOW_NOTES = [523.25, 659.25, 783.99, 880, 1046.5];
+    function flowNote(beat, last) {
+      if (beat === 0) return { freq: 392, type: 'triangle', dur: 0.07, gain: 0.03 };
+      const freq = FLOW_NOTES[Math.min(beat - 1, FLOW_NOTES.length - 1)];
+      return last ? { freq, dur: 0.24, gain: 0.04 } : { freq, dur: 0.12, gain: 0.032 };
+    }
+    // A low, falling thud when a packet is stopped at a blocked link.
+    const BLOCKED_NOTE = { freq: 196, to: 110, type: 'triangle', dur: 0.2, gain: 0.07 };
+
+    // Flow sounds are scheduled a little ahead from the packets' own clock, so
+    // each one lands when a packet leaves or reaches a node, loop after loop.
+    const FLOW_LOOKAHEAD = 300;
+    function scheduleFlowSounds() {
+      const clock = flow.animations[0];
+      if (!clock || !flow.beats || !sound.on || sound.context?.state !== 'running') return;
+      const now = clock.currentTime;
+      if (now === null) return;
+      const bus = sceneBus();
+      const horizon = now + FLOW_LOOKAHEAD;
+      const from = Math.max(flow.scheduledUntil, now);
+      const first = Math.max(0, Math.floor((from - flow.delay) / flow.period));
+      for (let cycle = first; flow.delay + cycle * flow.period < horizon; cycle += 1) {
+        for (let beat = 0; beat <= flow.beats; beat += 1) {
+          const time = flow.delay + cycle * flow.period + beat * FLOW_BEAT;
+          if (time < from || time >= horizon) continue;
+          const at = (time - now) / 1000;
+          const kind = flow.arrive.get(beat);
+          if (beat === 0 || kind?.pass) tone(bus, { ...flowNote(beat, beat === flow.beats), at });
+          if (kind?.blocked) tone(bus, { ...BLOCKED_NOTE, at });
+        }
+      }
+      flow.scheduledUntil = horizon;
+    }
+    setInterval(scheduleFlowSounds, 100);
 
     function renderCode(config) {
       code.hidden = !config;
@@ -389,7 +1009,223 @@
       code.scrollTo(0, 0);
     }
 
-    function render(scene) {
+    // The tail points at the first focused node (the center when nothing is
+    // focused), and the bubble bounces in on every scene.
+    let bubbleAnimation = null;
+
+    function pointBubble(scene) {
+      const target = nodes.get((scene.focus ?? [])[0])?.box;
+      const width = caption.offsetWidth;
+      let x = width / 2;
+      if (target && !target.hidden) x = diagram.offsetLeft + target.offsetLeft - caption.offsetLeft;
+      const margin = Math.min(28, width / 2);
+      caption.style.setProperty('--tail-x', `${Math.min(Math.max(x, margin), width - margin)}px`);
+    }
+
+    function bounceBubble() {
+      if (reducedMotion.matches || typeof caption.animate !== 'function') return;
+      bubbleAnimation = caption.animate([
+        { opacity: 0, transform: 'translateY(3cqw) scale(0.82)' },
+        { opacity: 1, transform: 'translateY(-1.2cqw) scale(1.05)', offset: 0.5 },
+        { opacity: 1, transform: 'translateY(0.4cqw) scale(0.98)', offset: 0.72 },
+        { opacity: 1, transform: 'translateY(-0.2cqw) scale(1.01)', offset: 0.88 },
+        { opacity: 1, transform: 'none' },
+      ], { duration: 700, delay: 120, easing: 'ease-out', fill: 'backwards' });
+    }
+
+    // Scene changes run in three beats. What leaves steps back (up when going
+    // forward, down when going back); then what stays glides to its new place
+    // while new parts enter; and new links are drawn out from their source.
+    // Reusing a node id across scenes is what makes it glide instead of re-enter.
+    const EXIT_MS = 200;
+    const MOVE_MS = 480;
+    const EASE_OUT = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+    const EASE_IN = 'cubic-bezier(0.4, 0, 1, 1)';
+    let renderedScene = null;
+    let transitionToken = 0;
+    let exitAnimations = [];
+    let moveAnimations = [];
+    let followFrame = 0;
+    let noiseBuffer = null;
+
+    const changed = (before, after, key) => JSON.stringify(before?.[key] ?? null) !== JSON.stringify(after?.[key] ?? null);
+    const motionAllowed = () => !reducedMotion.matches && typeof Element.prototype.animate === 'function';
+
+    // A short filtered-noise whoosh that rises going forward and falls going back.
+    function whoosh(direction) {
+      if (!sound.on || !sound.context) return;
+      const context = sound.context;
+      if (!noiseBuffer) {
+        noiseBuffer = context.createBuffer(1, Math.floor(context.sampleRate * 0.4), context.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < data.length; i += 1) data[i] = Math.random() * 2 - 1;
+      }
+      const start = context.currentTime;
+      const source = context.createBufferSource();
+      source.buffer = noiseBuffer;
+      const filter = context.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.Q.value = 1.4;
+      const [low, high] = direction < 0 ? [2600, 500] : [500, 2600];
+      filter.frequency.setValueAtTime(low, start);
+      filter.frequency.exponentialRampToValueAtTime(high, start + 0.26);
+      const envelope = context.createGain();
+      envelope.gain.setValueAtTime(0.0001, start);
+      envelope.gain.exponentialRampToValueAtTime(0.06, start + 0.09);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, start + 0.3);
+      source.connect(filter).connect(envelope).connect(sound.master);
+      source.start(start);
+      source.stop(start + 0.34);
+    }
+
+    function playExit(next, direction) {
+      const shift = direction < 0 ? '0 2cqw' : '0 -2cqw';
+      const exits = [];
+      const out = (target, keyframes, duration = EXIT_MS) => {
+        exits.push(target.animate(keyframes, { duration, easing: EASE_IN, fill: 'forwards' }));
+      };
+      const nextNodes = new Set(next.nodes);
+      const nextLinks = new Set(next.links ?? []);
+      for (const [id, { box }] of nodes) {
+        if (!box.hidden && !nextNodes.has(id)) out(box, { opacity: [1, 0], translate: ['0 0', shift], scale: [1, 0.94] });
+      }
+      for (const [id, { group }] of links) {
+        if (!group.hasAttribute('hidden') && !nextLinks.has(id)) out(group, { opacity: [1, 0] }, EXIT_MS * 0.75);
+      }
+      out(caption, { opacity: [1, 0], scale: [1, 0.94] }, EXIT_MS * 0.75);
+      if (!metrics.hidden && changed(renderedScene, next, 'metrics')) out(metrics, { opacity: [1, 0], translate: ['0 0', shift] });
+      if (!code.hidden && changed(renderedScene, next, 'code')) out(code, { opacity: [1, 0], translate: ['0 0', shift] });
+      const points = byId('points');
+      if (!points.hidden) out(points, { opacity: [1, 0], translate: ['0 0', shift] });
+      const phase = byId('phase');
+      if (!phase.hidden && renderedScene?.phase !== next.phase) {
+        // Before turns into After like a card flipping over.
+        out(phase, next.phase
+          ? { transform: ['perspective(30em) rotateX(0deg)', 'perspective(30em) rotateX(90deg)'] }
+          : { opacity: [1, 0] });
+      }
+      return exits;
+    }
+
+    // Nodes that stay glide from where they were drawn to their new place.
+    function glide(first) {
+      let moved = false;
+      for (const [id, from] of first ?? []) {
+        const { box } = nodes.get(id);
+        if (box.hidden) continue;
+        const rect = box.getBoundingClientRect();
+        const dx = from.x - (rect.left + rect.width / 2);
+        const dy = from.y - (rect.top + rect.height / 2);
+        if (Math.abs(dx) + Math.abs(dy) < 1) continue;
+        moved = true;
+        moveAnimations.push(box.animate(
+          { translate: [`${dx}px ${dy}px`, '0px 0px'] },
+          { duration: MOVE_MS, easing: EASE_OUT },
+        ));
+      }
+      return moved;
+    }
+
+    // Links follow the nodes frame by frame while they glide or enter.
+    function followEdges(duration) {
+      cancelAnimationFrame(followFrame);
+      const end = performance.now() + duration;
+      const tick = () => {
+        if (performance.now() < end) {
+          drawEdges(true);
+          followFrame = requestAnimationFrame(tick);
+        } else {
+          drawEdges();
+        }
+      };
+      followFrame = requestAnimationFrame(tick);
+    }
+
+    function revealEdge(entry) {
+      const { group, geometry, revealCircle, revealId } = entry;
+      const [farX, farY] = geometry.far;
+      revealCircle.setAttribute('cx', geometry.x1);
+      revealCircle.setAttribute('cy', geometry.y1);
+      group.setAttribute('clip-path', `url(#${revealId})`);
+      const animation = revealCircle.animate(
+        { r: ['0px', `${Math.hypot(farX - geometry.x1, farY - geometry.y1) + 24}px`] },
+        { duration: 460, delay: 140, easing: EASE_OUT, fill: 'backwards' },
+      );
+      const release = () => group.removeAttribute('clip-path');
+      animation.onfinish = release;
+      animation.oncancel = release;
+      moveAnimations.push(animation);
+    }
+
+    function animateIn(previous, scene, wasVisible, wasLinked, oldDetails) {
+      // A detail that changes on a node that stays fades over.
+      for (const [id, { box, detail }] of nodes) {
+        if (!box.hidden && wasVisible.has(id) && detail.textContent !== oldDetails.get(id)) {
+          detail.animate({ opacity: [0, 1] }, { duration: 320, easing: 'ease-out' });
+        }
+      }
+      for (const [id, entry] of links) {
+        if (!entry.group.hasAttribute('hidden') && !wasLinked.has(id) && entry.geometry) revealEdge(entry);
+      }
+      if (!metrics.hidden && changed(previous, scene, 'metrics')) {
+        [...metrics.children].forEach((chip, order) => chip.animate(
+          { opacity: [0, 1], translate: ['0 1.5cqw', '0 0'] },
+          { duration: 360, delay: 60 + order * 70, easing: EASE_OUT, fill: 'backwards' },
+        ));
+      }
+      if (!code.hidden && changed(previous, scene, 'code')) {
+        code.animate(
+          { opacity: [0, 1], translate: ['0 2cqw', '0 0'] },
+          { duration: 380, delay: 80, easing: EASE_OUT, fill: 'backwards' },
+        );
+        // Highlighted lines are swept in from the left, one after another.
+        code.querySelectorAll('.is-highlighted').forEach((line, order) => line.animate(
+          { backgroundSize: ['0% 100%', '100% 100%'] },
+          { duration: 420, delay: 360 + order * 90, easing: EASE_OUT, fill: 'backwards' },
+        ));
+      }
+      const phase = byId('phase');
+      if (!phase.hidden && previous?.phase !== scene.phase) {
+        phase.animate(previous?.phase
+          ? { transform: ['perspective(30em) rotateX(-90deg)', 'perspective(30em) rotateX(0deg)'] }
+          : { opacity: [0, 1], scale: [0.85, 1] },
+        { duration: 320, easing: EASE_OUT, fill: 'backwards' });
+      }
+    }
+
+    function transition(scene, direction) {
+      const token = ++transitionToken;
+      for (const animation of exitAnimations) animation.cancel();
+      exitAnimations = [];
+      if (renderedScene === null || !motionAllowed()) {
+        render(scene, null);
+        return;
+      }
+      // Where the visible nodes are drawn now, so the ones that stay can glide from here.
+      const first = new Map();
+      for (const [id, { box }] of nodes) {
+        if (box.hidden) continue;
+        const rect = box.getBoundingClientRect();
+        first.set(id, { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+      }
+      whoosh(direction);
+      exitAnimations = playExit(scene, direction);
+      setTimeout(() => {
+        if (token !== transitionToken) return;
+        for (const animation of exitAnimations) animation.cancel();
+        exitAnimations = [];
+        render(scene, first);
+      }, EXIT_MS);
+    }
+
+    function render(scene, first = null) {
+      const previous = renderedScene;
+      renderedScene = scene;
+      for (const animation of moveAnimations) animation.cancel();
+      moveAnimations = [];
+      const wasVisible = new Set([...nodes].filter(([, { box }]) => !box.hidden).map(([id]) => id));
+      const wasLinked = new Set([...links].filter(([, { group }]) => !group.hasAttribute('hidden')).map(([id]) => id));
+      const oldDetails = new Map([...nodes].map(([id, { detail }]) => [id, detail.textContent]));
       const shownNodes = new Set(scene.nodes);
       const shownLinks = new Set(scene.links ?? []);
       const focused = new Set(scene.focus ?? []);
@@ -400,7 +1236,10 @@
         const entry = nodes.get(id);
         if (entry) entry.box.style.setProperty('--order', entry.box.hidden ? entering++ : 0);
       }
-      for (const [id, { box, detail, defaultDetail }] of nodes) {
+      for (const [id, { box, detail, defaultDetail, x, y }] of nodes) {
+        const position = scene.positions?.[id];
+        box.style.left = `${position?.x ?? x}%`;
+        box.style.top = `${position?.y ?? y}%`;
         const visible = shownNodes.has(id);
         box.classList.toggle('is-entering', visible && box.hidden);
         box.hidden = !visible;
@@ -408,24 +1247,87 @@
         detail.textContent = Object.hasOwn(scene.details ?? {}, id) ? scene.details[id] : defaultDetail;
         detail.hidden = !detail.textContent;
       }
-      for (const [id, { group, dot }] of links) {
+      for (const [id, { group }] of links) {
         group.toggleAttribute('hidden', !shownLinks.has(id));
         group.classList.toggle('is-active', flowing.has(id));
-        dot.classList.remove('is-moving');
       }
+      // A running bounce scales the bubble, so cancel it before measuring.
+      bubbleAnimation?.cancel();
+      // Paired scenes keep a three-line bubble, so the figures of the pair line up.
+      caption.classList.toggle('is-paired', Boolean(scene.phase));
       caption.textContent = scene.caption;
-      fitText(caption, 22, [5.1, 4.5, 3.9, 3.4]);
+      fitText(caption, 27, [5.1, 4.5, 3.9, 3.4]);
       const items = scene.metrics ?? [];
-      metrics.replaceChildren(...items.map(({ label, value }) => {
+      metrics.replaceChildren(...items.map(({ label, value, icon: name }) => {
         const metric = element('div', 'metric');
-        metric.append(element('dt', 'metric-label', label), element('dd', 'metric-value', value));
+        const term = element('dt', 'metric-label', label);
+        if (name) term.prepend(icon(name));
+        metric.append(term, element('dd', 'metric-value', value));
         return metric;
       }));
       metrics.hidden = items.length === 0;
+      // Paired scenes carry a "Before" / "After" tag above the figure.
+      const phase = byId('phase');
+      phase.hidden = !scene.phase;
+      phase.dataset.phase = scene.phase ?? '';
+      phase.textContent = scene.phase ? labels[scene.phase] : '';
+      // A closing scene lists its points in place of a figure.
+      const points = byId('points');
+      points.replaceChildren(...(scene.points ?? []).map((point, order) => {
+        const { text, icon: name = 'check' } = typeof point === 'string' ? { text: point } : point;
+        const item = element('li', 'is-entering');
+        item.style.setProperty('--order', order);
+        item.append(icon(name), element('span', 'point-text', text));
+        return item;
+      }));
+      points.hidden = !scene.points?.length;
       renderCode(scene.code);
       drawEdges();
-      stage.style.setProperty('--flow-duration', `${Math.min((scene.duration ?? 3) * 0.8, 1.5)}s`);
-      for (const id of flowing) links.get(id).dot.classList.add('is-moving');
+      pointBubble(scene);
+      bounceBubble();
+      let moved = false;
+      if (motionAllowed()) {
+        moved = glide(first);
+        animateIn(previous, scene, wasVisible, wasLinked, oldDetails);
+        const settle = Math.max(moved ? MOVE_MS : 0, entering > 0 ? 420 + (entering - 1) * 70 : 0);
+        if (settle > 0) followEdges(settle + 40);
+      }
+      // Packets wait for the nodes that are still entering or gliding.
+      const delay = Math.max(entering > 0 ? 420 + (entering - 1) * 70 : 150, moved ? MOVE_MS : 0);
+      startFlows(scene.flow ?? [], delay);
+      playSceneSounds(scene, entering);
+      scheduleFlowSounds();
+      if (scene === scenes[index]) {
+        byId('step').textContent = `${index + 1} / ${scenes.length}`;
+        if (playing) schedule();
+        else updateGauge();
+      }
+    }
+
+    // Viewer settings (autoplay on open, sound) are remembered in this browser
+    // when storage is available; the page works the same without it.
+    const SETTINGS_KEY = 'animated-explainer:settings';
+    const saved = (() => {
+      try {
+        const value = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}');
+        return value && typeof value === 'object' ? value : {};
+      } catch {
+        return {};
+      }
+    })();
+    let autoplay = typeof saved.autoplay === 'boolean' ? saved.autoplay : !reducedMotion.matches;
+    sound.on = typeof saved.sound === 'boolean' ? saved.sound : true;
+    let frame = saved.frame === true;
+    // The theme the viewer picked, if any; theme.json's mode is the default until then.
+    const THEMES = ['system', 'light', 'dark'];
+    let themeChoice = THEMES.includes(saved.theme) ? saved.theme : null;
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoplay, sound: sound.on, frame, theme: themeChoice }));
+      } catch {
+        // Without storage the settings last for this page view only.
+      }
     }
 
     let index = 0;
@@ -435,22 +1337,43 @@
     let deadline = 0;
     let remaining = 0;
 
-    function updateControls() {
-      byId('prev').disabled = index === 0;
-      byId('next').disabled = index === scenes.length - 1;
-      byId('play').textContent = playing ? labels.pause : labels.play;
-      byId('play').title = `${playing ? labels.pause : labels.play} (Space)`;
-      byId('step').textContent = `${index + 1} / ${scenes.length}`;
-      stage.dataset.playing = String(playing);
-      caption.setAttribute('aria-live', playing ? 'off' : 'polite');
-    }
-
     function stopTimer() {
       clearTimeout(timer);
       timer = null;
     }
 
+    // The gauge under the slide has one segment per scene, so it shows where
+    // the scene sits in the whole and how long until the next one.
+    const gaugeFills = scenes.map(() => {
+      const segment = element('div', 'gauge-segment');
+      const fill = element('div', 'gauge-fill');
+      segment.append(fill);
+      document.querySelector('.gauge').append(segment);
+      return fill;
+    });
+    let gaugeAnimation = null;
+
+    function updateGauge() {
+      gaugeAnimation?.cancel();
+      gaugeAnimation = null;
+      const total = (scenes[index].duration ?? 3) * 1000;
+      const done = finished ? 1 : Math.min(1, Math.max(0, 1 - remaining / total));
+      gaugeFills.forEach((fill, position) => {
+        const value = position < index ? 1 : position > index ? 0 : done;
+        fill.style.transform = `scaleX(${value})`;
+      });
+      const gaugeFill = gaugeFills[index];
+      if (playing && remaining > 0 && typeof gaugeFill.animate === 'function') {
+        gaugeAnimation = gaugeFill.animate(
+          [{ transform: `scaleX(${done})` }, { transform: 'scaleX(1)' }],
+          { duration: remaining, easing: 'linear', fill: 'forwards' },
+        );
+      }
+    }
+
+    // While playing, each scene advances after its duration and the last one stays.
     function schedule() {
+      stopTimer();
       deadline = performance.now() + remaining;
       timer = setTimeout(() => {
         timer = null;
@@ -458,70 +1381,172 @@
           show(index + 1);
         } else {
           finished = true;
-          playing = false;
-          updateControls();
+          setPlaying(false);
         }
       }, remaining);
+      updateGauge();
+    }
+
+    // The corner always says whether the slides are playing or stopped.
+    function updateStatus() {
+      byId('status').dataset.playing = String(playing);
+      byId('status-label').textContent = playing ? labels.playing : labels.stopped;
+      caption.setAttribute('aria-live', playing ? 'off' : 'polite');
+    }
+
+    // Stopping only stops advancing; the scene keeps its flowing packets.
+    function setPlaying(value) {
+      if (!value && timer !== null) remaining = Math.max(0, deadline - performance.now());
+      playing = value;
+      updateStatus();
+      if (!playing) {
+        stopTimer();
+        updateGauge();
+      } else if (finished) {
+        show(0);
+      } else if (renderedScene === scenes[index]) {
+        // While a scene is still exiting, render() starts the timer.
+        schedule();
+      }
     }
 
     function show(position) {
       stopTimer();
-      delete stage.dataset.frozen;
-      index = position;
+      const direction = Math.sign(position - index) || 1;
+      index = Math.max(0, Math.min(scenes.length - 1, position));
       finished = false;
       remaining = (scenes[index].duration ?? 3) * 1000;
-      updateControls();
-      render(scenes[index]);
-      if (playing) schedule();
+      // Start the scene once its content is rendered, after the exit beat.
+      // Starting here would let a short duration outrun the pending render.
+      transition(scenes[index], direction);
     }
 
-    function pause() {
-      if (timer !== null) remaining = Math.max(0, deadline - performance.now());
-      stopTimer();
-      playing = false;
-      stage.dataset.frozen = 'true';
-      updateControls();
+    function go(delta) {
+      const target = index + delta;
+      if (target >= 0 && target < scenes.length) show(target);
     }
 
-    byId('play').onclick = () => {
-      if (playing) {
-        pause();
+    // With no buttons on screen, a short note confirms what a key did.
+    let toastTimer = null;
+    function toast(text) {
+      const note = byId('toast');
+      note.textContent = text;
+      note.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { note.hidden = true; }, 900);
+    }
+
+    const menu = byId('settings');
+    const gear = byId('settings-toggle');
+
+    function setMenu(open, restoreFocus = false) {
+      menu.hidden = !open;
+      gear.setAttribute('aria-expanded', String(open));
+      if (open) byId('autoplay').focus({ preventScroll: true });
+      else if (restoreFocus) gear.focus();
+    }
+
+    gear.onclick = () => setMenu(menu.hidden);
+    byId('autoplay').checked = autoplay;
+    byId('sound').checked = sound.on;
+    byId('autoplay').onchange = (event) => {
+      autoplay = event.target.checked;
+      saveSettings();
+      if (!autoplay) setPlaying(false);
+      else if (!finished) setPlaying(true);
+    };
+    byId('sound').onchange = (event) => {
+      sound.on = event.target.checked;
+      if (sound.on) unlockAudio();
+      else silence();
+      saveSettings();
+    };
+    byId('frame').checked = frame;
+    article.classList.toggle('has-frame', frame);
+    byId('frame').onchange = (event) => {
+      frame = event.target.checked;
+      article.classList.toggle('has-frame', frame);
+      saveSettings();
+    };
+
+    function applyTheme() {
+      const mode = themeChoice ?? theme.mode ?? 'system';
+      root.dataset.theme = mode;
+      for (const input of document.querySelectorAll('input[name="theme"]')) input.checked = input.value === mode;
+    }
+    applyTheme();
+    for (const input of document.querySelectorAll('input[name="theme"]')) {
+      input.onchange = () => {
+        themeChoice = input.value;
+        saveSettings();
+        // Cross-fade the whole page where the browser supports view transitions.
+        if (document.startViewTransition && motionAllowed()) document.startViewTransition(applyTheme);
+        else applyTheme();
+      };
+    }
+
+    // A click outside the open menu only closes it; otherwise a click on the
+    // left third of the slide goes back and anywhere else goes forward.
+    let swallowClick = false;
+    document.addEventListener('pointerdown', (event) => {
+      swallowClick = !menu.hidden && !event.target.closest('.corner');
+      if (swallowClick) setMenu(false);
+    }, true);
+    article.addEventListener('click', (event) => {
+      if (swallowClick) {
+        swallowClick = false;
         return;
       }
-      playing = true;
-      delete stage.dataset.frozen;
-      if (finished) {
-        show(0);
-      } else {
-        updateControls();
-        schedule();
-      }
-    };
-    byId('restart').onclick = () => {
-      playing = !reducedMotion.matches;
-      show(0);
-    };
-    byId('prev').onclick = () => { playing = false; show(index - 1); };
-    byId('next').onclick = () => { playing = false; show(index + 1); };
-    reducedMotion.addEventListener('change', (event) => { if (event.matches) pause(); });
+      if (String(getSelection() ?? '')) return;
+      const box = article.getBoundingClientRect();
+      go(event.clientX - box.left < box.width / 3 ? -1 : 1);
+    });
+
+    reducedMotion.addEventListener('change', (event) => {
+      if (event.matches) setPlaying(false);
+      startFlows(flow.ids, flow.delay);
+    });
     document.addEventListener('keydown', (event) => {
       if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key === 'Escape' && !menu.hidden) {
+        setMenu(false, true);
+        return;
+      }
+      // A focused control keeps its native keyboard behavior. M is a global
+      // shortcut, so it still works when a button or switch has focus.
+      const control = event.target instanceof Element
+        ? event.target.closest('button, input, select, textarea, a[href], [contenteditable="true"]')
+        : null;
+      if (control && event.key !== 'm' && event.key !== 'M') return;
       if (event.key === ' ' || event.key === 'Spacebar') {
-        const target = event.target;
-        if (target instanceof Element && target.closest('button, input, textarea, select, [contenteditable]')) return;
         event.preventDefault();
-        byId('play').click();
-      } else if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        byId('prev').click();
+        setPlaying(!playing);
       } else if (event.key === 'ArrowRight') {
         event.preventDefault();
-        byId('next').click();
+        go(1);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        go(-1);
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        show(0);
+      } else if (event.key === 'm' || event.key === 'M') {
+        byId('sound').click();
+        toast(sound.on ? labels.soundOn : labels.soundOff);
       }
     });
-    new ResizeObserver(drawEdges).observe(diagram);
+    // Capture phase, so the context is unlocked before the click or key shows a scene.
+    document.addEventListener('pointerdown', unlockAudio, true);
+    document.addEventListener('keydown', unlockAudio, true);
+    new ResizeObserver(() => {
+      drawEdges();
+      pointBubble(renderedScene ?? scenes[index]);
+      startFlows(flow.ids, flow.delay, flow.animations[0]?.currentTime ?? null);
+    }).observe(diagram);
     fitText(byId('title'), 24, [7.6, 6.6, 5.6, 4.8]);
-    byId('restart').onclick();
+    playing = autoplay;
+    updateStatus();
+    show(0);
   </script>
 </body>
 </html>
