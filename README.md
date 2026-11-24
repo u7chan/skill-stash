@@ -28,6 +28,7 @@
 | [modern-go](modern-go/SKILL.md) | 対象Goバージョンに合わせてmodern idiomを選び、挙動を保った最小変更として適用する |
 | [pyxel-cube](pyxel-cube/SKILL.md) | Pyxel CubeのNodeツリー・3D描画・GLB・物理演算でレトロ3Dゲームを実装・検証する |
 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
+| [refactoring-review](refactoring-review/SKILL.md) | 挙動を維持しながら重複・責務・過剰設計・不要な互換・コメントとDocコメントの不整合を整理する |
 | [scroll-motion](scroll-motion/SKILL.md) | スクロール演出24種をCSS優先で選定・実装し、静的ショールームとCSS/Tailwindのサンプルから適用する |
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
