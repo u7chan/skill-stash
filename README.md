@@ -30,6 +30,7 @@
 | [react-effect-discipline](react-effect-discipline/SKILL.md) | useEffectを外部システムとの同期に限定し、適切な代替・依存関係・cleanupを判断する |
 | [refactoring-review](refactoring-review/SKILL.md) | 挙動を維持しながら重複・責務・過剰設計・不要な互換・コメントとDocコメントの不整合を整理する |
 | [scroll-motion](scroll-motion/SKILL.md) | スクロール演出24種をCSS優先で選定・実装し、静的ショールームとCSS/Tailwindのサンプルから適用する |
+| [ui-design](ui-design/SKILL.md) | Web UIの参考調査・視覚設計・実画面レビュー・最終調整を変更規模に応じて行う |
 | **基盤 / インフラ** | Docker・IaC・ローカル検証 |
 | [docker-best-practices](docker-best-practices/SKILL.md) | Docker環境を計測して原因を特定し、build・runtime・storage・security・hostの必要な改善だけを安全に適用する |
 | [terraform-aws-local](terraform-aws-local/SKILL.md) | Docker + FlociでAWS向けTerraform IaCを実AWSなしに段階的に設計・検証する |
